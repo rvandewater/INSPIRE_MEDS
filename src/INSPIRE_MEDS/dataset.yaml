@@ -3,8 +3,8 @@ raw_dataset_version: 1.3
 
 urls:
   dataset:
-    - EXAMPLE_OPEN_URL
-    - url: https://physionet.org/content/inspire/1.3/
+    #- url: https://physionet.org/files/inspire/${raw_dataset_version}/
+    - url: https://physionet.org/content/inspire/get-zip/${raw_dataset_version}/
       username: ${oc.env:DATASET_DOWNLOAD_USERNAME}
       password: ${oc.env:DATASET_DOWNLOAD_PASSWORD}
   demo:

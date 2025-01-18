@@ -110,7 +110,7 @@ def download_file(url: str, output_dir: Path, session: requests.Session):
     parsed_url = urlparse(url)
     filename = os.path.basename(parsed_url.path) or "index.html"
     file_path = Path(output_dir) / filename
-
+    logger.info(f"Starting to download: {file_path}")
     with open(file_path, "wb") as file:
         for chunk in response.iter_content(chunk_size=8192):
             file.write(chunk)

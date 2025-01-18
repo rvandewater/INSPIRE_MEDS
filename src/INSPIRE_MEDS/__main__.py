@@ -39,11 +39,17 @@ def main(cfg: DictConfig):
     # Step 1: Pre-MEDS Data Wrangling
     if HAS_PRE_MEDS:
         command_parts = [
-            "python",
-            str(PRE_MEDS_PY),
+            "python", "-m", "INSPIRE_MEDS.pre_MEDS",
             f"input_dir={raw_input_dir}",
             f"output_dir={pre_MEDS_dir}",
+            "++do_overwrite=False"
         ]
+        # command_parts = [
+        #     "python",
+        #     str(PRE_MEDS_PY),
+        #     f"input_dir={raw_input_dir}",
+        #     f"output_dir={pre_MEDS_dir}",
+        # ]
         run_command(command_parts, cfg)
     else:
         pre_MEDS_dir = raw_input_dir

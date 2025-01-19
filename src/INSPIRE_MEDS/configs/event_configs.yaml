@@ -17,85 +17,107 @@ operations:
     time: col(orin_time)
     time_format:
   op_id: # Number, A random number starts with 4 for the operation.
-    code: col(op_id)
+    code: OPERATION_ID
     time: col(opstart_time)
+    numeric_value: col(op_id)
 #  hadm_id: # Number, A random number starts with 2 for hospital admission.
 #    code: col(hadm_id)
   case_id: # Number, A linker to VitalDB Open Dataset
-    code: col(case_id)
+    code:
+        - VITALDB_CASE_ID
+        - col(case_id)
     time: null
   opdate: # Relative Time, Operation date
     code: OPERATION_DATE
     time: col(opdate)
   age: # Number, Age of the patient on the operation date
-    code: col(age)
+    code:
+      - AGE
+      - col(age)
     time: col(admission_time)
   sex: # M/F, Sex of the patient
-    code: col(sex)
+    code:
+      - SEX
+      - col(sex)
     time: null
   weight: # Number, Weight measured before operation
-    code: col(weight)
+    code: WEIGHT
+    numeric_value: col(weight)
     time: col(admission_time)
   height: # Number, Age measured before operation
-    code: col(height)
+    code: HEIGHT
     time: col(admission_time)
+    numeric_value: col(height)
   race: # String, Race of the patient
-    code: col(race)
+    code:
+      - RACE
+      - col(race)
     time: null
   asa: # 1/2/3/4/5, American Society of Anesthesiologists physical status classification
-    code: col(asa)
+    code:
+      - ASA
+      - col(asa)
     time: col(opdate)
   emop: # Binary, Emergency of the operation
-    code: col(emop)
+    code:
+      - EMERGENCY_OPERATION
+      - col(emop)
     time: col(opdate)
   department: # String, Surgical department for admission
-    code: col(department)
+    code:
+      - ADMISSION_DEPARTMENT
+      - col(department)
     time: col(opdate)
   antype: # String, Anesthesia Type (General / Neuraxial / Regional / MAC)
-    code: col(antype)
+    code:
+      - ANESTHESIA_TYPE
+      - col(antype)
     time: col(opdate)
   icd10_pcs: # String, ICD-10 Procedure Coding System code
-    code: col(icd10_pcs)
+    code:
+      - ICD10_PCS
+      - col(icd10_pcs)
     time: col(opdate)
   orin_time: # Relative Time, The time for entering the operating room
-    code: OR_IN_TIME
+    code: OR_IN
     time: col(orin_time)
   orout_time: # Relative Time, The time for leaving the operating room
-    code: OR_OUT_TIME
+    code: OR_OUT
     time: col(orout_time)
   opstart_time: # Relative Time, The time for starting the operation
-    code: OPERATION_START_TIME
+    code: OPERATION_START
     time: col(opstart_time)
   opend_time: # Relative Time, The time for finishing the operation
-    code: OPERATION_END_TIME
+    code: OPERATION_END
     time: col(opend_time)
   admission_time: # Relative Time, The time for hospital admission
-    code: HOSPITAL_ADMISSION_TIME
+    code: HOSPITAL_ADMISSION
     time: col(admission_time)
   discharge_time: # Relative Time, The time for hospital discharge
-    code: HOSPITAL_DISCHARGE_TIME
+    code: HOSPITAL_DISCHARGE
     time: col(discharge_time)
   anstart_time: # Relative Time, The time for starting anaesthesia
-    code: ANESTHESIA_START_TIME
+    code: ANESTHESIA_START
     time: col(anstart_time)
   anend_time: # Relative Time, The time for finishing anaesthesia
-    code: ANESTHESIA_END_TIME
+    code: ANESTHESIA_END
     time: col(anend_time)
   cpbon_time: # Relative Time, The time for starting cardiopulmonary bypass
-    code: CPB_ON_TIME
+    code: CPB_ON
     time: col(cpbon_time)
   cpboff_time: # Relative Time, The time for finishing cardiopulmonary bypass
-    code: CPB_OFF_TIME
+    code: CPB_OFF
     time: col(cpboff_time)
   icuin_time: # Relative Time, The time for ICU admission after surgery
-    code: ICU_IN_TIME
+    code: ICU_ADMISSION
     time: col(icuin_time)
   icuout_time: # Relative Time, The time for ICU discharge after surgery
-    code: ICU_OUT_TIME
+    code: ICU_DISCHARGE
     time: col(icuout_time)
   inhosp_death_time: # Relative Time, The time for in-hospital death
     code: MEDS_DEATH
     time: col(inhosp_death_time)
+#    text_value: "In-hospital death"
   allcause_death_time: # Relative Time, The time for all-cause death
     code: MEDS_DEATH
     time: col(allcause_death_time)
@@ -143,6 +165,28 @@ medications:
       - col(atc_code)
     time: col(chart_time)
     text_value: drug_name
+diagnosis:
+  diagnosis:
+    code:
+      - DIAGNOSIS
+      - ICD
+      - "10"
+      - col(icd10_cm)
+    time: col(chart_time)
+vitals:
+  vital:
+    code:
+      - VITAL
+      - col(item_name)
+    time: col(chart_time)
+    numeric_value: value
+ward_vitals:
+  ward_vital:
+    code:
+      - WARD_VITAL
+      - col(item_name)
+    time: col(chart_time)
+    numeric_value: value
 #hosp/diagnoses_icd:
 #  diagnosis:
 #    code:

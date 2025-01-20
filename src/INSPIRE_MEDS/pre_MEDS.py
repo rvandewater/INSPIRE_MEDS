@@ -25,19 +25,19 @@ ORIGIN_PSUEDOTIME = pl.datetime(year=2011, month=1, day=1) + 0.5 * (
 def load_raw_inspire_file(fp: Path, **kwargs) -> pl.LazyFrame:
     """Load a raw INSPIRE file into a Polars DataFrame.
 
-                Args:
-                    fp: The path to the INSPIRE file.
+    Args:
+        fp: The path to the INSPIRE file.
 
-                Returns:
-                    The Polars DataFrame containing the INSPIRE data.
-                Example:
-                >>> load_raw_inspire_file("tests/operations_synthetic.csv").collect()
-    ┌────────────┬───────┬────────────────┬───┬──────┬───────────┬───────────────┬───────────────┐
-    │ subject_id ┆ op_id ┆ admission_time ┆ … ┆ emop ┆ icd10_pcs ┆ date_of_birth ┆ date_of_death │
-    │ ---        ┆ ---   ┆ ---            ┆   ┆ ---  ┆ ---       ┆ ---           ┆ ---           │
-    │ str        ┆ str   ┆ str            ┆   ┆ str  ┆ str       ┆ str           ┆ str           │
-    ╞════════════╪═══════╪════════════════╪═══╪══════╪═══════════╪═══════════════╪═══════════════╡
-    └────────────┴───────┴────────────────┴───┴──────┴───────────┴───────────────┴───────────────┘
+    Returns:
+        The Polars DataFrame containing the INSPIRE data.
+    Example:
+    >>> load_raw_inspire_file("tests/operations_synthetic.csv").collect()
+    ┌────────────┬───────┬───┬───────────┬───────────────┬───────────────┐
+    │ subject_id ┆ op_id ┆ … ┆ icd10_pcs ┆ date_of_birth ┆ date_of_death │
+    │ ---        ┆ ---   ┆   ┆ ---       ┆ ---           ┆ ---           │
+    │ str        ┆ str   ┆   ┆ str       ┆ str           ┆ str           │
+    ╞════════════╪═══════╪═══╪═══════════╪═══════════════╪═══════════════╡
+    └────────────┴───────┴───┴───────────┴───────────────┴───────────────┘
     """
     return pl.scan_csv(fp, infer_schema_length=10000000, encoding="utf8-lossy", **kwargs)
 

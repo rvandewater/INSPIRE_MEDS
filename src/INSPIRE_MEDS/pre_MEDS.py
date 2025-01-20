@@ -31,13 +31,14 @@ def load_raw_inspire_file(fp: Path, **kwargs) -> pl.LazyFrame:
     Returns:
         The Polars DataFrame containing the INSPIRE data.
     Example:
-        >>> load_raw_inspire_file("tests/operations_synthetic.csv").collect()
-        ┌────────────┬───────┬───┬───────────┬───────────────┬───────────────┐
-        │ subject_id ┆ op_id ┆ … ┆ icd10_pcs ┆ date_of_birth ┆ date_of_death │
-        │ ---        ┆ ---   ┆   ┆ ---       ┆ ---           ┆ ---           │
-        │ str        ┆ str   ┆   ┆ str       ┆ str           ┆ str           │
-        ╞════════════╪═══════╪═══╪═══════════╪═══════════════╪═══════════════╡
-        └────────────┴───────┴───┴───────────┴───────────────┴───────────────┘
+        >>> with pl.Config(tbl_cols=4):
+        >>>     load_raw_inspire_file("tests/operations_synthetic.csv").collect().
+        ┌────────────┬───────┬───┬───────────────┬───────────────┐
+        │ subject_id ┆ op_id ┆ … ┆ date_of_birth ┆ date_of_death │
+        │ ---        ┆ ---   ┆   ┆ ---           ┆ ---           │
+        │ str        ┆ str   ┆   ┆ str           ┆ str           │
+        ╞════════════╪═══════╪═══╪═══════════════╪═══════════════╡
+        └────────────┴───────┴───┴───────────────┴───────────────┘
     """
     return pl.scan_csv(fp, infer_schema_length=10000000, encoding="utf8-lossy", **kwargs)
 
@@ -47,8 +48,7 @@ def process_patient_and_admissions(df: pl.LazyFrame) -> pl.LazyFrame:
 
     As INSPIRE stores only offset times, note here that we add a CONSTANT TIME ACROSS ALL PATIENTS for the
     true timestamp of their health system admission. This is acceptable because in INSPIRE ONLY RELATIVE
-    TIME
-    DIFFERENCES ARE MEANINGFUL, NOT ABSOLUTE TIMES.
+    TIME DIFFERENCES ARE MEANINGFUL, NOT ABSOLUTE TIMES.
 
     The output of this process is ultimately converted to events via the `patient` key in the
     `configs/event_configs.yaml` file.

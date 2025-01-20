@@ -31,13 +31,13 @@ def load_raw_inspire_file(fp: Path, **kwargs) -> pl.LazyFrame:
     Returns:
         The Polars DataFrame containing the INSPIRE data.
     Example:
-    >>> load_raw_inspire_file("tests/operations_synthetic.csv").collect()
-    ┌────────────┬───────┬───┬───────────┬───────────────┬───────────────┐
-    │ subject_id ┆ op_id ┆ … ┆ icd10_pcs ┆ date_of_birth ┆ date_of_death │
-    │ ---        ┆ ---   ┆   ┆ ---       ┆ ---           ┆ ---           │
-    │ str        ┆ str   ┆   ┆ str       ┆ str           ┆ str           │
-    ╞════════════╪═══════╪═══╪═══════════╪═══════════════╪═══════════════╡
-    └────────────┴───────┴───┴───────────┴───────────────┴───────────────┘
+        >>> load_raw_inspire_file("tests/operations_synthetic.csv").collect()
+        ┌────────────┬───────┬───┬───────────┬───────────────┬───────────────┐
+        │ subject_id ┆ op_id ┆ … ┆ icd10_pcs ┆ date_of_birth ┆ date_of_death │
+        │ ---        ┆ ---   ┆   ┆ ---       ┆ ---           ┆ ---           │
+        │ str        ┆ str   ┆   ┆ str       ┆ str           ┆ str           │
+        ╞════════════╪═══════╪═══╪═══════════╪═══════════════╪═══════════════╡
+        └────────────┴───────┴───┴───────────┴───────────────┴───────────────┘
     """
     return pl.scan_csv(fp, infer_schema_length=10000000, encoding="utf8-lossy", **kwargs)
 

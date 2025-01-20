@@ -1,125 +1,197 @@
-admissions:
+operations:
   offset_col:
-    - "admittedat"
-    - "dischargedat"
+    - "admission_time"
+    - "icuin_time"
+    - "icuout_time"
+    - "orin_time"
+    - "orout_time"
+    - "opstart_time"
+    - "opend_time"
+    - "discharge_time"
+    - "anstart_time"
+    - "anend_time"
+    - "cpbon_time"
+    - "cpboff_time"
+    - "inhosp_death_time"
+    - "allcause_death_time"
+    - "opdate"
   pseudotime_col:
-    - "admittedattime"
-    - "dischargedattime"
+    - "admission_time"
+    - "icuin_time"
+    - "icuout_time"
+    - "orin_time"
+    - "orout_time"
+    - "opstart_time"
+    - "opend_time"
+    - "discharge_time"
+    - "anstart_time"
+    - "anend_time"
+    - "cpbon_time"
+    - "cpboff_time"
+    - "inhosp_death_time"
+    - "allcause_death_time"
+    - "opdate"
   output_data_cols:
-    - "location"
-    - "urgency"
-    - "origin"
-    - "destination"
-    - "weightgroup"
-    - "weightsource"
-    - "heightgroup"
-    - "heightsource"
-    - "specialty"
-
-numericitems:
+    - "age"
+    - "antype"
+    - "sex"
+    - "weight"
+    - "height"
+    - "race"
+    - "asa"
+    - "case_id"
+    - "hadm_id"
+    - "department"
+    - "emop"
+    - "icd10_pcs"
+    - "date_of_birth"
+    - "date_of_death"
+diagnosis:
   offset_col:
-    - "measuredat"
-    - "registeredat"
-    - "updatedat"
+    - "chart_time"
   pseudotime_col:
-    - "measuredattime"
-    - "registeredattime"
-    - "updatedattime"
+    - "chart_time"
   output_data_cols:
-    - "item"
+    - "icd10_cm"
+vitals:
+  offset_col:
+    - "chart_time"
+  pseudotime_col:
+    - "chart_time"
+  output_data_cols:
+    - "item_name"
     - "value"
-    - "unit"
-    - "registeredby"
-    - "updatedby"
-  exclude_rows: 
-    measuredat: -1899
-  warning_items:
-    - "How should we deal with `registeredat` and `updatedat`?"
-    - "Measurements with a `measuredat` == -1899 are excluded, as they seem to leak information from the future."
-
-listitems:
+#    - "op_id"
+ward_vitals:
   offset_col:
-    - "measuredat"
-    - "registeredat"
-    - "updatedat"
+    - "chart_time"
   pseudotime_col:
-    - "measuredattime"
-    - "registeredattime"
-    - "updatedattime"
+    - "chart_time"
   output_data_cols:
-    - "item"
+    - "item_name"
     - "value"
-    - "islabresult"
-    - "registeredby"
-    - "updatedby"
-  exclude_rows: 
-    measuredat: -1899
-  warning_items:
-    - "How should we deal with `registeredat` and `updatedat`?"
-    - "Measurements with a `measuredat` == -1899 are excluded, as they seem to leak information from the future."
-
-freetextitems:
+#    - "op_id"
+labs:
   offset_col:
-    - "measuredat"
-    - "registeredat"
-    - "updatedat"
+    - "chart_time"
   pseudotime_col:
-    - "measuredattime"
-    - "registeredattime"
-    - "updatedattime"
+    - "chart_time"
   output_data_cols:
-    - "item"
+    - "item_name"
     - "value"
-    - "comment"
-    - "islabresult"
-    - "registeredby"
-    - "updatedby"
-  exclude_rows: 
-    measuredat: -1899
-  warning_items:
-    - "How should we deal with `registeredat` and `updatedat`?"
-    - "Measurements with a `measuredat` == -1899 are excluded, as they seem to leak information from the future."
-
-drugitems:
+medications:
   offset_col:
-    - "start"
-    - "stop"
+    - "chart_time"
   pseudotime_col:
-    - "starttime"
-    - "stoptime"
+    - "chart_time"
   output_data_cols:
-    - "orderid"
-    - "ordercategory"
-    - "item"
-    - "rate"
-    - "rateunit"
-    - "ratetimeunitid"
-    - "dose"
-    - "doseunit"
-    - "doserateunit"
-    - "duration"
-    - "administered"
-    - "administeredunit"
-    - "action"
-  warning_items:
-    - "We **IGNORE** several flags here -- this may be a mistake!"
-    - "When is the administered dose recorded? Is this done after the fact?"
-
-procedureorderitems:
-  offset_col: "registeredat"
-  pseudotime_col: "registeredattime"
-  output_data_cols:
-    - "orderid"
-    - "ordercategoryname"
-    - "item"
-    - "registeredby"
-
-processitems:
-  offset_col:
-    - "start"
-    - "stop"
-  pseudotime_col:
-    - "starttime"
-    - "stoptime"
-  output_data_cols:
-    - "item"
+    - "drug_name"
+    - "atc_code"
+    - "route"
+#numericitems:
+#  offset_col:
+#    - "measuredat"
+#    - "registeredat"
+#    - "updatedat"
+#  pseudotime_col:
+#    - "measuredattime"
+#    - "registeredattime"
+#    - "updatedattime"
+#  output_data_cols:
+#    - "item"
+#    - "value"
+#    - "unit"
+#    - "registeredby"
+#    - "updatedby"
+#  exclude_rows:
+#    measuredat: -1899
+#  warning_items:
+#    - "How should we deal with `registeredat` and `updatedat`?"
+#    - "Measurements with a `measuredat` == -1899 are excluded, as they seem to leak information from the future."
+#
+#listitems:
+#  offset_col:
+#    - "measuredat"
+#    - "registeredat"
+#    - "updatedat"
+#  pseudotime_col:
+#    - "measuredattime"
+#    - "registeredattime"
+#    - "updatedattime"
+#  output_data_cols:
+#    - "item"
+#    - "value"
+#    - "islabresult"
+#    - "registeredby"
+#    - "updatedby"
+#  exclude_rows:
+#    measuredat: -1899
+#  warning_items:
+#    - "How should we deal with `registeredat` and `updatedat`?"
+#    - "Measurements with a `measuredat` == -1899 are excluded, as they seem to leak information from the future."
+#
+#freetextitems:
+#  offset_col:
+#    - "measuredat"
+#    - "registeredat"
+#    - "updatedat"
+#  pseudotime_col:
+#    - "measuredattime"
+#    - "registeredattime"
+#    - "updatedattime"
+#  output_data_cols:
+#    - "item"
+#    - "value"
+#    - "comment"
+#    - "islabresult"
+#    - "registeredby"
+#    - "updatedby"
+#  exclude_rows:
+#    measuredat: -1899
+#  warning_items:
+#    - "How should we deal with `registeredat` and `updatedat`?"
+#    - "Measurements with a `measuredat` == -1899 are excluded, as they seem to leak information from the future."
+#
+#drugitems:
+#  offset_col:
+#    - "start"
+#    - "stop"
+#  pseudotime_col:
+#    - "starttime"
+#    - "stoptime"
+#  output_data_cols:
+#    - "orderid"
+#    - "ordercategory"
+#    - "item"
+#    - "rate"
+#    - "rateunit"
+#    - "ratetimeunitid"
+#    - "dose"
+#    - "doseunit"
+#    - "doserateunit"
+#    - "duration"
+#    - "administered"
+#    - "administeredunit"
+#    - "action"
+#  warning_items:
+#    - "We **IGNORE** several flags here -- this may be a mistake!"
+#    - "When is the administered dose recorded? Is this done after the fact?"
+#
+#procedureorderitems:
+#  offset_col: "registeredat"
+#  pseudotime_col: "registeredattime"
+#  output_data_cols:
+#    - "orderid"
+#    - "ordercategoryname"
+#    - "item"
+#    - "registeredby"
+#
+#processitems:
+#  offset_col:
+#    - "start"
+#    - "stop"
+#  pseudotime_col:
+#    - "starttime"
+#    - "stoptime"
+#  output_data_cols:
+#    - "item"

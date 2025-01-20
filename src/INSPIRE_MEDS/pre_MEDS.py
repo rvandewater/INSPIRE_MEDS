@@ -16,11 +16,12 @@ from omegaconf import DictConfig, OmegaConf
 
 from MEDS_transforms.utils import get_shard_prefix, hydra_loguru_init, write_lazyframe
 
-ADMISSION_ID = "admissionid"
-PATIENT_ID = "patientid"
+ADMISSION_ID = "op_id"
+PATIENT_ID = "subject_id"
+ORIGIN_PSUEDOTIME = (pl.datetime(year=2011, month=1, day=1) +
+                         0.5*(pl.datetime(year=2020, month=12, day=31) - pl.datetime(year=2011, month=1, day=1)))
 
-
-def load_raw_aumc_file(fp: Path, **kwargs) -> pl.LazyFrame:
+def load_raw_inspire_file(fp: Path, **kwargs) -> pl.LazyFrame:
     """Load a raw INSPIRE file into a Polars DataFrame.
 
     Args:
@@ -29,7 +30,7 @@ def load_raw_aumc_file(fp: Path, **kwargs) -> pl.LazyFrame:
     Returns:
         The Polars DataFrame containing the INSPIRE data.
     Example:
-    >>> load_raw_aumc_file(Path("processitems.csv")).collect()
+    >>> load_raw_inspire_file(Path("processitems.csv")).collect()
         ┌─────────────┬────────┬──────────────────────┬──────────┬───────────┬──────────┐
         │ admissionid ┆ itemid ┆ item                 ┆ start    ┆ stop      ┆ duration │
         │ ---         ┆ ---    ┆ ---                  ┆ ---      ┆ ---       ┆ ---      │
@@ -51,31 +52,26 @@ def process_patient_and_admissions(df: pl.LazyFrame) -> pl.LazyFrame:
     The output of this process is ultimately converted to events via the `patient` key in the
     `configs/event_configs.yaml` file.
     """
-
-    origin_pseudotime = pl.datetime(
-        year=pl.col("admissionyeargroup").str.extract(r"(2003|2010)").cast(pl.Int32), month=1, day=1
-    )
-
-    # TODO: consider using better logic to infer date of birth for patients
-    #       with more than one admission.
-    age_in_years = (
-        (
-            pl.col("agegroup").str.extract("(\\d{2}).?$").cast(pl.Int32)
-            + pl.col("agegroup").str.extract("^(\\d{2})").cast(pl.Int32)
-        )
-        / 2
-    ).ceil()
+    # All patients who received surgery under general, neuraxial, regional, and monitored anesthesia care between
+    # January 2011 and December 2020 at SNUH were included.
+    # TODO: Check if we can find a more sophisticated way to calculate the origin pseudotime
+    origin_pseudotime = ORIGIN_PSUEDOTIME
+    age_in_years = pl.col("age")
     age_in_days = age_in_years * 365.25
     # We assume that the patient was born at the midpoint of the year as we don't know the actual birthdate
     pseudo_date_of_birth = origin_pseudotime - pl.duration(days=(age_in_days - 365.25 / 2))
-    pseudo_date_of_death = origin_pseudotime + pl.duration(milliseconds=pl.col("dateofdeath"))
-
-    return df.filter(pl.col("admissioncount") == 1).select(
+    pseudo_date_of_death = origin_pseudotime + pl.duration(
+        minutes=pl.when(pl.col("inhosp_death_time") < pl.col("allcause_death_time"))
+        .then(pl.col("inhosp_death_time"))
+        .otherwise(pl.col("allcause_death_time"))
+        .cast(pl.Int64)
+    )
+    return df.group_by("subject_id", maintain_order=True).first().select(
         PATIENT_ID,
-        pseudo_date_of_birth.alias("dateofbirth"),
-        "gender",
-        origin_pseudotime.alias("firstadmittedattime"),
-        pseudo_date_of_death.alias("dateofdeath"),
+        pseudo_date_of_birth.alias("date_of_birth"),
+        "sex",
+        origin_pseudotime.alias("first_admitted_at_time"),
+        pseudo_date_of_death.alias("date_of_death"),
     ), df.select(PATIENT_ID, ADMISSION_ID)
 
 
@@ -130,8 +126,8 @@ def join_and_get_pseudotime_fntr(
         ["item", "value", "unit", "registeredby", "updatedby"],
         {"measuredat": -1899},
         ["How should we deal with `registeredat` and `updatedat`?"])`
-        >>> df = load_raw_aumc_file(in_fp)
-        >>> raw_admissions_df = load_raw_aumc_file(Path("admissions.csv"))
+        >>> df = load_raw_inspire_file(in_fp)
+        >>> raw_admissions_df = load_raw_inspire_file(Path("operations.csv"))
         >>> patient_df, link_df = process_patient_and_admissions(raw_admissions_df)
         >>> processed_df = func(df, patient_df)
         >>> type(processed_df)
@@ -166,7 +162,8 @@ def join_and_get_pseudotime_fntr(
             df = df.filter(*filter_exprs)
 
         pseudotimes = [
-            (pl.col("firstadmittedattime") + pl.duration(milliseconds=pl.col(offset))).alias(pseudotime)
+            (   ORIGIN_PSUEDOTIME +
+                pl.duration(minutes=pl.col(offset))).alias(pseudotime)
             for pseudotime, offset in zip(pseudotime_col, offset_col)
         ]
 
@@ -176,13 +173,12 @@ def join_and_get_pseudotime_fntr(
                 *(f"  - {item}" for item in warning_items),
             ]
             logger.warning("\n".join(warning_lines))
-
-        return df.join(patient_df, on=ADMISSION_ID, how="inner").select(
+        # Join the patient table to the data table, INSPIRE only has subject_id and not admission_id in each table
+        return df.join(patient_df, on=PATIENT_ID, how="inner").select(
             PATIENT_ID,
             ADMISSION_ID,
             *pseudotimes,
-            *output_data_cols,
-        )
+            *output_data_cols)
 
     return fn
 
@@ -204,6 +200,7 @@ def main(cfg: DictConfig):
     functions = {}
     for table_name, preprocessor_cfg in preprocessors.items():
         logger.info(f"  Adding preprocessor for {table_name}:\n{OmegaConf.to_yaml(preprocessor_cfg)}")
+        # logger.info(**preprocessor_cfg)
         functions[table_name] = join_and_get_pseudotime_fntr(table_name=table_name, **preprocessor_cfg)
 
     raw_cohort_dir = Path(cfg.input_dir)
@@ -219,9 +216,9 @@ def main(cfg: DictConfig):
     else:
         logger.info("Processing patient table first...")
 
-        admissions_fp = raw_cohort_dir / "admissions.csv"
+        admissions_fp = raw_cohort_dir / "operations.csv"
         logger.info(f"Loading {str(admissions_fp.resolve())}...")
-        raw_admissions_df = load_raw_aumc_file(admissions_fp)
+        raw_admissions_df = load_raw_inspire_file(admissions_fp)
 
         logger.info("Processing patient table...")
         patient_df, link_df = process_patient_and_admissions(raw_admissions_df)
@@ -255,9 +252,11 @@ def main(cfg: DictConfig):
 
         st = datetime.now()
         logger.info(f"Processing {pfx}...")
-        df = load_raw_aumc_file(in_fp)
+        df = load_raw_inspire_file(in_fp)
         processed_df = fn(df, patient_df)
-        processed_df.sink_parquet(out_fp)
+        # Sink throws errors, so we use collect instead
+        #processed_df.sink_parquet(out_fp)
+        processed_df.collect().write_parquet(out_fp)
         logger.info(f"  * Processed and wrote to {str(out_fp.resolve())} in {datetime.now() - st}")
 
     logger.info(f"Done! All dataframes processed and written to {str(MEDS_input_dir.resolve())}")

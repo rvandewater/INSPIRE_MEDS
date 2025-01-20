@@ -32,9 +32,8 @@ operations:
     time: col(opdate)
   age: # Number, Age of the patient on the operation date
     code:
-      - AGE
-      - col(age)
-    time: col(admission_time)
+      - MEDS_BIRTH
+    time: col(date_of_birth)
   sex: # M/F, Sex of the patient
     code:
       - SEX
@@ -114,42 +113,17 @@ operations:
   icuout_time: # Relative Time, The time for ICU discharge after surgery
     code: ICU_DISCHARGE
     time: col(icuout_time)
-  inhosp_death_time: # Relative Time, The time for in-hospital death
+  death_time: # Relative Time, The time for death
     code: MEDS_DEATH
-    time: col(inhosp_death_time)
-#    text_value: "In-hospital death"
-  allcause_death_time: # Relative Time, The time for all-cause death
-    code: MEDS_DEATH
-    time: col(allcause_death_time)
-#hosp/admissions:
-#  ed_registration:
-#    code: ED_REGISTRATION
-#    time: col(edregtime)
-#    time_format: "%Y-%m-%d %H:%M:%S"
-#  ed_out:
-#    code: ED_OUT
-#    time: col(edouttime)
-#    time_format: "%Y-%m-%d %H:%M:%S"
-#  admission:
-#    code:
-#      - HOSPITAL_ADMISSION
-#      - col(admission_type)
-#      - col(admission_location)
-#    time: col(admittime)
-#    time_format: "%Y-%m-%d %H:%M:%S"
-#    insurance: insurance
-#    language: language
-#    marital_status: marital_status
-#    race: race
-#    hadm_id: hadm_id
-#  discharge:
-#    code:
-#      - HOSPITAL_DISCHARGE
-#      - col(discharge_location)
-#    time: col(dischtime)
-#    time_format: "%Y-%m-%d %H:%M:%S"
-#    hadm_id: hadm_id
-  # We omit the death event here as it is joined to the data in the subjects table in the pre-MEDS step.
+    time: col(date_of_death)
+#  inhosp_death_time: # Relative Time, The time for in-hospital death
+#    code: MEDS_DEATH
+#    time: col(inhosp_death_time)
+##    text_value: "In-hospital death"
+#  allcause_death_time: # Relative Time, The time for all-cause death
+#    code: MEDS_DEATH
+#    time: col(allcause_death_time)
+
 labs:
   lab:
     code:
@@ -187,6 +161,9 @@ ward_vitals:
       - col(item_name)
     time: col(chart_time)
     numeric_value: value
+
+
+
 #hosp/diagnoses_icd:
 #  diagnosis:
 #    code:

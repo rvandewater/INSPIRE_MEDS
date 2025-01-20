@@ -7,7 +7,7 @@ from pathlib import Path
 import hydra
 from omegaconf import DictConfig
 
-from . import ETL_CFG, EVENT_CFG, HAS_PRE_MEDS, MAIN_CFG, RUNNER_CFG
+from . import ETL_CFG, EVENT_CFG, HAS_PRE_MEDS, MAIN_CFG, PRE_MEDS_PY, RUNNER_CFG
 from . import __version__ as PKG_VERSION
 from . import dataset_info
 from .commands import run_command
@@ -38,20 +38,20 @@ def main(cfg: DictConfig):
 
     # Step 1: Pre-MEDS Data Wrangling
     if HAS_PRE_MEDS:
-        command_parts = [
-            "python",
-            "-m",
-            "INSPIRE_MEDS.pre_MEDS",
-            f"input_dir={raw_input_dir}",
-            f"output_dir={pre_MEDS_dir}",
-            "++do_overwrite=False",
-        ]
         # command_parts = [
         #     "python",
-        #     str(PRE_MEDS_PY),
+        #     "-m",
+        #     "INSPIRE_MEDS.pre_MEDS",
         #     f"input_dir={raw_input_dir}",
         #     f"output_dir={pre_MEDS_dir}",
+        #     "++do_overwrite=False",
         # ]
+        command_parts = [
+            "python",
+            str(PRE_MEDS_PY),
+            f"input_dir={raw_input_dir}",
+            f"output_dir={pre_MEDS_dir}",
+        ]
         run_command(command_parts, cfg)
     else:
         pre_MEDS_dir = raw_input_dir

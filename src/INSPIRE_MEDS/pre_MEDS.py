@@ -15,6 +15,8 @@ from loguru import logger
 from MEDS_transforms.utils import get_shard_prefix, hydra_loguru_init, write_lazyframe
 from omegaconf import DictConfig, OmegaConf
 
+from INSPIRE_MEDS import TABLE_PROCESSOR_CFG
+
 ADMISSION_ID = "op_id"
 SUBJECT_ID = "subject_id"
 ORIGIN_PSUEDOTIME = pl.datetime(year=2011, month=1, day=1) + 0.5 * (
@@ -185,9 +187,8 @@ def main(cfg: DictConfig):
 
     hydra_loguru_init()
 
-    table_preprocessors_config_fp = Path(cfg.table_preprocessors_config_fp)
-    logger.info(f"Loading table preprocessors from {str(table_preprocessors_config_fp.resolve())}...")
-    preprocessors = OmegaConf.load(table_preprocessors_config_fp)
+    logger.info(f"Loading table preprocessors from {TABLE_PROCESSOR_CFG}...")
+    preprocessors = OmegaConf.load(TABLE_PROCESSOR_CFG)
     functions = {}
     for table_name, preprocessor_cfg in preprocessors.items():
         logger.info(f"  Adding preprocessor for {table_name}:\n{OmegaConf.to_yaml(preprocessor_cfg)}")

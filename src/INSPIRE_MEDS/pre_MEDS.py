@@ -31,7 +31,7 @@ def load_raw_inspire_file(fp: Path, **kwargs) -> pl.LazyFrame:
     Returns:
         The Polars DataFrame containing the INSPIRE data.
     Example:
-    >>> load_raw_inspire_file(Path("operations.csv")).collect()
+    >>> load_raw_inspire_file(path).collect()
         ┌─────────────┬────────┬──────────────────────┬──────────┬───────────┬──────────┐
         │ admissionid ┆ itemid ┆ item                 ┆ start    ┆ stop      ┆ duration │
         │ ---         ┆ ---    ┆ ---                  ┆ ---      ┆ ---       ┆ ---      │
@@ -139,7 +139,7 @@ def join_and_get_pseudotime_fntr(
         ...     ["How should we deal with `registeredat` and `updatedat`?"]
         ... )
         >>> df = load_raw_inspire_file(in_fp)
-        >>> raw_admissions_df = load_raw_inspire_file(Path("operations.csv"))
+        >>> raw_admissions_df = load_raw_inspire_file(path)
         >>> patient_df, link_df = process_patient_and_admissions(raw_admissions_df)
         >>> processed_df = func(df, patient_df)
         >>> type(processed_df)

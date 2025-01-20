@@ -89,7 +89,6 @@ def join_and_get_pseudotime_fntr(
     offset_col: str | list[str],
     pseudotime_col: str | list[str],
     output_data_cols: list[str] | None = None,
-    exclude_rows: dict | None = None,
     warning_items: list[str] | None = None,
 ) -> Callable[[pl.LazyFrame, pl.LazyFrame], pl.LazyFrame]:
     """Returns a function that joins a dataframe to the `patient` table and adds pseudotimes.
@@ -101,7 +100,6 @@ def join_and_get_pseudotime_fntr(
             pseudotime_col: list of all timestamp columns derived from `offset_col` and the linked `patient`
                 table
             output_data_cols: list of all data columns included in the output
-            exclude_rows: list of column: value pairs based on which certain rows are removed from the dataset
             warning_items: any warnings noted in the table_preprocessors.yaml
 
         Returns:
@@ -121,7 +119,6 @@ def join_and_get_pseudotime_fntr(
             ...     ["subject_id", "op_id", "age", "antype", "sex", "weight", "height", "race", "asa",
             ...      "case_id", "hadm_id", "department", "emop", "icd10_pcs", "date_of_birth",
             ...      "date_of_death"],
-            ...     {},
             ...     ["How should we deal with op_id and subject_id?"]
             ... )
             >>> df = load_raw_inspire_file("tests/operations_synthetic.csv")
@@ -159,9 +156,6 @@ def join_and_get_pseudotime_fntr(
         Returns:
             The processed {table_name} data.
         """
-        if exclude_rows is not None:
-            filter_exprs = [pl.col(col_name).ne(val) for col_name, val in exclude_rows.items()]
-            df = df.filter(*filter_exprs)
 
         pseudotimes = [
             (ORIGIN_PSUEDOTIME + pl.duration(minutes=pl.col(offset))).alias(pseudotime)

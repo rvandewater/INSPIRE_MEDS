@@ -43,4 +43,3 @@ MEDS_extract-INSPIRE root_output_dir=$ROOT_OUTPUT_DIR
 ```
 
 to run the entire pipeline.
-

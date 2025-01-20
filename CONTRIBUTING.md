@@ -1,4 +1,3 @@
-
 A template repository for a MEDS-Transforms powered extraction pipeline for a custom dataset. Once you have
 customized the repository to your dataset (see instructions below), you will be able to run your extraction
 pipeline with a few simple command-line commands, such as:

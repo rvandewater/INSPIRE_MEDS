@@ -1,7 +1,7 @@
 default_language_version:
   python: python3.12
 
-exclude: "docs/index.md|MIMIC-IV_Example/README.md|eICU_Example/README.md|AUMCdb_Example/README.md"
+#exclude:
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -48,11 +48,11 @@ repos:
         args: [--py311-plus]
 
   # python docstring formatting
-  - repo: https://github.com/myint/docformatter
-    rev: v1.7.5
-    hooks:
-      - id: docformatter
-        args: [--in-place, --wrap-summaries=110, --wrap-descriptions=110]
+  #  - repo: https://github.com/myint/docformatter
+  #    rev: v1.7.5
+  #    hooks:
+  #      - id: docformatter
+  #        args: [--in-place, --wrap-summaries=110, --wrap-descriptions=110]
 
   # python check (PEP8), programming errors and code complexity
   - repo: https://github.com/PyCQA/flake8

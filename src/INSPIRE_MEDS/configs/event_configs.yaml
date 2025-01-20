@@ -20,12 +20,12 @@ operations:
     code: OPERATION_ID
     time: col(opstart_time)
     numeric_value: col(op_id)
-#  hadm_id: # Number, A random number starts with 2 for hospital admission.
-#    code: col(hadm_id)
+  #  hadm_id: # Number, A random number starts with 2 for hospital admission.
+  #    code: col(hadm_id)
   case_id: # Number, A linker to VitalDB Open Dataset
     code:
-        - VITALDB_CASE_ID
-        - col(case_id)
+      - VITALDB_CASE_ID
+      - col(case_id)
     time: null
   opdate: # Relative Time, Operation date
     code: OPERATION_DATE
@@ -130,7 +130,7 @@ labs:
       - LAB
       - col(item_name)
     time: col(chart_time)
-  #    time_format: "%Y-%m-%d %H:%M:%S"
+    #    time_format: "%Y-%m-%d %H:%M:%S"
     numeric_value: value
 medications:
   medication:
@@ -161,9 +161,6 @@ ward_vitals:
       - col(item_name)
     time: col(chart_time)
     numeric_value: value
-
-
-
 #hosp/diagnoses_icd:
 #  diagnosis:
 #    code:

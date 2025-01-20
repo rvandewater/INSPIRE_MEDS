@@ -12,14 +12,15 @@ from pathlib import Path
 import hydra
 import polars as pl
 from loguru import logger
+from MEDS_transforms.utils import get_shard_prefix, hydra_loguru_init, write_lazyframe
 from omegaconf import DictConfig, OmegaConf
 
-from MEDS_transforms.utils import get_shard_prefix, hydra_loguru_init, write_lazyframe
-
 ADMISSION_ID = "op_id"
-PATIENT_ID = "subject_id"
-ORIGIN_PSUEDOTIME = (pl.datetime(year=2011, month=1, day=1) +
-                         0.5*(pl.datetime(year=2020, month=12, day=31) - pl.datetime(year=2011, month=1, day=1)))
+SUBJECT_ID = "subject_id"
+ORIGIN_PSUEDOTIME = pl.datetime(year=2011, month=1, day=1) + 0.5 * (
+    pl.datetime(year=2020, month=12, day=31) - pl.datetime(year=2011, month=1, day=1)
+)
+
 
 def load_raw_inspire_file(fp: Path, **kwargs) -> pl.LazyFrame:
     """Load a raw INSPIRE file into a Polars DataFrame.
@@ -45,15 +46,16 @@ def load_raw_inspire_file(fp: Path, **kwargs) -> pl.LazyFrame:
 def process_patient_and_admissions(df: pl.LazyFrame) -> pl.LazyFrame:
     """Takes the admissions table and converts it to a form that includes timestamps.
 
-    As INSPIRE stores only offset times, note here that we add a CONSTANT TIME ACROSS ALL PATIENTS for the true
-    timestamp of their health system admission. This is acceptable because in INSPIRE ONLY RELATIVE TIME
+    As INSPIRE stores only offset times, note here that we add a CONSTANT TIME ACROSS ALL PATIENTS for the
+    true timestamp of their health system admission. This is acceptable because in INSPIRE ONLY RELATIVE
+    TIME
     DIFFERENCES ARE MEANINGFUL, NOT ABSOLUTE TIMES.
 
     The output of this process is ultimately converted to events via the `patient` key in the
     `configs/event_configs.yaml` file.
     """
-    # All patients who received surgery under general, neuraxial, regional, and monitored anesthesia care between
-    # January 2011 and December 2020 at SNUH were included.
+    # All patients who received surgery under general, neuraxial, regional, and monitored anesthesia care
+    # between January 2011 and December 2020 at SNUH were included.
     # TODO: Check if we can find a more sophisticated way to calculate the origin pseudotime
     origin_pseudotime = ORIGIN_PSUEDOTIME
     age_in_years = pl.col("age")
@@ -67,12 +69,12 @@ def process_patient_and_admissions(df: pl.LazyFrame) -> pl.LazyFrame:
         .cast(pl.Int64)
     )
     return df.group_by("subject_id", maintain_order=True).first().select(
-        PATIENT_ID,
+        SUBJECT_ID,
         pseudo_date_of_birth.alias("date_of_birth"),
         "sex",
         origin_pseudotime.alias("first_admitted_at_time"),
         pseudo_date_of_death.alias("date_of_death"),
-    ), df.select(PATIENT_ID, ADMISSION_ID)
+    ), df.select(SUBJECT_ID, ADMISSION_ID)
 
 
 def join_and_get_pseudotime_fntr(
@@ -102,7 +104,7 @@ def join_and_get_pseudotime_fntr(
             - "unit"
             - "registeredby"
             - "updatedby"
-        exclude_rows: 
+        exclude_rows:
             measuredat: -1899
         warning_items:
             - "How should we deal with `registeredat` and `updatedat`?"
@@ -154,16 +156,12 @@ def join_and_get_pseudotime_fntr(
         The output of this process is ultimately converted to events via the `{table_name}` key in the
         `configs/event_configs.yaml` file.
         """
-        if exclude_rows is not None: 
-            filter_exprs = [
-                pl.col(col_name).ne(val)
-                for col_name, val in exclude_rows.items()
-            ]
+        if exclude_rows is not None:
+            filter_exprs = [pl.col(col_name).ne(val) for col_name, val in exclude_rows.items()]
             df = df.filter(*filter_exprs)
 
         pseudotimes = [
-            (   ORIGIN_PSUEDOTIME +
-                pl.duration(minutes=pl.col(offset))).alias(pseudotime)
+            (ORIGIN_PSUEDOTIME + pl.duration(minutes=pl.col(offset))).alias(pseudotime)
             for pseudotime, offset in zip(pseudotime_col, offset_col)
         ]
 
@@ -173,12 +171,10 @@ def join_and_get_pseudotime_fntr(
                 *(f"  - {item}" for item in warning_items),
             ]
             logger.warning("\n".join(warning_lines))
-        # Join the patient table to the data table, INSPIRE only has subject_id and not admission_id in each table
-        return df.join(patient_df, on=PATIENT_ID, how="inner").select(
-            PATIENT_ID,
-            ADMISSION_ID,
-            *pseudotimes,
-            *output_data_cols)
+        # Join the patient table to the data table, INSPIRE only has subject_id as key
+        return df.join(patient_df, on=SUBJECT_ID, how="inner").select(
+            SUBJECT_ID, ADMISSION_ID, *pseudotimes, *output_data_cols
+        )
 
     return fn
 
@@ -225,7 +221,7 @@ def main(cfg: DictConfig):
         write_lazyframe(patient_df, patient_out_fp)
         write_lazyframe(link_df, link_out_fp)
 
-    patient_df = patient_df.join(link_df, on=PATIENT_ID)
+    patient_df = patient_df.join(link_df, on=SUBJECT_ID)
 
     all_fps = [fp for fp in raw_cohort_dir.glob("*.csv")]
 
@@ -255,7 +251,7 @@ def main(cfg: DictConfig):
         df = load_raw_inspire_file(in_fp)
         processed_df = fn(df, patient_df)
         # Sink throws errors, so we use collect instead
-        #processed_df.sink_parquet(out_fp)
+        # processed_df.sink_parquet(out_fp)
         processed_df.collect().write_parquet(out_fp)
         logger.info(f"  * Processed and wrote to {str(out_fp.resolve())} in {datetime.now() - st}")
 

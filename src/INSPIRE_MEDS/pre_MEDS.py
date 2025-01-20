@@ -31,7 +31,7 @@ def load_raw_inspire_file(fp: Path, **kwargs) -> pl.LazyFrame:
     Returns:
         The Polars DataFrame containing the INSPIRE data.
     Example:
-    >>> load_raw_inspire_file("tests/operations_synthetic").collect()
+    >>> load_raw_inspire_file("tests/operations_synthetic.csv").collect()
         ┌─────────────┬────────┬──────────────────────┬──────────┬───────────┬──────────┐
         │ admissionid ┆ itemid ┆ item                 ┆ start    ┆ stop      ┆ duration │
         │ ---         ┆ ---    ┆ ---                  ┆ ---      ┆ ---       ┆ ---      │
@@ -151,6 +151,13 @@ def join_and_get_pseudotime_fntr(
 
         The output of this process is ultimately converted to events via the `{table_name}` key in the
         `configs/event_configs.yaml` file.
+
+        Args:
+            df: The raw {table_name} data.
+            patient_df: The processed patient data.
+
+        Returns:
+            The processed {table_name} data.
         """
         if exclude_rows is not None:
             filter_exprs = [pl.col(col_name).ne(val) for col_name, val in exclude_rows.items()]

@@ -91,41 +91,40 @@ def join_and_get_pseudotime_fntr(
     warning_items: list[str] | None = None,
 ) -> Callable[[pl.LazyFrame, pl.LazyFrame], pl.LazyFrame]:
     """Returns a function that joins a dataframe to the `patient` table and adds pseudotimes.
-        Also raises specified warning strings via the logger for uncertain columns.
-        All args except `table_name` are taken from the table_preprocessors.yaml.
-        Args:
-            table_name: name of the INSPIRE table that should be joined
-            offset_col: list of all columns that contain time offsets since the patient's first admission
-            pseudotime_col: list of all timestamp columns derived from `offset_col` and the linked `patient`
-                table
-            output_data_cols: list of all data columns included in the output
-            warning_items: any warnings noted in the table_preprocessors.yaml
+    Also raises specified warning strings via the logger for uncertain columns.
+    All args except `table_name` are taken from the table_preprocessors.yaml.
+    Args:
+        table_name: name of the INSPIRE table that should be joined
+        offset_col: list of all columns that contain time offsets since the patient's first admission
+        pseudotime_col: list of all timestamp columns derived from `offset_col` and the linked `patient`
+            table
+        output_data_cols: list of all data columns included in the output
+        warning_items: any warnings noted in the table_preprocessors.yaml
 
-        Returns:
-            Function that expects the raw data stored in the `table_name` table and the joined output of the
-            `process_patient_and_admissions` function. Both inputs are expected to be `pl.DataFrame`s.
+    Returns:
+        Function that expects the raw data stored in the `table_name` table and the joined output of the
+        `process_patient_and_admissions` function. Both inputs are expected to be `pl.DataFrame`s.
 
-        Examples:
     Examples:
-            >>> func = join_and_get_pseudotime_fntr(
-            ...     "operations",
-            ...     ["admission_time", "icuin_time", "icuout_time", "orin_time", "orout_time",
-            ...      "opstart_time", "opend_time", "discharge_time", "anstart_time", "anend_time",
-            ...      "cpbon_time", "cpboff_time", "inhosp_death_time", "allcause_death_time", "opdate"],
-            ...     ["admission_time", "icuin_time", "icuout_time", "orin_time", "orout_time",
-            ...      "opstart_time", "opend_time", "discharge_time", "anstart_time", "anend_time",
-            ...      "cpbon_time", "cpboff_time", "inhosp_death_time", "allcause_death_time", "opdate"],
-            ...     ["subject_id", "op_id", "age", "antype", "sex", "weight", "height", "race", "asa",
-            ...      "case_id", "hadm_id", "department", "emop", "icd10_pcs", "date_of_birth",
-            ...      "date_of_death"],
-            ...     ["How should we deal with op_id and subject_id?"]
-            ... )
-            >>> df = load_raw_inspire_file("tests/operations_synthetic.csv")
-            >>> raw_admissions_df = load_raw_inspire_file("tests/operations_synthetic.csv")
-            >>> patient_df, link_df = process_patient_and_admissions(raw_admissions_df)
-            >>> processed_df = func(df, patient_df)
-            >>> type(processed_df)
-        <class 'polars.lazyframe.frame.LazyFrame'>
+        >>> func = join_and_get_pseudotime_fntr(
+        ...     "operations",
+        ...     ["admission_time", "icuin_time", "icuout_time", "orin_time", "orout_time",
+        ...      "opstart_time", "opend_time", "discharge_time", "anstart_time", "anend_time",
+        ...      "cpbon_time", "cpboff_time", "inhosp_death_time", "allcause_death_time", "opdate"],
+        ...     ["admission_time", "icuin_time", "icuout_time", "orin_time", "orout_time",
+        ...      "opstart_time", "opend_time", "discharge_time", "anstart_time", "anend_time",
+        ...      "cpbon_time", "cpboff_time", "inhosp_death_time", "allcause_death_time", "opdate"],
+        ...     ["subject_id", "op_id", "age", "antype", "sex", "weight", "height", "race", "asa",
+        ...      "case_id", "hadm_id", "department", "emop", "icd10_pcs", "date_of_birth",
+        ...      "date_of_death"],
+        ...     ["How should we deal with op_id and subject_id?"]
+        ... )
+        >>> df = load_raw_inspire_file("tests/operations_synthetic.csv")
+        >>> raw_admissions_df = load_raw_inspire_file("tests/operations_synthetic.csv")
+        >>> patient_df, link_df = process_patient_and_admissions(raw_admissions_df)
+        >>> processed_df = func(df, patient_df)
+        >>> type(processed_df)
+        >>> <class 'polars.lazyframe.frame.LazyFrame'>
     """
 
     if output_data_cols is None:

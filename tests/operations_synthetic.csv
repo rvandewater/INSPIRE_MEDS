@@ -1,0 +1,1 @@
+subject_id,op_id,admission_time,icuin_time,icuout_time,orin_time,orout_time,opstart_time,opend_time,discharge_time,anstart_time,anend_time,cpbon_time,cpboff_time,inhosp_death_time,allcause_death_time,opdate,age,antype,sex,weight,height,race,asa,case_id,hadm_id,department,emop,icd10_pcs,date_of_birth,date_of_death

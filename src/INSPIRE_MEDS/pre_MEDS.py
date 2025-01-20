@@ -25,20 +25,19 @@ ORIGIN_PSUEDOTIME = pl.datetime(year=2011, month=1, day=1) + 0.5 * (
 def load_raw_inspire_file(fp: Path, **kwargs) -> pl.LazyFrame:
     """Load a raw INSPIRE file into a Polars DataFrame.
 
-    Args:
-        fp: The path to the INSPIRE file.
+                Args:
+                    fp: The path to the INSPIRE file.
 
-    Returns:
-        The Polars DataFrame containing the INSPIRE data.
-    Example:
-    >>> load_raw_inspire_file("tests/operations_synthetic.csv").collect()
-        ┌─────────────┬────────┬──────────────────────┬──────────┬───────────┬──────────┐
-        │ admissionid ┆ itemid ┆ item                 ┆ start    ┆ stop      ┆ duration │
-        │ ---         ┆ ---    ┆ ---                  ┆ ---      ┆ ---       ┆ ---      │
-        │ i64         ┆ i64    ┆ str                  ┆ i64      ┆ i64       ┆ i64      │
-        ╞═════════════╪════════╪══════════════════════╪══════════╪═══════════╪══════════╡
-        │ 1           ┆ 1      ┆ "Pulse"              ┆ 0        ┆ 100000    ┆ 100000   │
-        └─────────────┴────────┴──────────────────────┴──────────┴───────────┴──────────┘
+                Returns:
+                    The Polars DataFrame containing the INSPIRE data.
+                Example:
+                >>> load_raw_inspire_file("tests/operations_synthetic.csv").collect()
+    ┌────────────┬───────┬────────────────┬───┬──────┬───────────┬───────────────┬───────────────┐
+    │ subject_id ┆ op_id ┆ admission_time ┆ … ┆ emop ┆ icd10_pcs ┆ date_of_birth ┆ date_of_death │
+    │ ---        ┆ ---   ┆ ---            ┆   ┆ ---  ┆ ---       ┆ ---           ┆ ---           │
+    │ str        ┆ str   ┆ str            ┆   ┆ str  ┆ str       ┆ str           ┆ str           │
+    ╞════════════╪═══════╪════════════════╪═══╪══════╪═══════════╪═══════════════╪═══════════════╡
+    └────────────┴───────┴────────────────┴───┴──────┴───────────┴───────────────┴───────────────┘
     """
     return pl.scan_csv(fp, infer_schema_length=10000000, encoding="utf8-lossy", **kwargs)
 
@@ -126,7 +125,7 @@ def join_and_get_pseudotime_fntr(
             >>> patient_df, link_df = process_patient_and_admissions(raw_admissions_df)
             >>> processed_df = func(df, patient_df)
             >>> type(processed_df)
-            <class 'polars.lazy.LazyFrame'>
+        <class 'polars.lazyframe.frame.LazyFrame'>
     """
 
     if output_data_cols is None:

@@ -52,7 +52,11 @@ repos:
   #    rev: v1.7.5
   #    hooks:
   #      - id: docformatter
+  #        name: docformatter
+  #        entry: docformatter
+  #        language: python
   #        args: [--in-place, --wrap-summaries=110, --wrap-descriptions=110]
+  #        files: \.py$
 
   # python check (PEP8), programming errors and code complexity
   - repo: https://github.com/PyCQA/flake8

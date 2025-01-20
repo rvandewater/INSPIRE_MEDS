@@ -31,7 +31,7 @@ def load_raw_inspire_file(fp: Path, **kwargs) -> pl.LazyFrame:
     Returns:
         The Polars DataFrame containing the INSPIRE data.
     Example:
-    >>> load_raw_inspire_file(Path("processitems.csv")).collect()
+    >>> load_raw_inspire_file(Path("operations.csv")).collect()
         ┌─────────────┬────────┬──────────────────────┬──────────┬───────────┬──────────┐
         │ admissionid ┆ itemid ┆ item                 ┆ start    ┆ stop      ┆ duration │
         │ ---         ┆ ---    ┆ ---                  ┆ ---      ┆ ---       ┆ ---      │
@@ -57,6 +57,7 @@ def process_patient_and_admissions(df: pl.LazyFrame) -> pl.LazyFrame:
     # All patients who received surgery under general, neuraxial, regional, and monitored anesthesia care
     # between January 2011 and December 2020 at SNUH were included.
     # TODO: Check if we can find a more sophisticated way to calculate the origin pseudotime
+    # df.sort(SUBJECT_ID, ADMISSION_ID)
     origin_pseudotime = ORIGIN_PSUEDOTIME
     age_in_years = pl.col("age")
     age_in_days = age_in_years * 365.25
@@ -68,13 +69,19 @@ def process_patient_and_admissions(df: pl.LazyFrame) -> pl.LazyFrame:
         .otherwise(pl.col("allcause_death_time"))
         .cast(pl.Int64)
     )
-    return df.group_by("subject_id", maintain_order=True).first().select(
-        SUBJECT_ID,
-        pseudo_date_of_birth.alias("date_of_birth"),
-        "sex",
-        origin_pseudotime.alias("first_admitted_at_time"),
-        pseudo_date_of_death.alias("date_of_death"),
-    ), df.select(SUBJECT_ID, ADMISSION_ID)
+    return (
+        df.sort(by="admission_time")
+        .group_by(SUBJECT_ID)
+        .first()
+        .select(
+            SUBJECT_ID,
+            pseudo_date_of_birth.alias("date_of_birth"),
+            "sex",
+            origin_pseudotime.alias("first_admitted_at_time"),
+            pseudo_date_of_death.alias("date_of_death"),
+        ),
+        df.select(SUBJECT_ID, ADMISSION_ID),
+    )
 
 
 def join_and_get_pseudotime_fntr(
@@ -123,11 +130,14 @@ def join_and_get_pseudotime_fntr(
         `process_patient_and_admissions` function. Both inputs are expected to be `pl.DataFrame`s.
 
     Examples:
-        >>> func = join_and_get_pseudotime_fntr("numericitems", ["measuredat", "registeredat", "updatedat"],
-        ["measuredattime", "registeredattime", "updatedattime"],
-        ["item", "value", "unit", "registeredby", "updatedby"],
-        {"measuredat": -1899},
-        ["How should we deal with `registeredat` and `updatedat`?"])`
+        >>> func = join_and_get_pseudotime_fntr(
+        ...     "numericitems",
+        ...     ["measuredat", "registeredat", "updatedat"],
+        ...     ["measuredattime", "registeredattime", "updatedattime"],
+        ...     ["item", "value", "unit", "registeredby", "updatedby"],
+        ...     {"measuredat": -1899},
+        ...     ["How should we deal with `registeredat` and `updatedat`?"]
+        ... )
         >>> df = load_raw_inspire_file(in_fp)
         >>> raw_admissions_df = load_raw_inspire_file(Path("operations.csv"))
         >>> patient_df, link_df = process_patient_and_admissions(raw_admissions_df)
@@ -251,8 +261,8 @@ def main(cfg: DictConfig):
         df = load_raw_inspire_file(in_fp)
         processed_df = fn(df, patient_df)
         # Sink throws errors, so we use collect instead
-        # processed_df.sink_parquet(out_fp)
-        processed_df.collect().write_parquet(out_fp)
+        processed_df.sink_parquet(out_fp)
+        # processed_df.collect().write_parquet(out_fp)
         logger.info(f"  * Processed and wrote to {str(out_fp.resolve())} in {datetime.now() - st}")
 
     logger.info(f"Done! All dataframes processed and written to {str(MEDS_input_dir.resolve())}")

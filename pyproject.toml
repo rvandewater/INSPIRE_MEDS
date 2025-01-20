@@ -9,7 +9,7 @@ authors = [
     {name="Robin van de Water", email="robin.vandewater@hpi.de"},
   { name="Matthew McDermott", email="mattmcdermott8@gmail.com" },
 ]
-description = "A template ETL pipeline to extract arbitrary data into the MEDS format."
+description = "An ETL pipeline to extract INSPIRE data into the MEDS format."
 readme = "README.md"
 requires-python = ">=3.11"
 classifiers = [

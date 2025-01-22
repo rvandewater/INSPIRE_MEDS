@@ -61,6 +61,8 @@ vitals:
   output_data_cols:
     - "item_name"
     - "value"
+    - "description"
+    - "unit"
 #    - "op_id"
 ward_vitals:
   offset_col:
@@ -70,6 +72,8 @@ ward_vitals:
   output_data_cols:
     - "item_name"
     - "value"
+    - "description"
+    - "unit"
 #    - "op_id"
 labs:
   offset_col:
@@ -79,6 +83,8 @@ labs:
   output_data_cols:
     - "item_name"
     - "value"
+    - "description"
+    - "unit"
 medications:
   offset_col:
     - "chart_time"

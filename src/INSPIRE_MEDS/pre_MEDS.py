@@ -45,8 +45,9 @@ def load_raw_inspire_file(fp: Path, **kwargs) -> pl.LazyFrame:
     return pl.scan_csv(fp, infer_schema_length=10000000, encoding="utf8-lossy", **kwargs)
 
 
-def process_patient_and_admissions(df: pl.LazyFrame) -> pl.LazyFrame:
-    """Takes the admissions table and converts it to a form that includes timestamps.
+def get_patient_link(df: pl.LazyFrame) -> pl.LazyFrame:
+    """
+    Process the operations table to get the patient table and the link table.
 
     As INSPIRE stores only offset times, note here that we add a CONSTANT TIME ACROSS ALL PATIENTS for the
     true timestamp of their health system admission. This is acceptable because in INSPIRE ONLY RELATIVE
@@ -70,6 +71,7 @@ def process_patient_and_admissions(df: pl.LazyFrame) -> pl.LazyFrame:
         .otherwise(pl.col("allcause_death_time"))
         .cast(pl.Int64)
     )
+
     return (
         df.sort(by="admission_time")
         .group_by(SUBJECT_ID)
@@ -123,7 +125,7 @@ def join_and_get_pseudotime_fntr(
         ... )
         >>> df = load_raw_inspire_file("tests/operations_synthetic.csv")
         >>> raw_admissions_df = load_raw_inspire_file("tests/operations_synthetic.csv")
-        >>> patient_df, link_df = process_patient_and_admissions(raw_admissions_df)
+        >>> patient_df, link_df = get_patient_link(raw_admissions_df)
         >>> processed_df = func(df, patient_df)
         >>> type(processed_df)
         >>> <class 'polars.lazyframe.frame.LazyFrame'>
@@ -168,12 +170,55 @@ def join_and_get_pseudotime_fntr(
                 *(f"  - {item}" for item in warning_items),
             ]
             logger.warning("\n".join(warning_lines))
+        logger.info(f"Joining {table_name} to patient table...")
+        logger.info(df.collect_schema())
         # Join the patient table to the data table, INSPIRE only has subject_id as key
         return df.join(patient_df, on=SUBJECT_ID, how="inner").select(
             SUBJECT_ID, ADMISSION_ID, *pseudotimes, *output_data_cols
         )
 
     return fn
+
+
+def process_operations(raw_df: pl.LazyFrame, department_df: pl.LazyFrame) -> pl.LazyFrame:
+    """Processes the operations table to include pseudotimes.
+
+    Args:
+        df: The raw operations data.
+        patient_df: The processed patient data.
+
+    Returns:
+        The processed operations data.
+    """
+    # All patients who received surgery under general, neuraxial, regional, and monitored anesthesia care
+    # between January 2011 and December 2020 at SNUH were included.
+
+    raw_df = raw_df.join(department_df, left_on="department", right_on="Abbreviations", how="left")
+    raw_df = raw_df.drop("department")
+    raw_df = raw_df.with_columns(pl.col("Full name").alias("department"))
+    return raw_df
+
+
+def process_abbreviations(raw_df: pl.LazyFrame, table, parameters: pl.LazyFrame) -> pl.LazyFrame:
+    """Processes the labs table to include additional parameters.
+
+    Args:
+        raw_df: The raw labs data.
+        table: The table name to join with the parameters.
+        parameters: The parameters data to join with the labs data.
+
+    Returns:
+        The processed labs data.
+    """
+    # Join the raw labs data with the parameters data
+    parameters = parameters.with_columns(pl.all().name.to_lowercase())
+
+    # Select the right table
+    parameters = parameters.filter(pl.col("table") == table)
+
+    # Join
+    processed_df = raw_df.join(parameters, left_on="item_name", right_on="label", how="left")
+    return processed_df
 
 
 @hydra.main(version_base=None, config_path="configs", config_name="pre_MEDS")
@@ -191,10 +236,8 @@ def main(cfg: DictConfig):
     preprocessors = OmegaConf.load(TABLE_PROCESSOR_CFG)
     functions = {}
     for table_name, preprocessor_cfg in preprocessors.items():
-        logger.info(f"  Adding preprocessor for {table_name}:\n{OmegaConf.to_yaml(preprocessor_cfg)}")
-        # logger.info(**preprocessor_cfg)
+        print(f"  Adding preprocessor for {table_name}:\n{OmegaConf.to_yaml(preprocessor_cfg)}")
         functions[table_name] = join_and_get_pseudotime_fntr(table_name=table_name, **preprocessor_cfg)
-
     raw_cohort_dir = Path(cfg.input_dir)
     MEDS_input_dir = Path(cfg.output_dir)
 
@@ -206,14 +249,15 @@ def main(cfg: DictConfig):
         patient_df = pl.read_parquet(patient_out_fp, use_pyarrow=True).lazy()
         link_df = pl.read_parquet(link_out_fp, use_pyarrow=True).lazy()
     else:
-        logger.info("Processing patient table first...")
+        logger.info("Processing operations table first...")
 
         admissions_fp = raw_cohort_dir / "operations.csv"
         logger.info(f"Loading {str(admissions_fp.resolve())}...")
         raw_admissions_df = load_raw_inspire_file(admissions_fp)
 
         logger.info("Processing patient table...")
-        patient_df, link_df = process_patient_and_admissions(raw_admissions_df)
+
+        patient_df, link_df = get_patient_link(raw_admissions_df)
         write_lazyframe(patient_df, patient_out_fp)
         write_lazyframe(link_df, link_out_fp)
 
@@ -223,6 +267,7 @@ def main(cfg: DictConfig):
 
     unused_tables = {}
 
+    parameters = load_raw_inspire_file(raw_cohort_dir / "parameters.csv")
     for in_fp in all_fps:
         pfx = get_shard_prefix(raw_cohort_dir, in_fp)
         if pfx in unused_tables:
@@ -240,11 +285,16 @@ def main(cfg: DictConfig):
 
         out_fp.parent.mkdir(parents=True, exist_ok=True)
 
-        fn = functions[pfx]
-
         st = datetime.now()
         logger.info(f"Processing {pfx}...")
         df = load_raw_inspire_file(in_fp)
+        if pfx in ["labs", "vitals", "ward_vitals"]:
+            df = process_abbreviations(df, pfx, parameters)
+        if in_fp == raw_cohort_dir / "operations.csv":
+            department_fp = raw_cohort_dir / "department.csv"
+            department_df = load_raw_inspire_file(department_fp)
+            df = process_operations(df, department_df)
+        fn = functions[pfx]
         processed_df = fn(df, patient_df)
         # Sink throws errors, so we use collect instead
         processed_df.sink_parquet(out_fp)

@@ -1,4 +1,4 @@
-# Extract your custom dataset via MEDS-Transforms
+# INSPIRE-MEDS
 
 [![codecov](https://codecov.io/gh/rvandewater/INSPIRE_MEDS/graph/badge.svg?token=RW6JXHNT0W)](https://codecov.io/gh/rvandewater/INSPIRE_MEDS)
 [![tests](https://github.com/rvandewater/INSPIRE_MEDS/actions/workflows/tests.yaml/badge.svg)](https://github.com/rvandewater/INSPIRE_MEDS/actions/workflows/tests.yml)

@@ -5,14 +5,14 @@ Adapted from: https://github.com/prockenschaub/AUMCdb_MEDS/blob/main/src/AUMCdb_
 See the docstring of `main` for more information.
 """
 
+import logging as logger
 from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
 
 import hydra
 import polars as pl
-from loguru import logger
-from MEDS_transforms.utils import get_shard_prefix, hydra_loguru_init, write_lazyframe
+from MEDS_transforms.utils import get_shard_prefix, write_lazyframe
 from omegaconf import DictConfig, OmegaConf
 
 from INSPIRE_MEDS import TABLE_PROCESSOR_CFG
@@ -229,8 +229,6 @@ def main(cfg: DictConfig):
     in processed form and as Parquet files to the `cohort_dir` config parameter. Hydra is used to manage
     configuration parameters and logging.
     """
-
-    hydra_loguru_init()
 
     logger.info(f"Loading table preprocessors from {TABLE_PROCESSOR_CFG}...")
     preprocessors = OmegaConf.load(TABLE_PROCESSOR_CFG)

@@ -23,10 +23,9 @@ operations:
   #  hadm_id: # Number, A random number starts with 2 for hospital admission.
   #    code: col(hadm_id)
   case_id: # Number, A linker to VitalDB Open Dataset
-    code:
-      - VITALDB_CASE_ID
-      - col(case_id)
+    code: VITALDB_CASE_ID
     time: null
+    numeric_value: col(case_id)
   opdate: # Relative Time, Operation date
     code: OPERATION_DATE
     time: col(opdate)

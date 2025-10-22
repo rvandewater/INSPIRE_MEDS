@@ -42,7 +42,9 @@ def load_raw_inspire_file(fp: Path, **kwargs) -> pl.LazyFrame:
         ╞════════════╪═══════╪═══╪═══════════════╪═══════════════╡
         └────────────┴───────┴───┴───────────────┴───────────────┘
     """
-    return pl.scan_csv(fp, infer_schema_length=10000000, encoding="utf8-lossy", **kwargs)
+    return pl.scan_csv(
+        fp, infer_schema_length=10000000, encoding="utf8-lossy", **kwargs
+    )
 
 
 def get_patient_link(df: pl.LazyFrame) -> pl.LazyFrame:
@@ -64,7 +66,9 @@ def get_patient_link(df: pl.LazyFrame) -> pl.LazyFrame:
     age_in_years = pl.col("age")
     age_in_days = age_in_years * 365.25
     # We assume that the patient was born at the midpoint of the year as we don't know the actual birthdate
-    pseudo_date_of_birth = origin_pseudotime - pl.duration(days=(age_in_days - 365.25 / 2))
+    pseudo_date_of_birth = origin_pseudotime - pl.duration(
+        days=(age_in_days - 365.25 / 2)
+    )
     pseudo_date_of_death = origin_pseudotime + pl.duration(
         minutes=pl.when(pl.col("inhosp_death_time") < pl.col("allcause_death_time"))
         .then(pl.col("inhosp_death_time"))
@@ -180,7 +184,9 @@ def join_and_get_pseudotime_fntr(
     return fn
 
 
-def process_operations(raw_df: pl.LazyFrame, department_df: pl.LazyFrame) -> pl.LazyFrame:
+def process_operations(
+    raw_df: pl.LazyFrame, department_df: pl.LazyFrame
+) -> pl.LazyFrame:
     """Processes the operations table to include pseudotimes.
 
     Args:
@@ -193,13 +199,17 @@ def process_operations(raw_df: pl.LazyFrame, department_df: pl.LazyFrame) -> pl.
     # All patients who received surgery under general, neuraxial, regional, and monitored anesthesia care
     # between January 2011 and December 2020 at SNUH were included.
 
-    raw_df = raw_df.join(department_df, left_on="department", right_on="Abbreviations", how="left")
+    raw_df = raw_df.join(
+        department_df, left_on="department", right_on="Abbreviations", how="left"
+    )
     raw_df = raw_df.drop("department")
     raw_df = raw_df.with_columns(pl.col("Full name").alias("department"))
     return raw_df
 
 
-def process_abbreviations(raw_df: pl.LazyFrame, table, parameters: pl.LazyFrame) -> pl.LazyFrame:
+def process_abbreviations(
+    raw_df: pl.LazyFrame, table, parameters: pl.LazyFrame
+) -> pl.LazyFrame:
     """Processes the labs table to include additional parameters.
 
     Args:
@@ -217,7 +227,9 @@ def process_abbreviations(raw_df: pl.LazyFrame, table, parameters: pl.LazyFrame)
     parameters = parameters.filter(pl.col("table") == table)
 
     # Join
-    processed_df = raw_df.join(parameters, left_on="item_name", right_on="label", how="left")
+    processed_df = raw_df.join(
+        parameters, left_on="item_name", right_on="label", how="left"
+    )
     return processed_df
 
 
@@ -234,8 +246,12 @@ def main(cfg: DictConfig):
     preprocessors = OmegaConf.load(TABLE_PROCESSOR_CFG)
     functions = {}
     for table_name, preprocessor_cfg in preprocessors.items():
-        print(f"  Adding preprocessor for {table_name}:\n{OmegaConf.to_yaml(preprocessor_cfg)}")
-        functions[table_name] = join_and_get_pseudotime_fntr(table_name=table_name, **preprocessor_cfg)
+        print(
+            f"  Adding preprocessor for {table_name}:\n{OmegaConf.to_yaml(preprocessor_cfg)}"
+        )
+        functions[table_name] = join_and_get_pseudotime_fntr(
+            table_name=table_name, **preprocessor_cfg
+        )
     raw_cohort_dir = Path(cfg.input_dir)
     MEDS_input_dir = Path(cfg.output_dir)
 
@@ -243,7 +259,9 @@ def main(cfg: DictConfig):
     link_out_fp = MEDS_input_dir / "link_patient_to_admission.parquet"
 
     if patient_out_fp.is_file():
-        logger.info(f"Reloading processed patient df from {str(patient_out_fp.resolve())}")
+        logger.info(
+            f"Reloading processed patient df from {str(patient_out_fp.resolve())}"
+        )
         patient_df = pl.read_parquet(patient_out_fp, use_pyarrow=True).lazy()
         link_df = pl.read_parquet(link_out_fp, use_pyarrow=True).lazy()
     else:
@@ -272,7 +290,9 @@ def main(cfg: DictConfig):
             logger.warning(f"Skipping {pfx} as it is not supported in this pipeline.")
             continue
         elif pfx not in functions:
-            logger.warning(f"No function needed for {pfx}. For INSPIRE, THIS IS UNEXPECTED")
+            logger.warning(
+                f"No function needed for {pfx}. For INSPIRE, THIS IS UNEXPECTED"
+            )
             continue
 
         out_fp = MEDS_input_dir / f"{pfx}.parquet"
@@ -297,9 +317,13 @@ def main(cfg: DictConfig):
         # Sink throws errors, so we use collect instead
         processed_df.sink_parquet(out_fp)
         # processed_df.collect().write_parquet(out_fp)
-        logger.info(f"  * Processed and wrote to {str(out_fp.resolve())} in {datetime.now() - st}")
+        logger.info(
+            f"  * Processed and wrote to {str(out_fp.resolve())} in {datetime.now() - st}"
+        )
 
-    logger.info(f"Done! All dataframes processed and written to {str(MEDS_input_dir.resolve())}")
+    logger.info(
+        f"Done! All dataframes processed and written to {str(MEDS_input_dir.resolve())}"
+    )
 
 
 if __name__ == "__main__":

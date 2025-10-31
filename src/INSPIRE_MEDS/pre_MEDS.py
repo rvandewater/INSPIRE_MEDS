@@ -222,7 +222,7 @@ def process_abbreviations(
     """
     # Join the raw labs data with the parameters data
     parameters = parameters.with_columns(pl.all().name.to_lowercase())
-
+    parameters = parameters.select([col for col in parameters.columns if col.islower()])
     # Select the right table
     parameters = parameters.filter(pl.col("table") == table)
 
@@ -308,12 +308,14 @@ def main(cfg: DictConfig):
         df = load_raw_inspire_file(in_fp)
         if pfx in ["labs", "vitals", "ward_vitals"]:
             df = process_abbreviations(df, pfx, parameters)
+        logger.info(f"Pre-function schema of {pfx}: {df.collect_schema()}")
         if in_fp == raw_cohort_dir / "operations.csv":
             department_fp = raw_cohort_dir / "department.csv"
             department_df = load_raw_inspire_file(department_fp)
             df = process_operations(df, department_df)
         fn = functions[pfx]
         processed_df = fn(df, patient_df)
+        logger.info(f"Final schema of {pfx}: {processed_df.collect_schema()}")
         # Sink throws errors, so we use collect instead
         processed_df.sink_parquet(out_fp)
         # processed_df.collect().write_parquet(out_fp)

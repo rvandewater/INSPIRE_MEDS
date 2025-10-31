@@ -127,8 +127,8 @@ labs:
   lab:
     code:
       - LAB
-      - col(unit)
       - col(item_name)
+      - col(unit)
     time: col(chart_time)
     numeric_value: value
     text_value: description
@@ -145,7 +145,7 @@ diagnosis:
       - DIAGNOSIS
       - ICD
       - "10"
-      - col(icd10_cm)
+      - col(icd10_cm
     time: col(chart_time)
 vitals:
   vital:
@@ -160,8 +160,8 @@ ward_vitals:
   ward_vital:
     code:
       - WARD_VITAL
-      - col(unit)
       - col(item_name)
+      - col(unit)
     time: col(chart_time)
     numeric_value: value
     text_value: description

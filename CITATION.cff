@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
-title: "SICdb_MEDS ETL"
+title: "INSPIRE_MEDS ETL"
 doi: "10.5281/zenodo.14891940"
 authors:
   - family-names: "van de Water"

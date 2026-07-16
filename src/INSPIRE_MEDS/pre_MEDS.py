@@ -233,6 +233,30 @@ def process_abbreviations(
     return processed_df
 
 
+def resolve_table_file(raw_dir: Path, stem: str) -> Path:
+    """Return the raw table path for ``stem``, accepting either a plain ``.csv``
+    (INSPIRE <= 1.3) or a gzip-compressed ``.csv.gz`` (INSPIRE >= 1.4, the layout
+    PhysioNet currently ships). polars ``scan_csv`` reads both transparently.
+
+    Args:
+        raw_dir: The directory holding the raw INSPIRE tables.
+        stem: The table name without extension, e.g. ``"operations"``.
+
+    Returns:
+        The path to ``<stem>.csv`` if present, else ``<stem>.csv.gz``.
+
+    Raises:
+        FileNotFoundError: If neither ``<stem>.csv`` nor ``<stem>.csv.gz`` exists.
+    """
+    for ext in (".csv", ".csv.gz"):
+        fp = raw_dir / f"{stem}{ext}"
+        if fp.is_file():
+            return fp
+    raise FileNotFoundError(
+        f"Could not find '{stem}.csv' or '{stem}.csv.gz' in {raw_dir}"
+    )
+
+
 @hydra.main(version_base=None, config_path="configs", config_name="pre_MEDS")
 def main(cfg: DictConfig):
     """Performs pre-MEDS data wrangling for INSPIRE.
@@ -267,7 +291,7 @@ def main(cfg: DictConfig):
     else:
         logger.info("Processing operations table first...")
 
-        admissions_fp = raw_cohort_dir / "operations.csv"
+        admissions_fp = resolve_table_file(raw_cohort_dir, "operations")
         logger.info(f"Loading {str(admissions_fp.resolve())}...")
         raw_admissions_df = load_raw_inspire_file(admissions_fp)
 
@@ -279,11 +303,14 @@ def main(cfg: DictConfig):
 
     patient_df = patient_df.join(link_df, on=SUBJECT_ID)
 
-    all_fps = [fp for fp in raw_cohort_dir.glob("*.csv")]
+    # Accept both plain ".csv" (INSPIRE <= 1.3) and gzipped ".csv.gz" (INSPIRE >= 1.4).
+    all_fps = sorted(raw_cohort_dir.glob("*.csv")) + sorted(
+        raw_cohort_dir.glob("*.csv.gz")
+    )
 
     unused_tables = {}
 
-    parameters = load_raw_inspire_file(raw_cohort_dir / "parameters.csv")
+    parameters = load_raw_inspire_file(resolve_table_file(raw_cohort_dir, "parameters"))
     for in_fp in all_fps:
         pfx = get_shard_prefix(raw_cohort_dir, in_fp)
         if pfx in unused_tables:
@@ -309,8 +336,8 @@ def main(cfg: DictConfig):
         if pfx in ["labs", "vitals", "ward_vitals"]:
             df = process_abbreviations(df, pfx, parameters)
         logger.info(f"Pre-function schema of {pfx}: {df.collect_schema()}")
-        if in_fp == raw_cohort_dir / "operations.csv":
-            department_fp = raw_cohort_dir / "department.csv"
+        if pfx == "operations":
+            department_fp = resolve_table_file(raw_cohort_dir, "department")
             department_df = load_raw_inspire_file(department_fp)
             df = process_operations(df, department_df)
         fn = functions[pfx]

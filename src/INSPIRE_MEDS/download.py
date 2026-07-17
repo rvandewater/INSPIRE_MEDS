@@ -1,7 +1,12 @@
 import logging
 import os
+import shutil
+import zipfile
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 from urllib.parse import urljoin, urlparse
+from tqdm import tqdm
+
 
 import requests
 from bs4 import BeautifulSoup
@@ -16,6 +21,7 @@ class MockResponse:  # pragma: no cover
     def __init__(self, status_code: int, contents: str = ""):
         self.status_code = status_code
         self.contents = contents.encode()
+        self.headers = {}
 
     def iter_content(self, chunk_size):
         return [
@@ -65,6 +71,34 @@ class MockSession:  # pragma: no cover
         else:
             contents = self.return_contents
         return MockResponse(status_code=status, contents=contents)
+
+
+def iter_download_chunks(response: requests.Response, desc: str):
+    """Yield response chunks with tqdm progress when available."""
+    total = int(getattr(response, "headers", {}).get("content-length", 0) or 0)
+    seen = 0
+    next_log = 0
+    bar = (
+        tqdm(
+            total=total or None, unit="B", unit_scale=True, unit_divisor=1024, desc=desc
+        )
+        if tqdm
+        else None
+    )
+    try:
+        for chunk in response.iter_content(chunk_size=1024 * 1024):
+            if not chunk:
+                continue
+            seen += len(chunk)
+            if bar:
+                bar.update(len(chunk))
+            elif seen >= next_log:
+                logger.info(f"{desc}: {seen / 1024 / 1024:.1f} MiB")
+                next_log = seen + 50 * 1024 * 1024
+            yield chunk
+    finally:
+        if bar:
+            bar.close()
 
 
 def download_file(url: str, output_dir: Path, session: requests.Session):
@@ -117,9 +151,44 @@ def download_file(url: str, output_dir: Path, session: requests.Session):
     file_path = Path(output_dir) / filename
     logger.info(f"Starting to download: {file_path}")
     with open(file_path, "wb") as file:
-        for chunk in response.iter_content(chunk_size=8192):
+        for chunk in iter_download_chunks(response, filename):
             file.write(chunk)
     logger.info(f"Downloaded: {file_path}")
+
+
+def download_zip(url: str, output_dir: Path, session: requests.Session):
+    """Download a zip archive and extract its files into output_dir."""
+    try:
+        response = session.get(url, stream=True)
+        if response.status_code != 200:
+            logger.error(f"Failed to download {url}: {response.status_code}")
+        response.raise_for_status()
+    except Exception as e:
+        raise ValueError(f"Failed to download {url}") from e
+
+    logger.info(f"Starting to download zip: {url}")
+    with NamedTemporaryFile(suffix=".zip") as tmp:
+        for chunk in iter_download_chunks(response, "INSPIRE zip"):
+            tmp.write(chunk)
+        tmp.flush()
+
+        logger.info(f"Extracting zip to: {output_dir}")
+        with zipfile.ZipFile(tmp.name) as zf:
+            files = [
+                member
+                for member in zf.infolist()
+                if not member.is_dir() and not member.filename.startswith("__MACOSX/")
+            ]
+            for member in (
+                tqdm(files, desc="Extracting", unit="file") if tqdm else files
+            ):
+                filename = Path(member.filename).name
+                if filename:
+                    with (
+                        zf.open(member) as src,
+                        open(output_dir / filename, "wb") as dst,
+                    ):
+                        shutil.copyfileobj(src, dst)
 
 
 def crawl_and_download(base_url: str, output_dir: Path, session: requests.Session):
@@ -167,7 +236,7 @@ def crawl_and_download(base_url: str, output_dir: Path, session: requests.Sessio
 
     if not base_url.endswith("/"):
         download_file(base_url, output_dir, session)
-
+    logger.info(f"Crawling {base_url} into {output_dir}")
     try:
         response = session.get(base_url)
         if response.status_code != 200:
@@ -303,6 +372,9 @@ def download_data(
             url = url.url
 
         try:
-            crawl_and_download(url, output_dir, session)
+            if "/get-zip/" in url:
+                download_zip(url, output_dir, session)
+            else:
+                crawl_and_download(url, output_dir, session)
         except ValueError as e:
             raise ValueError(f"Failed to download data from {url}") from e

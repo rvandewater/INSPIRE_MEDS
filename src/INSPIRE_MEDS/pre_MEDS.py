@@ -12,7 +12,7 @@ from pathlib import Path
 
 import hydra
 import polars as pl
-from MEDS_transforms.utils import get_shard_prefix, write_lazyframe
+from INSPIRE_MEDS.utils import get_shard_prefix, write_lazyframe
 from omegaconf import DictConfig, OmegaConf
 
 from INSPIRE_MEDS import TABLE_PROCESSOR_CFG

@@ -33,9 +33,16 @@ jobs:
       #----------------------------------------------
       #              run test suite
       #----------------------------------------------
-      #      - name: Run tests
-      #        run: |
-      ##          pytest src/ tests/ -v --doctest-modules --cov=src --junitxml=junit.xml -s
+      - name: Run tests
+        run: |
+          pytest tests/ -v --cov=src --junitxml=junit.xml -s
+
+      # Doctests for the helper modules. Scoped to these files rather than all of `src/`:
+      # `pre_MEDS.py` carries some long-broken doctests (they reference fixture files that do not
+      # exist), which is why the whole step was commented out. Fixing those is out of scope here.
+      - name: Run doctests
+        run: |
+          pytest --doctest-modules src/INSPIRE_MEDS/utils.py src/INSPIRE_MEDS/unpack.py -v
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4.0.1

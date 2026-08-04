@@ -1,0 +1,170 @@
+# MESSY config for the INSPIRE MEDS ETL (MEDS-Extract >= 0.7).
+#
+# This single file replaces what used to be spread across four places:
+#   - `dataset.yaml`               -> the `sources:` block below
+#   - `download.py`                -> the `sources:` block below
+#   - `configs/ETL.yaml`           -> the `etl:` block below (the stage DAG is now canonical)
+#   - `configs/event_configs.yaml` -> the event tables below, rewritten in dftly
+#
+# Run the whole ETL with:
+#   meds-extract-run spec=INSPIRE output_dir=$OUTPUT_DIR
+# (see README.md; `INSPIRE` is registered via the `MEDS_extract.pipelines` entry point).
+
+sources:
+  dataset_version: 1.4.2
+
+  dataset:
+    - type: physionet
+      base_url: https://physionet.org/files/inspire/${sources.dataset_version}
+      username: ${oc.env:DATASET_DOWNLOAD_USERNAME}
+      password: ${oc.env:DATASET_DOWNLOAD_PASSWORD}
+
+etl:
+  dataset_name: INSPIRE
+  n_subjects_per_shard: 1000
+
+_defaults:
+  subject_id: $subject_id
+
+# ---------------------------------------------------------------------------
+# NOTE ON NULL HANDLING
+#
+# Under 0.6.x a null component of an interpolated code was silently rendered as the literal
+# "UNK" and the row was kept. In 0.7.0 a composite code null-propagates and the row is DROPPED.
+# Every component below is therefore coalesced with `?? 'UNK'` to preserve the previous
+# row-retention behaviour exactly. Where a null component *should* drop the row instead, remove
+# the corresponding `?? 'UNK'` -- that is a data-modelling decision for the maintainers.
+# ---------------------------------------------------------------------------
+
+operations:
+  admission:
+    code: HOSPITAL_ADMISSION
+    time: $admission_time
+  icu_registration:
+    code: ICU_REGISTRATION
+    time: $icuin_time
+  icu_out:
+    code: ICU_OUT
+    time: $icuout_time
+  orin:
+    code: OR_IN
+    time: $orin_time
+  op_id: # Number, A random number starts with 4 for the operation.
+    code: OPERATION_ID
+    time: $opstart_time
+    numeric_value: $op_id
+  case_id: # Number, A linker to VitalDB Open Dataset
+    code: VITALDB_CASE_ID
+    time: null
+    numeric_value: $case_id
+  opdate: # Relative Time, Operation date
+    code: OPERATION_DATE
+    time: $opdate
+  age: # Number, Age of the patient on the operation date
+    code: MEDS_BIRTH
+    time: $date_of_birth
+  sex: # M/F, Sex of the patient
+    code: 'f"SEX//{$sex ?? ''UNK''}"'
+    time: null
+  weight: # Number, Weight measured before operation
+    code: WEIGHT
+    numeric_value: $weight
+    time: $admission_time
+  height: # Number, Height measured before operation
+    code: HEIGHT
+    time: $admission_time
+    numeric_value: $height
+  race: # String, Race of the patient
+    code: 'f"RACE//{$race ?? ''UNK''}"'
+    time: null
+  asa: # 1/2/3/4/5, American Society of Anesthesiologists physical status classification
+    code: 'f"ASA//{$asa ?? ''UNK''}"'
+    time: $opdate
+  emop: # Binary, Emergency of the operation
+    code: 'f"EMERGENCY_OPERATION//{$emop ?? ''UNK''}"'
+    time: $opdate
+  department: # String, Surgical department for admission
+    code: 'f"ADMISSION_DEPARTMENT//{$department ?? ''UNK''}"'
+    time: $opdate
+  antype: # String, Anesthesia Type (General / Neuraxial / Regional / MAC)
+    code: 'f"ANESTHESIA_TYPE//{$antype ?? ''UNK''}"'
+    time: $opdate
+  icd10_pcs: # String, ICD-10 Procedure Coding System code
+    code: 'f"ICD10_PCS//{$icd10_pcs ?? ''UNK''}"'
+    time: $opdate
+  orin_time: # Relative Time, The time for entering the operating room
+    code: OR_IN
+    time: $orin_time
+  orout_time: # Relative Time, The time for leaving the operating room
+    code: OR_OUT
+    time: $orout_time
+  opstart_time: # Relative Time, The time for starting the operation
+    code: OPERATION_START
+    time: $opstart_time
+  opend_time: # Relative Time, The time for finishing the operation
+    code: OPERATION_END
+    time: $opend_time
+  admission_time: # Relative Time, The time for hospital admission
+    code: HOSPITAL_ADMISSION
+    time: $admission_time
+  discharge_time: # Relative Time, The time for hospital discharge
+    code: HOSPITAL_DISCHARGE
+    time: $discharge_time
+  anstart_time: # Relative Time, The time for starting anaesthesia
+    code: ANESTHESIA_START
+    time: $anstart_time
+  anend_time: # Relative Time, The time for finishing anaesthesia
+    code: ANESTHESIA_END
+    time: $anend_time
+  cpbon_time: # Relative Time, The time for starting cardiopulmonary bypass
+    code: CPB_ON
+    time: $cpbon_time
+  cpboff_time: # Relative Time, The time for finishing cardiopulmonary bypass
+    code: CPB_OFF
+    time: $cpboff_time
+  icuin_time: # Relative Time, The time for ICU admission after surgery
+    code: ICU_ADMISSION
+    time: $icuin_time
+  icuout_time: # Relative Time, The time for ICU discharge after surgery
+    code: ICU_DISCHARGE
+    time: $icuout_time
+  death_time: # Relative Time, The time for death
+    code: MEDS_DEATH
+    time: $date_of_death
+
+labs:
+  lab:
+    code: 'f"LAB//{$item_name ?? ''UNK''}//{$unit ?? ''UNK''}"'
+    time: $chart_time
+    # NB: these were bare strings in the 0.6.x config, which meant "read this raw column".
+    # A bare string is a LITERAL in dftly, so the `$` prefix here is load-bearing.
+    numeric_value: $value
+    text_value: $description
+
+medications:
+  medication:
+    code: 'f"MEDICATION//{$atc_code ?? ''UNK''}"'
+    time: $chart_time
+    text_value: $drug_name
+
+diagnosis:
+  diagnosis:
+    # FIXED: the 0.6.x config read `col(icd10_cm` -- with no closing paren -- so YAML parsed it
+    # as the plain string "col(icd10_cm" and every diagnosis code was emitted as the literal
+    # `DIAGNOSIS//ICD//10//col(icd10_cm` rather than the patient's actual ICD-10-CM code.
+    code: 'f"DIAGNOSIS//ICD//10//{$icd10_cm ?? ''UNK''}"'
+    time: $chart_time
+
+vitals:
+  vital:
+    code: 'f"VITAL//{$item_name ?? ''UNK''}//{$unit ?? ''UNK''}"'
+    time: $chart_time
+    numeric_value: $value
+    text_value: $description
+
+ward_vitals:
+  ward_vital:
+    code: 'f"WARD_VITAL//{$item_name ?? ''UNK''}//{$unit ?? ''UNK''}"'
+    time: $chart_time
+    numeric_value: $value
+    text_value: $description

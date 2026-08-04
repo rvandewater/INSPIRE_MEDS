@@ -18,7 +18,11 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-  "meds-transforms~=0.2.4", "requests", "beautifulsoup4", "hydra-core", "tqdm"
+  "MEDS-extract[download]>=0.7.0,<0.8",
+  "MEDS-transforms>=0.6.7,<0.7",
+  "hydra-core",
+  "polars>=1.26",
+  "tqdm",
 ]
 
 [tool.setuptools_scm]
@@ -36,6 +40,11 @@ docs = [
 
 [project.scripts]
 MEDS_extract-INSPIRE = "INSPIRE_MEDS.__main__:main"
+
+# Registers the bundled MESSY file as a MEDS-Extract dataset pipeline, so the whole
+# ETL is runnable as `meds-extract-run spec=INSPIRE output_dir=...`.
+[project.entry-points."MEDS_extract.pipelines"]
+INSPIRE = "INSPIRE_MEDS.configs:messy.yaml"
 
 [project.urls]
 Homepage = "https://github.com/rvandewater/INSPIRE_MEDS_Template"

@@ -49,6 +49,32 @@ MEDS_extract-INSPIRE root_output_dir=$ROOT_OUTPUT_DIR
 
 to run the entire pipeline.
 
+## Configuration
+
+The entire ETL is described by one file, `src/INSPIRE_MEDS/configs/messy.yaml` — a
+[MESSY](https://github.com/mmcdermott/MEDS_extract) config carrying three sections:
+
+- **`sources:`** — where the raw data lives. `meds-extract-download` stages it, with SHA-256
+    verification and resumable transfers. This replaces the old hand-rolled `download.py`.
+- **`etl:`** — the dataset name plus curated stage options (`n_subjects_per_shard`).
+- **the event tables** — what to extract, written in
+    [dftly](https://github.com/mmcdermott/dftly) expressions.
+
+Because the config is registered under the `MEDS_extract.pipelines` entry-point group, the
+extraction half is runnable directly, without this package's CLI wrapper:
+
+```bash
+# Stage the raw data only:
+meds-extract-download spec=INSPIRE output_dir=$RAW_INPUT_DIR
+
+# Run the canonical 8-stage pipeline over already-pre-MEDS'd data:
+meds-extract-run spec=INSPIRE output_dir=$MEDS_COHORT_DIR download_key=null input_dir=$PRE_MEDS_DIR
+```
+
+The `MEDS_extract-INSPIRE` wrapper still exists because INSPIRE needs a pre-MEDS step that MESSY
+cannot yet express: unzipping the PhysioNet archive and resolving the relative operation-offset
+times into absolute timestamps.
+
 ## MEDS-transforms settings
 
 If you want to convert a large dataset, you can use parallelization with MEDS-transforms

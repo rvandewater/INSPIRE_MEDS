@@ -38,7 +38,46 @@ _defaults:
 # the corresponding `?? 'UNK'` -- that is a data-modelling decision for the maintainers.
 # ---------------------------------------------------------------------------
 
+# ---------------------------------------------------------------------------
+# HOW THE PSEUDO-TIMESTAMPS WORK
+#
+# INSPIRE stores only OFFSETS (in MINUTES) from a single fixed origin shared by every patient --
+# only relative differences are meaningful, not absolute times. The old pre-MEDS step computed
+# that origin as the midpoint of the study window (2011-01-01 .. 2020-12-31), which is exactly
+# 2016-01-01; it is written as a literal here.
+#
+# `_origin` is repeated per table because `_table.cols` is table-scoped.
+# ---------------------------------------------------------------------------
+
 operations:
+  _table:
+    join:
+      # `.sort(admission_time).group_by(subject_id).first()` in pre-MEDS took each patient's
+      # EARLIEST operation to derive their static facts. Age rises monotonically with time, so
+      # `min` over the same table reproduces that row's age; `_is_first` then restricts the
+      # patient-level events to that row, since MESSY has no row filter.
+      operations: {key: subject_id, cols: {age: min, admission_time: min}}
+    cols:
+      _origin: '("2016-01-01"::?"%Y-%m-%d")::datetime'
+      _is_first: '$admission_time == $admission_time_right'
+      # Born at the midpoint of the birth year, so subtract half a year less than the full age.
+      date_of_birth: '$_origin - ($age_right * 365.25 - 182.625)::days'
+      # The earlier of the in-hospital and all-cause death times.
+      _death_min: '$inhosp_death_time if $inhosp_death_time < $allcause_death_time else $allcause_death_time'
+      date_of_death: '$_origin + $_death_min::minutes if $_is_first'
+      admission_t: '$_origin + $admission_time::minutes'
+      icuin_t: '$_origin + $icuin_time::minutes'
+      icuout_t: '$_origin + $icuout_time::minutes'
+      orin_t: '$_origin + $orin_time::minutes'
+      orout_t: '$_origin + $orout_time::minutes'
+      opstart_t: '$_origin + $opstart_time::minutes'
+      opend_t: '$_origin + $opend_time::minutes'
+      discharge_t: '$_origin + $discharge_time::minutes'
+      anstart_t: '$_origin + $anstart_time::minutes'
+      anend_t: '$_origin + $anend_time::minutes'
+      cpbon_t: '$_origin + $cpbon_time::minutes'
+      cpboff_t: '$_origin + $cpboff_time::minutes'
+      opdate_t: '$_origin + $opdate::minutes'
   admission:
     code: HOSPITAL_ADMISSION
     time: $admission_time
@@ -63,7 +102,7 @@ operations:
     code: OPERATION_DATE
     time: $opdate
   age: # Number, Age of the patient on the operation date
-    code: MEDS_BIRTH
+    code: '"MEDS_BIRTH" if $_is_first'
     time: $date_of_birth
   sex: # M/F, Sex of the patient
     code: 'f"SEX//{$sex ?? ''UNK''}"'
@@ -131,42 +170,62 @@ operations:
     code: ICU_DISCHARGE
     time: $icuout_time
   death_time: # Relative Time, The time for death
-    code: MEDS_DEATH
+    code: '"MEDS_DEATH" if $_is_first'
     time: $date_of_death
 
 labs:
+  _table:
+    cols:
+      _origin: '("2016-01-01"::?"%Y-%m-%d")::datetime'
+      chart_t: '$_origin + $chart_time::minutes'
   lab:
     code: 'f"LAB//{$item_name ?? ''UNK''}//{$unit ?? ''UNK''}"'
-    time: $chart_time
+    time: $chart_t
     # NB: these were bare strings in the 0.6.x config, which meant "read this raw column".
     # A bare string is a LITERAL in dftly, so the `$` prefix here is load-bearing.
     numeric_value: $value
     text_value: $description
 
 medications:
+  _table:
+    cols:
+      _origin: '("2016-01-01"::?"%Y-%m-%d")::datetime'
+      chart_t: '$_origin + $chart_time::minutes'
   medication:
     code: 'f"MEDICATION//{$atc_code ?? ''UNK''}"'
-    time: $chart_time
+    time: $chart_t
     text_value: $drug_name
 
 diagnosis:
+  _table:
+    cols:
+      _origin: '("2016-01-01"::?"%Y-%m-%d")::datetime'
+      chart_t: '$_origin + $chart_time::minutes'
   diagnosis:
     # FIXED: the 0.6.x config read `col(icd10_cm` -- with no closing paren -- so YAML parsed it
     # as the plain string "col(icd10_cm" and every diagnosis code was emitted as the literal
     # `DIAGNOSIS//ICD//10//col(icd10_cm` rather than the patient's actual ICD-10-CM code.
     code: 'f"DIAGNOSIS//ICD//10//{$icd10_cm ?? ''UNK''}"'
-    time: $chart_time
+    time: $chart_t
 
 vitals:
+  _table:
+    cols:
+      _origin: '("2016-01-01"::?"%Y-%m-%d")::datetime'
+      chart_t: '$_origin + $chart_time::minutes'
   vital:
     code: 'f"VITAL//{$item_name ?? ''UNK''}//{$unit ?? ''UNK''}"'
-    time: $chart_time
+    time: $chart_t
     numeric_value: $value
     text_value: $description
 
 ward_vitals:
+  _table:
+    cols:
+      _origin: '("2016-01-01"::?"%Y-%m-%d")::datetime'
+      chart_t: '$_origin + $chart_time::minutes'
   ward_vital:
     code: 'f"WARD_VITAL//{$item_name ?? ''UNK''}//{$unit ?? ''UNK''}"'
-    time: $chart_time
+    time: $chart_t
     numeric_value: $value
     text_value: $description

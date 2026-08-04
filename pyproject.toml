@@ -17,19 +17,14 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-dependencies = [
-  "MEDS-extract[download]>=0.7.0,<0.8",
-  "MEDS-transforms>=0.6.7,<0.7",
-  "hydra-core",
-  "polars>=1.26",
-  "tqdm",
-]
+# Pure-config ETL: the only runtime dependency is MEDS-Extract itself, which supplies both
+# CLIs (`meds-extract-download`, `meds-extract-run`) and every extraction stage.
+dependencies = ["MEDS-extract[download]>=0.7.0,<0.8"]
 
 [tool.setuptools_scm]
 
 [project.optional-dependencies]
 dev = ["pre-commit<4"]
-tests = ["pytest", "pytest-cov", "rootutils", "hydra-joblib-launcher"]
 local_parallelism = ["hydra-joblib-launcher"]
 slurm_parallelism = ["hydra-submitit-launcher"]
 docs = [
@@ -37,9 +32,6 @@ docs = [
   "mkdocs-literate-nav==0.6.1", "mkdocs-section-index==0.3.9", "mkdocs-git-authors-plugin==0.9.0",
   "mkdocs-git-revision-date-localized-plugin==1.2.6"
 ]
-
-[project.scripts]
-MEDS_extract-INSPIRE = "INSPIRE_MEDS.__main__:main"
 
 # Registers the bundled MESSY file as a MEDS-Extract dataset pipeline, so the whole
 # ETL is runnable as `meds-extract-run spec=INSPIRE output_dir=...`.

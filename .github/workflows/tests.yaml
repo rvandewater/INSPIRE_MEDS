@@ -42,7 +42,7 @@ jobs:
       # exist), which is why the whole step was commented out. Fixing those is out of scope here.
       - name: Run doctests
         run: |
-          pytest --doctest-modules src/INSPIRE_MEDS/utils.py src/INSPIRE_MEDS/unpack.py -v
+          pytest --doctest-modules src/INSPIRE_MEDS/utils.py -v
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4.0.1

@@ -1,0 +1,6 @@
+spec: INSPIRE
+output_dir: /home/mmd/meds_staging/inspire/raw_input
+key: dataset
+concurrency: 3
+continue_on_error: false
+do_overwrite: false

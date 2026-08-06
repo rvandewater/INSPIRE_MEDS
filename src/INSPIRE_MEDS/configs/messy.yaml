@@ -175,16 +175,35 @@ operations:
 
 labs:
   _table:
+    join:
+      # `unit` and `description` are NOT columns of this table -- they live in
+      # `parameters.csv`, and the 0.6.x ETL added them in a pre-MEDS pass that joined
+      # `item_name` to `parameters.label`. That pass is gone but the references to
+      # `$unit` / `$description` survived the migration, so the stage failed outright with
+      # "is missing requested column(s) ['description', 'unit']". This restores the join
+      # declaratively.
+      #
+      # Aggregated (`min`) rather than a plain join because `parameters.csv` is keyed on
+      # (table, label) and MESSY joins cannot filter the right side: 10 labels appear under
+      # both `vitals` and `ward_vitals`, so a plain join would multiply rows. Reducing to one
+      # row per label is safe here -- every duplicated label carries an identical `Unit`, and
+      # `Unit` is the only one of the two that reaches a *code*. Two labels (`bt`, `fio2`)
+      # differ in `Description` by wording/casing alone ("Body Temperature" vs "Body
+      # temperature"); `min` picks one deterministically, affecting only `text_value`.
+      parameters:
+        left_on: item_name
+        right_on: Label
+        cols: {Unit: min, Description: min}
     cols:
       _origin: '("2016-01-01"::?"%Y-%m-%d")::datetime'
       chart_t: '$_origin + $chart_time::minutes'
   lab:
-    code: 'f"LAB//{$item_name ?? ''UNK''}//{$unit ?? ''UNK''}"'
+    code: 'f"LAB//{$item_name ?? ''UNK''}//{$Unit ?? ''UNK''}"'
     time: $chart_t
     # NB: these were bare strings in the 0.6.x config, which meant "read this raw column".
     # A bare string is a LITERAL in dftly, so the `$` prefix here is load-bearing.
     numeric_value: $value
-    text_value: $description
+    text_value: $Description
 
 medications:
   _table:
@@ -210,22 +229,60 @@ diagnosis:
 
 vitals:
   _table:
+    join:
+      # `unit` and `description` are NOT columns of this table -- they live in
+      # `parameters.csv`, and the 0.6.x ETL added them in a pre-MEDS pass that joined
+      # `item_name` to `parameters.label`. That pass is gone but the references to
+      # `$unit` / `$description` survived the migration, so the stage failed outright with
+      # "is missing requested column(s) ['description', 'unit']". This restores the join
+      # declaratively.
+      #
+      # Aggregated (`min`) rather than a plain join because `parameters.csv` is keyed on
+      # (table, label) and MESSY joins cannot filter the right side: 10 labels appear under
+      # both `vitals` and `ward_vitals`, so a plain join would multiply rows. Reducing to one
+      # row per label is safe here -- every duplicated label carries an identical `Unit`, and
+      # `Unit` is the only one of the two that reaches a *code*. Two labels (`bt`, `fio2`)
+      # differ in `Description` by wording/casing alone ("Body Temperature" vs "Body
+      # temperature"); `min` picks one deterministically, affecting only `text_value`.
+      parameters:
+        left_on: item_name
+        right_on: Label
+        cols: {Unit: min, Description: min}
     cols:
       _origin: '("2016-01-01"::?"%Y-%m-%d")::datetime'
       chart_t: '$_origin + $chart_time::minutes'
   vital:
-    code: 'f"VITAL//{$item_name ?? ''UNK''}//{$unit ?? ''UNK''}"'
+    code: 'f"VITAL//{$item_name ?? ''UNK''}//{$Unit ?? ''UNK''}"'
     time: $chart_t
     numeric_value: $value
-    text_value: $description
+    text_value: $Description
 
 ward_vitals:
   _table:
+    join:
+      # `unit` and `description` are NOT columns of this table -- they live in
+      # `parameters.csv`, and the 0.6.x ETL added them in a pre-MEDS pass that joined
+      # `item_name` to `parameters.label`. That pass is gone but the references to
+      # `$unit` / `$description` survived the migration, so the stage failed outright with
+      # "is missing requested column(s) ['description', 'unit']". This restores the join
+      # declaratively.
+      #
+      # Aggregated (`min`) rather than a plain join because `parameters.csv` is keyed on
+      # (table, label) and MESSY joins cannot filter the right side: 10 labels appear under
+      # both `vitals` and `ward_vitals`, so a plain join would multiply rows. Reducing to one
+      # row per label is safe here -- every duplicated label carries an identical `Unit`, and
+      # `Unit` is the only one of the two that reaches a *code*. Two labels (`bt`, `fio2`)
+      # differ in `Description` by wording/casing alone ("Body Temperature" vs "Body
+      # temperature"); `min` picks one deterministically, affecting only `text_value`.
+      parameters:
+        left_on: item_name
+        right_on: Label
+        cols: {Unit: min, Description: min}
     cols:
       _origin: '("2016-01-01"::?"%Y-%m-%d")::datetime'
       chart_t: '$_origin + $chart_time::minutes'
   ward_vital:
-    code: 'f"WARD_VITAL//{$item_name ?? ''UNK''}//{$unit ?? ''UNK''}"'
+    code: 'f"WARD_VITAL//{$item_name ?? ''UNK''}//{$Unit ?? ''UNK''}"'
     time: $chart_t
     numeric_value: $value
-    text_value: $description
+    text_value: $Description

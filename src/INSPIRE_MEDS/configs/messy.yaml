@@ -51,8 +51,11 @@ _defaults:
 
 operations:
   _table:
-    join:
-      operations: {key: subject_id, cols: {age: min, admission_time: min}}
+    # No join. INSPIRE's offsets are anchored PER PATIENT at that patient's first hospital
+    # admission -- min(admission_time) is 0 for every subject -- so `admission_time == 0`
+    # identifies the earliest admission directly, with no aggregation. The former
+    # aggregated self-join over this same table is both unnecessary and, as of
+    # MEDS-Extract's self-join guard, rejected outright.
     cols:
       _origin: '("2016-01-01"::?"%Y-%m-%d")::datetime'
       # Born at the midpoint of the birth year, so subtract half a year less than the full age.

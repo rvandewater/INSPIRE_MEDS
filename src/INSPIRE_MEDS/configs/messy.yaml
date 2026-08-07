@@ -52,19 +52,14 @@ _defaults:
 operations:
   _table:
     join:
-      # `.sort(admission_time).group_by(subject_id).first()` in pre-MEDS took each patient's
-      # EARLIEST operation to derive their static facts. Age rises monotonically with time, so
-      # `min` over the same table reproduces that row's age; `_is_first` then restricts the
-      # patient-level events to that row, since MESSY has no row filter.
       operations: {key: subject_id, cols: {age: min, admission_time: min}}
     cols:
       _origin: '("2016-01-01"::?"%Y-%m-%d")::datetime'
-      _is_first: '$admission_time == $admission_time_right'
       # Born at the midpoint of the birth year, so subtract half a year less than the full age.
-      date_of_birth: '$_origin - ($age_right * 365.25 - 182.625)::days'
+      date_of_birth: '$_origin - ($age * 365.25 - 182.625)::days'
       # The earlier of the in-hospital and all-cause death times.
       _death_min: '$inhosp_death_time if $inhosp_death_time < $allcause_death_time else $allcause_death_time'
-      date_of_death: '$_origin + $_death_min::minutes if $_is_first'
+      date_of_death: '$_origin + $_death_min::minutes'
       admission_t: '$_origin + $admission_time::minutes'
       icuin_t: '$_origin + $icuin_time::minutes'
       icuout_t: '$_origin + $icuout_time::minutes'
@@ -78,21 +73,15 @@ operations:
       cpbon_t: '$_origin + $cpbon_time::minutes'
       cpboff_t: '$_origin + $cpboff_time::minutes'
       opdate_t: '$_origin + $opdate::minutes'
-  admission:
-    code: HOSPITAL_ADMISSION
-    time: $admission_time
   icu_registration:
     code: ICU_REGISTRATION
-    time: $icuin_time
+    time: $icuin_t
   icu_out:
     code: ICU_OUT
-    time: $icuout_time
-  orin:
-    code: OR_IN
-    time: $orin_time
+    time: $icuout_t
   op_id: # Number, A random number starts with 4 for the operation.
     code: OPERATION_ID
-    time: $opstart_time
+    time: $opstart_t
     numeric_value: $op_id
   case_id: # Number, A linker to VitalDB Open Dataset
     code: VITALDB_CASE_ID
@@ -100,9 +89,14 @@ operations:
     numeric_value: $case_id
   opdate: # Relative Time, Operation date
     code: OPERATION_DATE
-    time: $opdate
+    time: $opdate_t
   age: # Number, Age of the patient on the operation date
-    code: '"MEDS_BIRTH" if $_is_first'
+    # INSPIRE's offsets are anchored PER PATIENT at their first hospital admission:
+    # min(admission_time) is 0 for all 99,886 subjects, so `admission_time == 0` is
+    # provably the same selector as "this is the subject's earliest admission" -- with no
+    # aggregation and no join. `age` is the age at that admission, which is what the birth
+    # date is derived from.
+    code: '"MEDS_BIRTH" if $admission_time == 0'
     time: $date_of_birth
   sex: # M/F, Sex of the patient
     code: 'f"SEX//{$sex ?? ''UNK''}"'
@@ -110,67 +104,67 @@ operations:
   weight: # Number, Weight measured before operation
     code: WEIGHT
     numeric_value: $weight
-    time: $admission_time
+    time: $admission_t
   height: # Number, Height measured before operation
     code: HEIGHT
-    time: $admission_time
+    time: $admission_t
     numeric_value: $height
   race: # String, Race of the patient
     code: 'f"RACE//{$race ?? ''UNK''}"'
     time: null
   asa: # 1/2/3/4/5, American Society of Anesthesiologists physical status classification
     code: 'f"ASA//{$asa ?? ''UNK''}"'
-    time: $opdate
+    time: $opdate_t
   emop: # Binary, Emergency of the operation
     code: 'f"EMERGENCY_OPERATION//{$emop ?? ''UNK''}"'
-    time: $opdate
+    time: $opdate_t
   department: # String, Surgical department for admission
     code: 'f"ADMISSION_DEPARTMENT//{$department ?? ''UNK''}"'
-    time: $opdate
+    time: $opdate_t
   antype: # String, Anesthesia Type (General / Neuraxial / Regional / MAC)
     code: 'f"ANESTHESIA_TYPE//{$antype ?? ''UNK''}"'
-    time: $opdate
+    time: $opdate_t
   icd10_pcs: # String, ICD-10 Procedure Coding System code
     code: 'f"ICD10_PCS//{$icd10_pcs ?? ''UNK''}"'
-    time: $opdate
+    time: $opdate_t
   orin_time: # Relative Time, The time for entering the operating room
     code: OR_IN
-    time: $orin_time
+    time: $orin_t
   orout_time: # Relative Time, The time for leaving the operating room
     code: OR_OUT
-    time: $orout_time
+    time: $orout_t
   opstart_time: # Relative Time, The time for starting the operation
     code: OPERATION_START
-    time: $opstart_time
+    time: $opstart_t
   opend_time: # Relative Time, The time for finishing the operation
     code: OPERATION_END
-    time: $opend_time
+    time: $opend_t
   admission_time: # Relative Time, The time for hospital admission
     code: HOSPITAL_ADMISSION
-    time: $admission_time
+    time: $admission_t
   discharge_time: # Relative Time, The time for hospital discharge
     code: HOSPITAL_DISCHARGE
-    time: $discharge_time
+    time: $discharge_t
   anstart_time: # Relative Time, The time for starting anaesthesia
     code: ANESTHESIA_START
-    time: $anstart_time
+    time: $anstart_t
   anend_time: # Relative Time, The time for finishing anaesthesia
     code: ANESTHESIA_END
-    time: $anend_time
+    time: $anend_t
   cpbon_time: # Relative Time, The time for starting cardiopulmonary bypass
     code: CPB_ON
-    time: $cpbon_time
+    time: $cpbon_t
   cpboff_time: # Relative Time, The time for finishing cardiopulmonary bypass
     code: CPB_OFF
-    time: $cpboff_time
+    time: $cpboff_t
   icuin_time: # Relative Time, The time for ICU admission after surgery
     code: ICU_ADMISSION
-    time: $icuin_time
+    time: $icuin_t
   icuout_time: # Relative Time, The time for ICU discharge after surgery
     code: ICU_DISCHARGE
-    time: $icuout_time
+    time: $icuout_t
   death_time: # Relative Time, The time for death
-    code: '"MEDS_DEATH" if $_is_first'
+    code: MEDS_DEATH
     time: $date_of_death
 
 labs:

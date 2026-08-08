@@ -58,8 +58,9 @@ operations:
     # MEDS-Extract's self-join guard, rejected outright.
     cols:
       _origin: '("2016-01-01"::?"%Y-%m-%d")::datetime'
-      # Born at the midpoint of the birth year, so subtract half a year less than the full age.
-      date_of_birth: '$_origin - ($age * 365.25 - 182.625)::days'
+      # `age` is whole years, so true age is in [age, age+1); the midpoint estimate subtracts an
+      # extra half year. See "Birth" in the README.
+      date_of_birth: '$_origin - ($age * 365.25 + 182.625)::days'
       # The earlier of the in-hospital and all-cause death times.
       _death_min: '$inhosp_death_time if $inhosp_death_time < $allcause_death_time else $allcause_death_time'
       date_of_death: '$_origin + $_death_min::minutes'
@@ -76,16 +77,10 @@ operations:
       cpbon_t: '$_origin + $cpbon_time::minutes'
       cpboff_t: '$_origin + $cpboff_time::minutes'
       opdate_t: '$_origin + $opdate::minutes'
-  icu_registration:
-    code: ICU_REGISTRATION
-    time: $icuin_t
-  icu_out:
-    code: ICU_OUT
-    time: $icuout_t
   op_id: # Number, A random number starts with 4 for the operation.
     code: OPERATION_ID
     time: $opstart_t
-    numeric_value: $op_id
+    op_id: $op_id
   case_id: # Number, A linker to VitalDB Open Dataset
     code: VITALDB_CASE_ID
     time: null
@@ -200,7 +195,9 @@ labs:
     # NB: these were bare strings in the 0.6.x config, which meant "read this raw column".
     # A bare string is a LITERAL in dftly, so the `$` prefix here is load-bearing.
     numeric_value: $value
-    text_value: $Description
+    _metadata:
+      _self:
+        description: $Description
 
 medications:
   _table:
@@ -208,7 +205,7 @@ medications:
       _origin: '("2016-01-01"::?"%Y-%m-%d")::datetime'
       chart_t: '$_origin + $chart_time::minutes'
   medication:
-    code: 'f"MEDICATION//{$atc_code ?? ''UNK''}"'
+    code: 'f"MEDICATION//{$atc_code ?? ''UNK''}//{$route}"'
     time: $chart_t
     text_value: $drug_name
 
@@ -252,7 +249,9 @@ vitals:
     code: 'f"VITAL//{$item_name ?? ''UNK''}//{$Unit ?? ''UNK''}"'
     time: $chart_t
     numeric_value: $value
-    text_value: $Description
+    _metadata:
+      _self:
+        description: $Description
 
 ward_vitals:
   _table:
@@ -282,4 +281,6 @@ ward_vitals:
     code: 'f"WARD_VITAL//{$item_name ?? ''UNK''}//{$Unit ?? ''UNK''}"'
     time: $chart_t
     numeric_value: $value
-    text_value: $Description
+    _metadata:
+      _self:
+        description: $Description

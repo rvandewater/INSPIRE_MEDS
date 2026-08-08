@@ -37,7 +37,7 @@ There is no longer a pre-MEDS step: it is all config.
 ## Configuration
 
 **This package contains no ETL code.** The entire pipeline is one file,
-[`src/INSPIRE_MEDS/configs/messy.yaml`](src/INSPIRE_MEDS/configs/messy.yaml), registered under the
+[`src/INSPIRE_MEDS/messy.yaml`](src/INSPIRE_MEDS/messy.yaml), registered under the
 `MEDS_extract.pipelines` entry-point group, and run with
 `meds-extract-run spec=INSPIRE output_dir=...`.
 

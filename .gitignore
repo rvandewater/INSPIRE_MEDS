@@ -161,3 +161,6 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 .idea/
 .vscode/
+
+# Hydra run dirs written to CWD by hydra CLIs (e.g. meds-extract-download)
+/outputs/

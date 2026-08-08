@@ -62,7 +62,10 @@ operations:
       # extra half year. See "Birth" in the README.
       date_of_birth: '$_origin - ($age * 365.25 + 182.625)::days'
       # The earlier of the in-hospital and all-cause death times.
-      _death_min: '$inhosp_death_time if $inhosp_death_time < $allcause_death_time else $allcause_death_time'
+      # Earliest of the two death records. Written as a min over two coalesces because dftly
+      # has no null test: a bare `$inhosp < $allcause` is NULL when inhosp is missing, which
+      # took the else branch and silently dropped subjects recorded only in hospital.
+      _death_min: 'min($inhosp_death_time ?? $allcause_death_time, $allcause_death_time ?? $inhosp_death_time)'
       date_of_death: '$_origin + $_death_min::minutes'
       admission_t: '$_origin + $admission_time::minutes'
       icuin_t: '$_origin + $icuin_time::minutes'

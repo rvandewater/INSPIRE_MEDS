@@ -22,7 +22,7 @@ classifiers = [
 ]
 # Pure-config ETL: the only runtime dependency is MEDS-Extract itself, which supplies both
 # CLIs (`meds-extract-download`, `meds-extract-run`) and every extraction stage.
-dependencies = ["MEDS-extract[download]>=0.7.0,<0.8"]
+dependencies = ["MEDS-extract[download]>=0.7.0,<0.8", "polars>=1.0"]
 
 [tool.setuptools_scm]
 
@@ -38,10 +38,12 @@ docs = [
 
 # Registers the bundled MESSY file as a MEDS-Extract dataset pipeline, so the whole
 # ETL is runnable as `meds-extract-run spec=INSPIRE output_dir=...`.
+[project.scripts]
+MEDS_extract-INSPIRE = "INSPIRE_MEDS.__main__:main"
+
 [project.entry-points."MEDS_extract.pipelines"]
 INSPIRE = "INSPIRE_MEDS:messy.yaml"
 
 [project.urls]
 Homepage = "https://github.com/rvandewater/INSPIRE_MEDS_Template"
 Issues = "https://github.com/rvandewater/INSPIRE_MEDS_Template/issues"
-

@@ -51,22 +51,19 @@ _defaults:
 
 operations:
   _table:
-    # No join. INSPIRE's offsets are anchored PER PATIENT at that patient's first hospital
-    # admission -- min(admission_time) is 0 for every subject -- so `admission_time == 0`
-    # identifies the earliest admission directly, with no aggregation. The former
-    # aggregated self-join over this same table is both unnecessary and, as of
-    # MEDS-Extract's self-join guard, rejected outright.
+    # `subjects` is derived by INSPIRE_MEDS.pre_MEDS: `age` is per-operation and 5-year binned,
+    # and `inhosp_death_time` sits on only some of a subject's rows, so both need a per-subject
+    # reduction that MESSY cannot express. See "Birth and death" in the README.
+    join:
+      subjects:
+        key: subject_id
+        cols: {birth_age: min, death_min: min}
     cols:
       _origin: '("2016-01-01"::?"%Y-%m-%d")::datetime'
-      # `age` is whole years, so true age is in [age, age+1); the midpoint estimate subtracts an
-      # extra half year. See "Birth" in the README.
-      date_of_birth: '$_origin - ($age * 365.25 + 182.625)::days'
-      # The earlier of the in-hospital and all-cause death times.
-      # Earliest of the two death records. Written as a min over two coalesces because dftly
-      # has no null test: a bare `$inhosp < $allcause` is NULL when inhosp is missing, which
-      # took the else branch and silently dropped subjects recorded only in hospital.
-      _death_min: 'min($inhosp_death_time ?? $allcause_death_time, $allcause_death_time ?? $inhosp_death_time)'
-      date_of_death: '$_origin + $_death_min::minutes'
+      # `age` is whole years, so true age is in [age, age+1) and the midpoint subtracts an extra
+      # half year. `birth_age` and `death_min` are joined per subject; see the README.
+      date_of_birth: '$_origin - ($birth_age * 365.25 + 182.625)::days'
+      date_of_death: '$_origin + $death_min::minutes'
       admission_t: '$_origin + $admission_time::minutes'
       icuin_t: '$_origin + $icuin_time::minutes'
       icuout_t: '$_origin + $icuout_time::minutes'
@@ -97,7 +94,7 @@ operations:
     # provably the same selector as "this is the subject's earliest admission" -- with no
     # aggregation and no join. `age` is the age at that admission, which is what the birth
     # date is derived from.
-    code: '"MEDS_BIRTH" if $admission_time == 0'
+    code: MEDS_BIRTH
     time: $date_of_birth
   sex: # M/F, Sex of the patient
     code: 'f"SEX//{$sex ?? ''UNK''}"'

@@ -384,6 +384,7 @@ name = "inspire-meds"
 source = { editable = "." }
 dependencies = [
     { name = "meds-extract", extra = ["download"] },
+    { name = "polars" },
 ]
 
 [package.optional-dependencies]
@@ -420,6 +421,7 @@ requires-dist = [
     { name = "mkdocs-material", marker = "extra == 'docs'", specifier = "==9.5.31" },
     { name = "mkdocs-section-index", marker = "extra == 'docs'", specifier = "==0.3.9" },
     { name = "mkdocstrings", extras = ["python", "shell"], marker = "extra == 'docs'", specifier = "==0.25.2" },
+    { name = "polars", specifier = ">=1.0" },
     { name = "pre-commit", marker = "extra == 'dev'", specifier = "<4" },
 ]
 provides-extras = ["dev", "local-parallelism", "slurm-parallelism", "docs"]

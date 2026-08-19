@@ -117,7 +117,9 @@ def stage_input(raw_input_dir: Path, staging_dir: Path) -> Path:
             link.symlink_to(entry.resolve())
 
     out = staging_dir / f"{SIDE_TABLE_NAME}.parquet"
-    table = build_subject_table(pl.scan_csv(sources[0], infer_schema_length=None)).collect()
+    table = build_subject_table(
+        pl.scan_csv(sources[0], infer_schema_length=None)
+    ).collect()
     table.write_parquet(out)
     logger.info(f"Wrote {table.height:,} subject rows to {out}")
     return staging_dir

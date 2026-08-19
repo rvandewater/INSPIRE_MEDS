@@ -21,30 +21,58 @@ pip install INSPIRE_MEDS
 export DATASET_DOWNLOAD_USERNAME=$PHYSIONET_USERNAME
 export DATASET_DOWNLOAD_PASSWORD=$PHYSIONET_PASSWORD
 
-meds-extract-run spec=INSPIRE output_dir=$MEDS_COHORT_DIR
+MEDS_extract-INSPIRE $ROOT_OUTPUT_DIR
 ```
 
-That downloads the raw INSPIRE files and runs the full eight-stage MEDS-Extract pipeline. To
-stage the raw data separately:
+That downloads the raw INSPIRE files, builds a small derived table (see
+[Birth and death](#birth-and-death)), and runs the full eight-stage MEDS-Extract pipeline. To
+reuse a download you already have:
 
 ```bash
-meds-extract-download spec=INSPIRE output_dir=$RAW_INPUT_DIR
-meds-extract-run spec=INSPIRE output_dir=$MEDS_COHORT_DIR download_key=null input_dir=$RAW_INPUT_DIR
+MEDS_extract-INSPIRE $ROOT_OUTPUT_DIR --raw-input-dir $RAW_INPUT_DIR --do-download false
 ```
-
-There is no longer a pre-MEDS step: it is all config.
 
 ## Configuration
 
-**This package contains no ETL code.** The entire pipeline is one file,
+Nearly all of the pipeline is one file,
 [`src/INSPIRE_MEDS/messy.yaml`](src/INSPIRE_MEDS/messy.yaml), registered under the
-`MEDS_extract.pipelines` entry-point group, and run with
-`meds-extract-run spec=INSPIRE output_dir=...`.
+`MEDS_extract.pipelines` entry-point group. The one exception is described under
+[Birth and death](#birth-and-death) below.
 
-INSPIRE stores only offsets (in minutes) from a single fixed origin shared by every patient; only
-relative differences are meaningful. That origin is the midpoint of the study window
-(2011-01-01 .. 2020-12-31) = **2016-01-01**, now written as a literal in `_table.cols` instead of
-computed in Python.
+### Pseudo-timestamps
+
+INSPIRE ships no wall-clock times. Every time column is an **offset in minutes**, anchored **per
+patient** at that patient's own first hospital admission — `min(admission_time)` is 0 for all
+99,886 subjects. Each patient's anchor is then placed at one shared literal origin, the midpoint
+of the study window (2011-01-01 .. 2020-12-31) = **2016-01-01**.
+
+So only relative differences *within* a subject are meaningful. The absolute dates in the MEDS
+output are not real dates, and comparing them across subjects is meaningless.
+
+### Null handling
+
+A null component of a composite code drops the row under MEDS-Extract 0.7, where 0.6.x rendered
+it as the literal `UNK` and kept the row. Components are therefore coalesced with `?? 'UNK'`
+wherever a null must not drop the row.
+
+Two are deliberately left uncoalesced. `route` on medications is never null in the release (0 of
+10,854,338 rows), so a coalesce would be dead code. The demographic codes drop rather than mint
+an `UNK` category, because a missing demographic is not an observed value.
+
+### Birth and death
+
+`MEDS_BIRTH` and `MEDS_DEATH` are properties of a **subject**, but INSPIRE records what they
+derive from on `operations`, which is one row per **operation**:
+
+- `age` is the age on the operation date, quantised to 5-year bins, so a patient with several
+  operations in one admission can straddle a bin boundary and carry two ages.
+- `inhosp_death_time` appears only on the rows of the admission during which the patient died,
+  while `allcause_death_time` is invariant across all their rows.
+
+MESSY cannot reduce a table over its own rows — self-joins are rejected and dftly is strictly
+row-wise — so `INSPIRE_MEDS.pre_MEDS` reduces `operations` to one row per subject and the config
+joins it back. That is the only Python this package ships. It runs against a staging directory of
+symlinks, so the checksum-verified download is never modified.
 
 | Was (`pre_MEDS.py`) | Now |
 | --- | --- |

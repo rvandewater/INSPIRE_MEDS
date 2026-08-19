@@ -1,15 +1,3 @@
-# MESSY config for the INSPIRE MEDS ETL (MEDS-Extract >= 0.7).
-#
-# This single file replaces what used to be spread across four places:
-#   - `dataset.yaml`               -> the `sources:` block below
-#   - `download.py`                -> the `sources:` block below
-#   - `configs/ETL.yaml`           -> the `etl:` block below (the stage DAG is now canonical)
-#   - `configs/event_configs.yaml` -> the event tables below, rewritten in dftly
-#
-# Run the whole ETL with:
-#   meds-extract-run spec=INSPIRE output_dir=$OUTPUT_DIR
-# (see README.md; `INSPIRE` is registered via the `MEDS_extract.pipelines` entry point).
-
 sources:
   dataset_version: 1.4.2
 
@@ -18,7 +6,6 @@ sources:
       base_url: https://physionet.org/files/inspire/${sources.dataset_version}
       username: ${oc.env:DATASET_DOWNLOAD_USERNAME}
       password: ${oc.env:DATASET_DOWNLOAD_PASSWORD}
-      # `auto` expands any archive members in the release and is a no-op on everything else.
       unarchive: auto
 
 etl:
@@ -28,55 +15,29 @@ etl:
 _defaults:
   subject_id: $subject_id
 
-# ---------------------------------------------------------------------------
-# NOTE ON NULL HANDLING
-#
-# Under 0.6.x a null component of an interpolated code was silently rendered as the literal
-# "UNK" and the row was kept. In 0.7.0 a composite code null-propagates and the row is DROPPED.
-# Every component below is therefore coalesced with `?? 'UNK'` to preserve the previous
-# row-retention behaviour exactly. Where a null component *should* drop the row instead, remove
-# the corresponding `?? 'UNK'` -- that is a data-modelling decision for the maintainers.
-# ---------------------------------------------------------------------------
-
-# ---------------------------------------------------------------------------
-# HOW THE PSEUDO-TIMESTAMPS WORK
-#
-# INSPIRE stores only OFFSETS (in MINUTES) from a single fixed origin shared by every patient --
-# only relative differences are meaningful, not absolute times. The old pre-MEDS step computed
-# that origin as the midpoint of the study window (2011-01-01 .. 2020-12-31), which is exactly
-# 2016-01-01; it is written as a literal here.
-#
-# `_origin` is repeated per table because `_table.cols` is table-scoped.
-# ---------------------------------------------------------------------------
-
 operations:
   _table:
-    # `subjects` is derived by INSPIRE_MEDS.pre_MEDS: `age` is per-operation and 5-year binned,
-    # and `inhosp_death_time` sits on only some of a subject's rows, so both need a per-subject
-    # reduction that MESSY cannot express. See "Birth and death" in the README.
     join:
       subjects:
         key: subject_id
-        cols: {birth_age: min, death_min: min}
+        cols: { birth_age: min, death_min: min }
     cols:
       _origin: '("2016-01-01"::?"%Y-%m-%d")::datetime'
-      # `age` is whole years, so true age is in [age, age+1) and the midpoint subtracts an extra
-      # half year. `birth_age` and `death_min` are joined per subject; see the README.
-      date_of_birth: '$_origin - ($birth_age * 365.25 + 182.625)::days'
-      date_of_death: '$_origin + $death_min::minutes'
-      admission_t: '$_origin + $admission_time::minutes'
-      icuin_t: '$_origin + $icuin_time::minutes'
-      icuout_t: '$_origin + $icuout_time::minutes'
-      orin_t: '$_origin + $orin_time::minutes'
-      orout_t: '$_origin + $orout_time::minutes'
-      opstart_t: '$_origin + $opstart_time::minutes'
-      opend_t: '$_origin + $opend_time::minutes'
-      discharge_t: '$_origin + $discharge_time::minutes'
-      anstart_t: '$_origin + $anstart_time::minutes'
-      anend_t: '$_origin + $anend_time::minutes'
-      cpbon_t: '$_origin + $cpbon_time::minutes'
-      cpboff_t: '$_origin + $cpboff_time::minutes'
-      opdate_t: '$_origin + $opdate::minutes'
+      date_of_birth: "$_origin - ($birth_age * 365.25 + 182.625)::days"
+      date_of_death: "$_origin + $death_min::minutes"
+      admission_t: "$_origin + $admission_time::minutes"
+      icuin_t: "$_origin + $icuin_time::minutes"
+      icuout_t: "$_origin + $icuout_time::minutes"
+      orin_t: "$_origin + $orin_time::minutes"
+      orout_t: "$_origin + $orout_time::minutes"
+      opstart_t: "$_origin + $opstart_time::minutes"
+      opend_t: "$_origin + $opend_time::minutes"
+      discharge_t: "$_origin + $discharge_time::minutes"
+      anstart_t: "$_origin + $anstart_time::minutes"
+      anend_t: "$_origin + $anend_time::minutes"
+      cpbon_t: "$_origin + $cpbon_time::minutes"
+      cpboff_t: "$_origin + $cpboff_time::minutes"
+      opdate_t: "$_origin + $opdate::minutes"
   op_id: # Number, A random number starts with 4 for the operation.
     code: OPERATION_ID
     time: $opstart_t
@@ -89,11 +50,6 @@ operations:
     code: OPERATION_DATE
     time: $opdate_t
   age: # Number, Age of the patient on the operation date
-    # INSPIRE's offsets are anchored PER PATIENT at their first hospital admission:
-    # min(admission_time) is 0 for all 99,886 subjects, so `admission_time == 0` is
-    # provably the same selector as "this is the subject's earliest admission" -- with no
-    # aggregation and no join. `age` is the age at that admission, which is what the birth
-    # date is derived from.
     code: MEDS_BIRTH
     time: $date_of_birth
   sex: # M/F, Sex of the patient
@@ -168,32 +124,16 @@ operations:
 labs:
   _table:
     join:
-      # `unit` and `description` are NOT columns of this table -- they live in
-      # `parameters.csv`, and the 0.6.x ETL added them in a pre-MEDS pass that joined
-      # `item_name` to `parameters.label`. That pass is gone but the references to
-      # `$unit` / `$description` survived the migration, so the stage failed outright with
-      # "is missing requested column(s) ['description', 'unit']". This restores the join
-      # declaratively.
-      #
-      # Aggregated (`min`) rather than a plain join because `parameters.csv` is keyed on
-      # (table, label) and MESSY joins cannot filter the right side: 10 labels appear under
-      # both `vitals` and `ward_vitals`, so a plain join would multiply rows. Reducing to one
-      # row per label is safe here -- every duplicated label carries an identical `Unit`, and
-      # `Unit` is the only one of the two that reaches a *code*. Two labels (`bt`, `fio2`)
-      # differ in `Description` by wording/casing alone ("Body Temperature" vs "Body
-      # temperature"); `min` picks one deterministically, affecting only `text_value`.
       parameters:
         left_on: item_name
         right_on: Label
-        cols: {Unit: min, Description: min}
+        cols: { Unit: min, Description: min }
     cols:
       _origin: '("2016-01-01"::?"%Y-%m-%d")::datetime'
-      chart_t: '$_origin + $chart_time::minutes'
+      chart_t: "$_origin + $chart_time::minutes"
   lab:
     code: 'f"LAB//{$item_name ?? ''UNK''}//{$Unit ?? ''UNK''}"'
     time: $chart_t
-    # NB: these were bare strings in the 0.6.x config, which meant "read this raw column".
-    # A bare string is a LITERAL in dftly, so the `$` prefix here is load-bearing.
     numeric_value: $value
     _metadata:
       _self:
@@ -203,7 +143,7 @@ medications:
   _table:
     cols:
       _origin: '("2016-01-01"::?"%Y-%m-%d")::datetime'
-      chart_t: '$_origin + $chart_time::minutes'
+      chart_t: "$_origin + $chart_time::minutes"
   medication:
     code: 'f"MEDICATION//{$atc_code ?? ''UNK''}//{$route}"'
     time: $chart_t
@@ -213,38 +153,21 @@ diagnosis:
   _table:
     cols:
       _origin: '("2016-01-01"::?"%Y-%m-%d")::datetime'
-      chart_t: '$_origin + $chart_time::minutes'
+      chart_t: "$_origin + $chart_time::minutes"
   diagnosis:
-    # FIXED: the 0.6.x config read `col(icd10_cm` -- with no closing paren -- so YAML parsed it
-    # as the plain string "col(icd10_cm" and every diagnosis code was emitted as the literal
-    # `DIAGNOSIS//ICD//10//col(icd10_cm` rather than the patient's actual ICD-10-CM code.
     code: 'f"DIAGNOSIS//ICD//10//{$icd10_cm ?? ''UNK''}"'
     time: $chart_t
 
 vitals:
   _table:
     join:
-      # `unit` and `description` are NOT columns of this table -- they live in
-      # `parameters.csv`, and the 0.6.x ETL added them in a pre-MEDS pass that joined
-      # `item_name` to `parameters.label`. That pass is gone but the references to
-      # `$unit` / `$description` survived the migration, so the stage failed outright with
-      # "is missing requested column(s) ['description', 'unit']". This restores the join
-      # declaratively.
-      #
-      # Aggregated (`min`) rather than a plain join because `parameters.csv` is keyed on
-      # (table, label) and MESSY joins cannot filter the right side: 10 labels appear under
-      # both `vitals` and `ward_vitals`, so a plain join would multiply rows. Reducing to one
-      # row per label is safe here -- every duplicated label carries an identical `Unit`, and
-      # `Unit` is the only one of the two that reaches a *code*. Two labels (`bt`, `fio2`)
-      # differ in `Description` by wording/casing alone ("Body Temperature" vs "Body
-      # temperature"); `min` picks one deterministically, affecting only `text_value`.
       parameters:
         left_on: item_name
         right_on: Label
-        cols: {Unit: min, Description: min}
+        cols: { Unit: min, Description: min }
     cols:
       _origin: '("2016-01-01"::?"%Y-%m-%d")::datetime'
-      chart_t: '$_origin + $chart_time::minutes'
+      chart_t: "$_origin + $chart_time::minutes"
   vital:
     code: 'f"VITAL//{$item_name ?? ''UNK''}//{$Unit ?? ''UNK''}"'
     time: $chart_t
@@ -256,27 +179,13 @@ vitals:
 ward_vitals:
   _table:
     join:
-      # `unit` and `description` are NOT columns of this table -- they live in
-      # `parameters.csv`, and the 0.6.x ETL added them in a pre-MEDS pass that joined
-      # `item_name` to `parameters.label`. That pass is gone but the references to
-      # `$unit` / `$description` survived the migration, so the stage failed outright with
-      # "is missing requested column(s) ['description', 'unit']". This restores the join
-      # declaratively.
-      #
-      # Aggregated (`min`) rather than a plain join because `parameters.csv` is keyed on
-      # (table, label) and MESSY joins cannot filter the right side: 10 labels appear under
-      # both `vitals` and `ward_vitals`, so a plain join would multiply rows. Reducing to one
-      # row per label is safe here -- every duplicated label carries an identical `Unit`, and
-      # `Unit` is the only one of the two that reaches a *code*. Two labels (`bt`, `fio2`)
-      # differ in `Description` by wording/casing alone ("Body Temperature" vs "Body
-      # temperature"); `min` picks one deterministically, affecting only `text_value`.
       parameters:
         left_on: item_name
         right_on: Label
-        cols: {Unit: min, Description: min}
+        cols: { Unit: min, Description: min }
     cols:
       _origin: '("2016-01-01"::?"%Y-%m-%d")::datetime'
-      chart_t: '$_origin + $chart_time::minutes'
+      chart_t: "$_origin + $chart_time::minutes"
   ward_vital:
     code: 'f"WARD_VITAL//{$item_name ?? ''UNK''}//{$Unit ?? ''UNK''}"'
     time: $chart_t

@@ -51,12 +51,24 @@ def _run(argv: list[str]) -> None:
 def main(argv: list[str] | None = None) -> None:
     """Entry point for ``MEDS_extract-INSPIRE``."""
     p = argparse.ArgumentParser(prog="MEDS_extract-INSPIRE", description=__doc__)
-    p.add_argument("root_output_dir", type=Path, help="Root for raw_input/, staged/ and MEDS_cohort/.")
-    p.add_argument("--raw-input-dir", type=Path, default=None, help="Default: <root>/raw_input")
-    p.add_argument("--output-dir", type=Path, default=None, help="Default: <root>/MEDS_cohort")
+    p.add_argument(
+        "root_output_dir",
+        type=Path,
+        help="Root for raw_input/, staged/ and MEDS_cohort/.",
+    )
+    p.add_argument(
+        "--raw-input-dir", type=Path, default=None, help="Default: <root>/raw_input"
+    )
+    p.add_argument(
+        "--output-dir", type=Path, default=None, help="Default: <root>/MEDS_cohort"
+    )
     p.add_argument("--do-download", default="true", choices=("true", "false"))
     p.add_argument("--download-concurrency", type=int, default=4)
-    p.add_argument("overrides", nargs="*", help="Extra key=value overrides passed to meds-extract-run.")
+    p.add_argument(
+        "overrides",
+        nargs="*",
+        help="Extra key=value overrides passed to meds-extract-run.",
+    )
     args = p.parse_args(argv)
 
     logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
@@ -66,26 +78,30 @@ def main(argv: list[str] | None = None) -> None:
     staged = root / "staged_input"
 
     if args.do_download == "true":
-        _run([
-            _script("meds-extract-download"),
-            f"spec={SPEC_REF}",
-            f"output_dir={raw.resolve()!s}",
-            "key=dataset",
-            f"concurrency={args.download_concurrency}",
-        ])
+        _run(
+            [
+                _script("meds-extract-download"),
+                f"spec={SPEC_REF}",
+                f"output_dir={raw.resolve()!s}",
+                "key=dataset",
+                f"concurrency={args.download_concurrency}",
+            ]
+        )
     else:
         logger.info("do_download=false: using the existing raw input at %s", raw)
 
     stage_input(raw, staged)
 
-    _run([
-        _script("meds-extract-run"),
-        f"spec={SPEC_REF}",
-        f"output_dir={out.resolve()!s}",
-        "do_download=false",
-        f"input_dir={staged.resolve()!s}",
-        *args.overrides,
-    ])
+    _run(
+        [
+            _script("meds-extract-run"),
+            f"spec={SPEC_REF}",
+            f"output_dir={out.resolve()!s}",
+            "do_download=false",
+            f"input_dir={staged.resolve()!s}",
+            *args.overrides,
+        ]
+    )
     logger.info("Done. MEDS cohort at %s", out)
 
 

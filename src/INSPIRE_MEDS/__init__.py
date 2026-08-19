@@ -1,9 +1,15 @@
-"""INSPIRE MEDS ETL -- a pure-config MEDS-Extract pipeline.
+"""The INSPIRE MEDS ETL.
 
-This package contains no ETL code. The entire pipeline is `messy.yaml`, registered under
-the `MEDS_extract.pipelines` entry-point group, so it runs as:
+Nearly all of the pipeline is `messy.yaml`, registered under the `MEDS_extract.pipelines`
+entry-point group. The one exception is a small pre-MEDS reduction: MEDS_BIRTH and MEDS_DEATH
+are per-subject facts derived from a per-operation table, and MESSY cannot reduce a table over
+its own rows, so `pre_MEDS.build_subject_table` produces a one-row-per-subject side table that
+the config joins back. `MEDS_extract-INSPIRE` chains download, that step, and `meds-extract-run`:
 
-    meds-extract-run spec=INSPIRE output_dir=$OUTPUT_DIR
+    MEDS_extract-INSPIRE $ROOT_OUTPUT_DIR
+
+Running `meds-extract-run spec=INSPIRE` directly also works, provided the side table already
+exists in the input directory.
 """
 
 from importlib.metadata import PackageNotFoundError, version

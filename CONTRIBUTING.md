@@ -87,3 +87,52 @@ Any change to codes, timestamps or which rows are emitted is a change to everybo
 cohort. State the measured effect in the PR — row counts, subject counts, code-vocabulary size
 before and after — rather than only describing the intent. Several defects in this repository were
 found precisely because those numbers were compared.
+
+# Development
+
+## Environment
+
+The project uses [uv](https://docs.astral.sh/uv/) for its environment, lockfile,
+build, and commands.
+
+```bash
+uv sync
+uv run pre-commit install
+uv run pre-commit run --all-files
+uv run pytest
+uv run mkdocs build --strict
+```
+
+A plain `pre-commit run` checks only staged files, so hooks legitimately skip
+when nothing matching is staged. Use `--all-files` for a full repository check.
+
+Build the distribution with:
+
+```bash
+uv build
+```
+
+## Release
+
+Bump and commit the project version before creating the matching tag:
+
+```bash
+uv version --bump patch
+uv run pytest
+uv build --clear
+git add pyproject.toml uv.lock
+git commit -m "Release $(uv version --short)"
+VERSION=$(uv version --short)
+git tag -a "$VERSION" -m "Release $VERSION"
+git push origin main "$VERSION"
+```
+
+The tag workflow rejects mismatched versions, then publishes the distributions
+to PyPI and creates the GitHub release.
+
+```bash
+uv sync
+uv version --bump patch   # 0.0.12 → 0.0.13
+uv version --bump minor   # 0.0.12 → 0.1.0
+uv version --bump major   # 0.0.12 → 1.0.0
+```

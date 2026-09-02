@@ -41,11 +41,11 @@ operations:
   op_id: # Number, A random number starts with 4 for the operation.
     code: OPERATION_ID
     time: $opstart_t
-    op_id: $op_id
+    text_value: $op_id::str
   case_id: # Number, A linker to VitalDB Open Dataset
     code: VITALDB_CASE_ID
     time: null
-    numeric_value: $case_id
+    text_value: $case_id::str
   opdate: # Relative Time, Operation date
     code: OPERATION_DATE
     time: $opdate_t

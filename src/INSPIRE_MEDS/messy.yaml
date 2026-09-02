@@ -1,0 +1,195 @@
+sources:
+  dataset_version: 1.4.2
+
+  dataset:
+    - type: physionet
+      base_url: https://physionet.org/files/inspire/${sources.dataset_version}
+      username: ${oc.env:DATASET_DOWNLOAD_USERNAME}
+      password: ${oc.env:DATASET_DOWNLOAD_PASSWORD}
+      unarchive: auto
+
+etl:
+  dataset_name: INSPIRE
+  n_subjects_per_shard: 1000
+
+_defaults:
+  subject_id: $subject_id
+
+operations:
+  _table:
+    join:
+      subjects:
+        key: subject_id
+        cols: { birth_age: min, death_min: min }
+    cols:
+      _origin: '("2016-01-01"::?"%Y-%m-%d")::datetime'
+      date_of_birth: "$_origin - ($birth_age * 365.25 + 182.625)::days"
+      date_of_death: "$_origin + $death_min::minutes"
+      admission_t: "$_origin + $admission_time::minutes"
+      icuin_t: "$_origin + $icuin_time::minutes"
+      icuout_t: "$_origin + $icuout_time::minutes"
+      orin_t: "$_origin + $orin_time::minutes"
+      orout_t: "$_origin + $orout_time::minutes"
+      opstart_t: "$_origin + $opstart_time::minutes"
+      opend_t: "$_origin + $opend_time::minutes"
+      discharge_t: "$_origin + $discharge_time::minutes"
+      anstart_t: "$_origin + $anstart_time::minutes"
+      anend_t: "$_origin + $anend_time::minutes"
+      cpbon_t: "$_origin + $cpbon_time::minutes"
+      cpboff_t: "$_origin + $cpboff_time::minutes"
+      opdate_t: "$_origin + $opdate::minutes"
+  op_id: # Number, A random number starts with 4 for the operation.
+    code: OPERATION_ID
+    time: $opstart_t
+    text_value: $op_id::str
+  case_id: # Number, A linker to VitalDB Open Dataset
+    code: VITALDB_CASE_ID
+    time: null
+    text_value: $case_id::str
+  opdate: # Relative Time, Operation date
+    code: OPERATION_DATE
+    time: $opdate_t
+  age: # Number, Age of the patient on the operation date
+    code: MEDS_BIRTH
+    time: $date_of_birth
+  sex: # M/F, Sex of the patient
+    code: 'f"SEX//{$sex ?? ''UNK''}"'
+    time: null
+  weight: # Number, Weight measured before operation
+    code: WEIGHT
+    numeric_value: $weight
+    time: $admission_t
+  height: # Number, Height measured before operation
+    code: HEIGHT
+    time: $admission_t
+    numeric_value: $height
+  race: # String, Race of the patient
+    code: 'f"RACE//{$race ?? ''UNK''}"'
+    time: null
+  asa: # 1/2/3/4/5, American Society of Anesthesiologists physical status classification
+    code: 'f"ASA//{$asa ?? ''UNK''}"'
+    time: $opdate_t
+  emop: # Binary, Emergency of the operation
+    code: 'f"EMERGENCY_OPERATION//{$emop ?? ''UNK''}"'
+    time: $opdate_t
+  department: # String, Surgical department for admission
+    code: 'f"ADMISSION_DEPARTMENT//{$department ?? ''UNK''}"'
+    time: $opdate_t
+  antype: # String, Anesthesia Type (General / Neuraxial / Regional / MAC)
+    code: 'f"ANESTHESIA_TYPE//{$antype ?? ''UNK''}"'
+    time: $opdate_t
+  icd10_pcs: # String, ICD-10 Procedure Coding System code
+    code: 'f"ICD10_PCS//{$icd10_pcs ?? ''UNK''}"'
+    time: $opdate_t
+  orin_time: # Relative Time, The time for entering the operating room
+    code: OR_IN
+    time: $orin_t
+  orout_time: # Relative Time, The time for leaving the operating room
+    code: OR_OUT
+    time: $orout_t
+  opstart_time: # Relative Time, The time for starting the operation
+    code: OPERATION_START
+    time: $opstart_t
+  opend_time: # Relative Time, The time for finishing the operation
+    code: OPERATION_END
+    time: $opend_t
+  admission_time: # Relative Time, The time for hospital admission
+    code: HOSPITAL_ADMISSION
+    time: $admission_t
+  discharge_time: # Relative Time, The time for hospital discharge
+    code: HOSPITAL_DISCHARGE
+    time: $discharge_t
+  anstart_time: # Relative Time, The time for starting anaesthesia
+    code: ANESTHESIA_START
+    time: $anstart_t
+  anend_time: # Relative Time, The time for finishing anaesthesia
+    code: ANESTHESIA_END
+    time: $anend_t
+  cpbon_time: # Relative Time, The time for starting cardiopulmonary bypass
+    code: CPB_ON
+    time: $cpbon_t
+  cpboff_time: # Relative Time, The time for finishing cardiopulmonary bypass
+    code: CPB_OFF
+    time: $cpboff_t
+  icuin_time: # Relative Time, The time for ICU admission after surgery
+    code: ICU_ADMISSION
+    time: $icuin_t
+  icuout_time: # Relative Time, The time for ICU discharge after surgery
+    code: ICU_DISCHARGE
+    time: $icuout_t
+  death_time: # Relative Time, The time for death
+    code: MEDS_DEATH
+    time: $date_of_death
+
+labs:
+  _table:
+    join:
+      parameters:
+        left_on: item_name
+        right_on: Label
+        cols: { Unit: min, Description: min }
+    cols:
+      _origin: '("2016-01-01"::?"%Y-%m-%d")::datetime'
+      chart_t: "$_origin + $chart_time::minutes"
+  lab:
+    code: 'f"LAB//{$item_name ?? ''UNK''}//{$Unit ?? ''UNK''}"'
+    time: $chart_t
+    numeric_value: $value
+    _metadata:
+      _self:
+        description: $Description
+
+medications:
+  _table:
+    cols:
+      _origin: '("2016-01-01"::?"%Y-%m-%d")::datetime'
+      chart_t: "$_origin + $chart_time::minutes"
+  medication:
+    code: 'f"MEDICATION//{$atc_code ?? ''UNK''}//{$route}"'
+    time: $chart_t
+    text_value: $drug_name
+
+diagnosis:
+  _table:
+    cols:
+      _origin: '("2016-01-01"::?"%Y-%m-%d")::datetime'
+      chart_t: "$_origin + $chart_time::minutes"
+  diagnosis:
+    code: 'f"DIAGNOSIS//ICD//10//{$icd10_cm ?? ''UNK''}"'
+    time: $chart_t
+
+vitals:
+  _table:
+    join:
+      parameters:
+        left_on: item_name
+        right_on: Label
+        cols: { Unit: min, Description: min }
+    cols:
+      _origin: '("2016-01-01"::?"%Y-%m-%d")::datetime'
+      chart_t: "$_origin + $chart_time::minutes"
+  vital:
+    code: 'f"VITAL//{$item_name ?? ''UNK''}//{$Unit ?? ''UNK''}"'
+    time: $chart_t
+    numeric_value: $value
+    _metadata:
+      _self:
+        description: $Description
+
+ward_vitals:
+  _table:
+    join:
+      parameters:
+        left_on: item_name
+        right_on: Label
+        cols: { Unit: min, Description: min }
+    cols:
+      _origin: '("2016-01-01"::?"%Y-%m-%d")::datetime'
+      chart_t: "$_origin + $chart_time::minutes"
+  ward_vital:
+    code: 'f"WARD_VITAL//{$item_name ?? ''UNK''}//{$Unit ?? ''UNK''}"'
+    time: $chart_t
+    numeric_value: $value
+    _metadata:
+      _self:
+        description: $Description

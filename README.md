@@ -20,34 +20,67 @@ This pipeline extracts the INSPIRE dataset (from physionet, https://physionet.or
 pip install INSPIRE_MEDS
 export DATASET_DOWNLOAD_USERNAME=$PHYSIONET_USERNAME
 export DATASET_DOWNLOAD_PASSWORD=$PHYSIONET_PASSWORD
-MEDS_extract-INSPIRE root_output_dir=$ROOT_OUTPUT_DIR
+
+MEDS_extract-INSPIRE $ROOT_OUTPUT_DIR
 ```
 
-When you run this, the program will:
-
-1. Download the needed raw INSPIRE files for the currently supported version into
-    `$ROOT_OUTPUT_DIR/raw_input`.
-2. Perform initial, pre-MEDS processing on the raw INSPIRE files, saving the results in
-    `$ROOT_OUTPUT_DIR/pre_MEDS`.
-3. Construct the final MEDS cohort, and save it to `$ROOT_OUTPUT_DIR/MEDS_cohort`.
-
-You can also specify the target directories more directly, with
+That downloads the raw INSPIRE files, builds a small derived table (see
+[Birth and death](#birth-and-death)), and runs the full eight-stage MEDS-Extract pipeline. To
+reuse a download you already have:
 
 ```bash
-export DATASET_DOWNLOAD_USERNAME=$PHYSIONET_USERNAME
-export DATASET_DOWNLOAD_PASSWORD=$PHYSIONET_PASSWORD
-MEDS_extract-INSPIRE raw_input_dir=$RAW_INPUT_DIR pre_MEDS_dir=$PRE_MEDS_DIR MEDS_cohort_dir=$MEDS_COHORT_DIR
+MEDS_extract-INSPIRE $ROOT_OUTPUT_DIR --raw-input-dir $RAW_INPUT_DIR --do-download false
 ```
 
-## Examples and More Info:
+## Configuration
 
-You can run `MEDS_extract-INSPIRE --help` for more information on the arguments and options. You can also run
+Nearly all of the pipeline is one file,
+[`src/INSPIRE_MEDS/messy.yaml`](src/INSPIRE_MEDS/messy.yaml), registered under the
+`MEDS_extract.pipelines` entry-point group. The one exception is described under
+[Birth and death](#birth-and-death) below.
 
-```bash
-MEDS_extract-INSPIRE root_output_dir=$ROOT_OUTPUT_DIR
-```
+### Pseudo-timestamps
 
-to run the entire pipeline.
+INSPIRE ships no wall-clock times. Every time column is an **offset in minutes**, anchored **per
+patient** at that patient's own first hospital admission — `min(admission_time)` is 0 for all
+99,886 subjects. Each patient's anchor is then placed at one shared literal origin, the midpoint
+of the study window (2011-01-01 .. 2020-12-31) = **2016-01-01**.
+
+So only relative differences *within* a subject are meaningful. The absolute dates in the MEDS
+output are not real dates, and comparing them across subjects is meaningless.
+
+### Null handling
+
+A null component of a composite code drops the row under MEDS-Extract 0.7, where 0.6.x rendered
+it as the literal `UNK` and kept the row. Components are therefore coalesced with `?? 'UNK'`
+wherever a null must not drop the row.
+
+Two are deliberately left uncoalesced. `route` on medications is never null in the release (0 of
+10,854,338 rows), so a coalesce would be dead code. The demographic codes drop rather than mint
+an `UNK` category, because a missing demographic is not an observed value.
+
+### Birth and death
+
+`MEDS_BIRTH` and `MEDS_DEATH` are properties of a **subject**, but INSPIRE records what they
+derive from on `operations`, which is one row per **operation**:
+
+- `age` is the age on the operation date, quantised to 5-year bins, so a patient with several
+  operations in one admission can straddle a bin boundary and carry two ages.
+- `inhosp_death_time` appears only on the rows of the admission during which the patient died,
+  while `allcause_death_time` is invariant across all their rows.
+
+MESSY cannot reduce a table over its own rows — self-joins are rejected and dftly is strictly
+row-wise — so `INSPIRE_MEDS.pre_MEDS` reduces `operations` to one row per subject and the config
+joins it back. That is the only Python this package ships. It runs against a staging directory of
+symlinks, so the checksum-verified download is never modified.
+
+| Was (`pre_MEDS.py`) | Now |
+| --- | --- |
+| `ORIGIN_PSUEDOTIME` | `_origin: ("2016-01-01"::?"%Y-%m-%d")::datetime` |
+| `+ pl.duration(minutes=offset)` | `$_origin + $<col>::minutes` |
+| `.sort(admission_time).group_by(subject_id).first()` | self-join `cols: {age: min, admission_time: min}` plus an `_is_first` guard on the patient-level events |
+| `min(inhosp_death_time, allcause_death_time)` | a dftly conditional |
+
 
 ## MEDS-transforms settings
 

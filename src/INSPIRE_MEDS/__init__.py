@@ -1,7 +1,19 @@
+"""The INSPIRE MEDS ETL.
+
+Nearly all of the pipeline is `messy.yaml`, registered under the `MEDS_extract.pipelines`
+entry-point group. The one exception is a small pre-MEDS reduction: MEDS_BIRTH and MEDS_DEATH
+are per-subject facts derived from a per-operation table, and MESSY cannot reduce a table over
+its own rows, so `pre_MEDS.build_subject_table` produces a one-row-per-subject side table that
+the config joins back. `MEDS_extract-INSPIRE` chains download, that step, and `meds-extract-run`:
+
+    MEDS_extract-INSPIRE $ROOT_OUTPUT_DIR
+
+Running `meds-extract-run spec=INSPIRE` directly also works, provided the side table already
+exists in the input directory.
+"""
+
 from importlib.metadata import PackageNotFoundError, version
 from importlib.resources import files
-
-from omegaconf import OmegaConf
 
 __package_name__ = "INSPIRE_MEDS"
 try:
@@ -9,33 +21,10 @@ try:
 except PackageNotFoundError:  # pragma: no cover
     __version__ = "unknown"
 
-MAIN_CFG = files(__package_name__).joinpath("configs/main.yaml")
-EVENT_CFG = files(__package_name__).joinpath("configs/event_configs.yaml")
-ETL_CFG = files(__package_name__).joinpath("configs/ETL.yaml")
-RUNNER_CFG = files(__package_name__).joinpath("configs/runner.yaml")
-PRE_MEDS_PY = files(__package_name__).joinpath("pre_MEDS.py")
-PRE_MEDS_CFG = files(__package_name__).joinpath("configs/pre_MEDS.yaml")
-TABLE_PROCESSOR_CFG = files(__package_name__).joinpath(
-    "configs/table_preprocessors.yaml"
-)
-DATASET_CFG = files(__package_name__).joinpath("dataset.yaml")
+# The name this ETL registers under `MEDS_extract.pipelines`; `meds-extract-run spec=INSPIRE`
+# resolves it, and MEDS-Extract uses it as the default dataset name.
+PIPELINE_NAME = "INSPIRE"
 
-dataset_info = OmegaConf.load(DATASET_CFG)
+MESSY_CFG = files(__package_name__).joinpath("messy.yaml")
 
-HAS_PRE_MEDS = PRE_MEDS_PY.exists()
-
-event_config = OmegaConf.load(EVENT_CFG)
-
-__all__ = [
-    "event_config",
-    "EVENT_CFG",
-    "ETL_CFG",
-    "HAS_PRE_MEDS",
-    "PRE_MEDS_CFG",
-    "MAIN_CFG",
-    "RUNNER_CFG",
-    "DATASET_CFG",
-    "dataset_info",
-    "__package_name__",
-    "__version__",
-]
+__all__ = ["MESSY_CFG", "PIPELINE_NAME", "__package_name__", "__version__"]

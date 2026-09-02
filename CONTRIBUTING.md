@@ -1,175 +1,89 @@
-A template repository for a MEDS-Transforms powered extraction pipeline for a custom dataset. Once you have
-customized the repository to your dataset (see instructions below), you will be able to run your extraction
-pipeline with a few simple command-line commands, such as:
+# Contributing
+
+This repository is a **MEDS-Extract 0.7 ETL**. Almost all of it is one declarative file; there is
+very little Python to change.
 
 ```bash
-pip install PACKAGE_NAME # you can do this locally or via PyPI
-# Download your data or set download credentials
-COMMAND_NAME root_output_dir=$ROOT_OUTPUT_DIR
+pip install INSPIRE_MEDS
+export DATASET_DOWNLOAD_USERNAME=$PHYSIONET_USERNAME
+export DATASET_DOWNLOAD_PASSWORD=$PHYSIONET_PASSWORD
+
+MEDS_extract-INSPIRE $ROOT_OUTPUT_DIR
 ```
 
-See the [MIMIC-IV MEDS Extraction ETL](https://github.com/rvandewater/MIMIC_IV_MEDS) for an end to end example!
+## What the 0.7 layout looks like
 
-## How to use this repository
+Under MEDS-Transforms 0.2.x an ETL was a Python package: `pre_MEDS.py` reshaped the raw data,
+`dataset.yaml` described the download, `ETL.yaml` listed the pipeline stages, and
+`event_configs.yaml` described the events. **0.7 replaces all four with a single MESSY file**
+(MEDS-Extract Specification Syntax YAML):
 
-1. Initialize a new repository using this template repository.
-2. Rename the directory after `src/` to the name of your package in python-friendly format (e.g.,
-    `MIMIC_IV_MEDS`).
-3. Customize the following code points:
-    - [`pyproject.toml`](#pyprojecttoml)
-    - [`src/.../__init__.py`](#srcinitpy)
-    - [`src/.../dataset.yaml`](#srcdatasetyaml)
-    - [`src/.../pre_MEDS.py`](#srcpre_medspy)
-    - [`src/.../event_configs.yaml`](#srcevent_configsyaml)
-    - [`README.md`](#readmemd)
-    - [`tests/e2e_demo_test.py`](#testse2e_demo_testpy)
-4. Customize the following external services:
-    - CodeCov
-    - PyPI
+| Used to be | Now |
+| --- | --- |
+| `dataset.yaml` + `download.py` | the `sources:` block |
+| `configs/ETL.yaml` | nothing — the stage sequence is canonical and not configurable |
+| `configs/event_configs.yaml` | the event tables, written in [dftly](https://github.com/mmcdermott/dftly) |
+| `pre_MEDS.py` | mostly `_table.join` / `_table.cols` (see the exception below) |
 
-### Code Points:
+The file lives at [`src/INSPIRE_MEDS/messy.yaml`](src/INSPIRE_MEDS/messy.yaml) and is registered
+under the `MEDS_extract.pipelines` entry-point group in `pyproject.toml`:
 
-#### `pyproject.toml`
-
-In the `pyproject.toml` file, you will need to update the following fields:
-
-1. Under `[project]`:
-    - `name = "ETL-MEDS"`: Update `ETL-MEDS` to the name of your package (e.g., `MIMIC-IV-MEDS`)
-    - `authors = [...]`: Update the author information to your name and email.
-    - `description = "..."`: Update the description to a brief description of your dataset.
-    - `dependencies = [...]`: Update the dependencies to include the necessary packages for your ETL pipeline
-        (if any additional packages are needed).
-2. Under `[project.scripts]`
-    - `MEDS_extract-sample_dataset = "INSPIRE_MEDS.__main__:main"`: Update `MEDS_extract-sample_dataset` to the
-        name of your command-line pipeline (e.g., `MIMIC-IV_extract`) and update `INSPIRE_MEDS` to the name of your
-        package that you would import in python (e.g., `MIMIC_IV_MEDS`). This will be the same as the directory
-        name between `src` and your actual code.
-3. Under `[project.urls]`
-    - `Homepage = "..."` Update the homepage to the URL of your GitHub repository.
-    - `Issues = "..."` Update the issues URL to the URL of your GitHub repository issues page.
-
-#### `src/.../__init__.py`
-
-In this file, you simply need to update the `__package_name__ = "INSPIRE_MEDS"` line to refer not to `INSPIRE_MEDS`
-but to your new package import name (e.g., `MIMIC_IV_MEDS`)
-
-#### `src/.../dataset.yaml`
-
-In this file, you can add details about the dataset you are working with. This will be used to record metadata
-about the dataset and to provide links from which the dataset can be downloaded. You'll need to modify:
-
-1. `dataset_name`: The name of the dataset.
-2. `raw_dataset_version`: The version this version of your pipeline is designed to work with.
-3. `urls`: This block contains the URLs from which the dataset can be downloaded. This field requires
-    additional commentary, explored below.
-
-##### URLs:
-
-This field is an object and contains three sub-keys:
-
-1. `dataset`: The URLs for the full dataset.
-2. `demo`: The URLs for a smaller, open, demo version of the dataset.
-3. `common`: The URLs for shared metadata files or other shared resources.
-
-Each of these sub-keys should be a list of either strings (plain URLs) or dictionaries containing the URL (in
-the key `url`) and username and password authentication information (in the keys `username` and `password`).
-Note that we _strongly_ recommend that you _do not_ include your username and password in the raw file.
-Instead, leverage the OmegaConf resolvers to reference external environment variables or other secure methods
-of storing this information. In the example in this repository, we include one URL with the following
-configuration:
-
-```yaml
-  - url: EXAMPLE_CONTROLLED_URL
-    username: ${oc.env:DATASET_DOWNLOAD_USERNAME}
-    password: ${oc.env:DATASET_DOWNLOAD_PASSWORD}
+```toml
+[project.entry-points."MEDS_extract.pipelines"]
+INSPIRE = "INSPIRE_MEDS:messy.yaml"
 ```
 
-which would resolve to fill in the `username` and `password` from the environment variables
-`DATASET_DOWNLOAD_USERNAME` and `DATASET_DOWNLOAD_PASSWORD`, respectively.
+That value is **parsed, not imported** — it names a package and a data file inside it, which is
+why it does not look like a normal `module:attribute` target.
 
-###### What if my dataset doesn't support direct download/this style of downloading?
+## Editing the config
 
-That's no problem! You can simply turn off downloading entirely by setting `do_download=False` in the
-`configs/main.yaml` or on the command line when you run the pipeline and ensure that your data files are
-manually downloaded and placed in the appropriate directory (the `raw_input_dir` in the `configs/main.yaml`).
-If there is a technical issue with downloading the data through the format supported so far, you can also file
-a [GitHub Issue](https://github.com/rvandewater/INSPIRE_MEDS_Template/issues) outlining your issue and we can
-attempt to expand the supported libraries to cover your use case!
+Three things bite newcomers, in rough order of how often:
 
-#### `pre_MEDS.py`
+1. **`$` is load-bearing.** `$value` reads the `value` column; a bare `value` is the string
+    literal `"value"`. This fails silently — wrong data, no error.
+2. **A null code component drops the row.** `f"LAB//{$item}"` discards every row with a null
+    `item`. Coalesce with `?? 'UNK'` when the row must be kept. 0.6.x rendered nulls as `UNK`
+    automatically; 0.7 does not.
+3. **There is no null test.** dftly has no `is_null`. The working idiom is `X if $c == $c`, which
+    is true for any present value (including `0`, `inf` and `NaN`) and null for a missing one.
+    A bare `null` parses as the *string* `"null"`. Tracked in
+    [dftly#113](https://github.com/mmcdermott/dftly/issues/113).
 
-This script should be generally modified to include any "pre-MEDS" steps that are necessary to prepare the
-dataset for MEDS-Transforms based extraction. Critically, these steps often include:
+Also worth knowing: a table may declare **exactly one** `_table.join`, `_table.cols` entries are
+evaluated in order so later ones may reference earlier ones, and adding a Duration to a Datetime
+must be written as `anchor - (-$offset)::minutes` because `+` does not lower correctly.
 
-1. De-compressing files or otherwise preparing the raw data for extraction at a technical level.
-2. Joining tables together so that all relevant rows include the unifying `subject_id`.
-3. Converting any offsets into timestamps.
-4. Any other modifications of interest.
+## The one piece of Python
 
-See [MEDS-Transforms](TODO) for more documentation on the appropriate construction of the pre-MEDS script.
+`MEDS_BIRTH` and `MEDS_DEATH` are per-**subject** facts, but INSPIRE records what they derive from
+on `operations`, which is one row per **operation**. MESSY cannot reduce a table over its own rows
+— self-joins are rejected and dftly is strictly row-wise — so
+[`src/INSPIRE_MEDS/pre_MEDS.py`](src/INSPIRE_MEDS/pre_MEDS.py) reduces `operations` to one row per
+subject, and the config joins that side table back.
 
-#### `event_configs.yaml`
+`MEDS_extract-INSPIRE` chains the three steps: `meds-extract-download`, that reduction, then
+`meds-extract-run`. It stages the side table in a directory of **symlinks** to the raw release, so
+the checksum-verified download is never modified.
 
-This file is the configuration file for mapping the rows in your various raw data tables to MEDS events via
-the MEDS-Transforms pipeline. See [MEDS-Transforms](TODO) for more documentation on the format and usage of
-this file.
+If you are porting another dataset and it needs no such reduction, drop the Python entirely and
+let users call `meds-extract-run spec=<NAME>` directly.
 
-#### `README.md`
+## Testing
 
-Insert badges like below:
-
-```markdown
-[![PyPI - Version](https://img.shields.io/pypi/v/PACKAGE_NAME)](https://pypi.org/project/PACKAGE_NAME/)
-[![Documentation Status](https://readthedocs.org/projects/REPO_NAME/badge/?version=latest)](https://REPO_NAME.readthedocs.io/en/stable/?badge=stable)
-[![codecov](https://codecov.io/gh/rvandewater/REPO_NAME/graph/badge.svg?token=REPO_TOKEN)](https://codecov.io/gh/rvandewater/REPO_NAME)
-[![tests](https://github.com/rvandewater/REPO_NAME/actions/workflows/tests.yaml/badge.svg)](https://github.com/rvandewater/REPO_NAME/actions/workflows/tests.yml)
-[![code-quality](https://github.com/rvandewater/REPO_NAME/actions/workflows/code-quality-main.yaml/badge.svg)](https://github.com/rvandewater/REPO_NAME/actions/workflows/code-quality-main.yaml)
-![python](https://img.shields.io/badge/-Python_3.12-blue?logo=python&logoColor=white)
-[![license](https://img.shields.io/badge/License-MIT-green.svg?labelColor=gray)](https://github.com/rvandewater/REPO_NAME#license)
-[![PRs](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/rvandewater/REPO_NAME/pulls)
-[![contributors](https://img.shields.io/github/contributors/rvandewater/REPO_NAME.svg)](https://github.com/rvandewater/REPO_NAME/graphs/contributors)
+```bash
+uv sync
+uv run pytest tests/
+uv run pre-commit run --all-files
 ```
 
-#### `tests/e2e_demo_test.py`
+There is no demo release for INSPIRE, so there is no end-to-end CI test — the credentialed
+download cannot run in CI. Changes that affect the output should be validated by running the ETL
+over the real release and comparing cohort statistics before and after.
 
-If your dataset does not have an open demo version, you can remove this file, as there is no way to set up
-automated testing of the end-to-end pipeline in a safe manner without a demo dataset.
+## Changing what the ETL emits
 
-If you do have a demo dataset, ensure that it is included in your `dataset.yaml` file and update the
-`e2e_demo_test.py` file as follows:
-
-1. Update the command in the `command_parts` variable to match the command you set in your `pyproject.toml`
-    file for the executable for your pipeline (e.g., `MIMIC-IV_extract`).
-2. Remove the `pytest.mark.skip` decorator from the test function so that it runs successfully!
-
-The test file (and the internal doctests, which can help unittest your `pre-MEDS` file) can then be run via
-`pytest --doctest-modules -s` from the root directory to ensure correctness of your pipeline. These tests will
-also be run on pull requests or pushes to the `main` branch of your repository via GitHub Actions, and test
-code coverage will be tracked via CodeCov.
-
-### External Services
-
-#### CodeCov
-
-1. Go to [CodeCov](https://codecov.io/) and add make an account or log-in as needed.
-2. Follow the instructions to configure your new repository with CodeCov.
-3. Copy the badge markdown from CodeCov and paste it into the `README.md` file. To find the badge markdown
-    link, go to your repository in CodeCov, click on the "Configuration" tab, click on the "Badges and
-    Graphs" option, then copy the markdown link from the top section and paste it in the corresponding line
-    of the README, in place of the default link included above.
-4. It will now track the test coverage of your ETL, including running the full pipeline against the linked
-    demo data you provide in `dataset.yaml`.
-
-#### PyPI
-
-1. Go to [PyPI](https://pypi.org/) and add make an account or log-in as needed.
-2. Go to your account settings and go to the "Publishing" settings.
-3. Set up a new "Trusted Publisher" for your GitHub Repository (e.g., see the image below). Ensure your
-    package name matches in the trusted publisher and in your `pyproject.toml` file!
-4. Now, if, on the local command line, you run `git tag 0.0.1`, then `git push origin 0.0.1`, it will push a
-    new, tagged version of your code as of the local commit when you ran the command both to a new GitHub
-    Release and to PyPI. This will allow you to install your package via `pip install PACKAGE_NAME` and to manage
-    versions effectively!
-
-Example trusted publisher set-up:
-![PyPI Trusted Publisher](https://github.com/rvandewater/INSPIRE_MEDS_Template/blob/main/static/pypi_trusted_publisher_example.png?raw=true)
+Any change to codes, timestamps or which rows are emitted is a change to everybody's downstream
+cohort. State the measured effect in the PR — row counts, subject counts, code-vocabulary size
+before and after — rather than only describing the intent. Several defects in this repository were
+found precisely because those numbers were compared.

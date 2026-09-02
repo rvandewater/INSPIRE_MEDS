@@ -115,3 +115,49 @@ be functional
 
 - Care site is added to the visit as text
 - Add support for care_site table (visit_detail)
+
+## Citation
+
+Please cite the following original paper when using the INSPIRE dataset:
+
+```bibtex
+@article{PhysioNet-inspire-1.4.2,
+  author = {Lim, Leerang and Lee, Hyung-Chul},
+  title = {{INSPIRE, a publicly available research dataset for perioperative medicine}},
+  journal = {{PhysioNet}},
+  year = {2026},
+  month = jun,
+  note = {Version 1.4.2},
+  doi = {10.13026/1eay-yc85},
+  url = {https://doi.org/10.13026/1eay-yc85}
+}
+```
+
+Also cite the ETL framework used to extract the dataset:
+
+```bibtex
+@software{van_de_Water_INSPIRE_MEDS_ETL_2025,
+author = {van de Water, Robin Philippus},
+doi = {10.5281/zenodo.14891940},
+license = {MIT},
+month = feb,
+title = {{INSPIRE\_MEDS ETL}},
+url = {https://github.com/rvandewater/INSPIRE_MEDS},
+year = {2025}
+}
+```
+
+For citing MEDS in general:
+
+```bibtex
+@article{mcdermott2026meds,
+  title={MEDS—An Emerging Data Standard and Ecosystem for Health AI Research},
+  author={McDermott, Matthew BA and Steinberg, Ethan and Fries, Jason A and van de Water, Robin P and Pang, Chao and Rockenschaub, Patrick and Renc, Pawel and Oh, Jungwoo and Stankevi{\v{c}}i{\=u}t{\.e}, Kamil{\.e} and Xu, Justin and others},
+  journal={NEJM AI},
+  volume={3},
+  number={6},
+  pages={AIra2501253},
+  year={2026},
+  publisher={Massachusetts Medical Society}
+}
+```

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "INSPIRE-MEDS"
-dynamic = ["version"]
+version = "1.0.0"
 authors = [
     {name="Robin van de Water", email="robin.vandewater@hpi.de"},
   { name="Matthew McDermott", email="mattmcdermott8@gmail.com" },

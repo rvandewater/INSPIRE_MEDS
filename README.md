@@ -65,22 +65,21 @@ an `UNK` category, because a missing demographic is not an observed value.
 derive from on `operations`, which is one row per **operation**:
 
 - `age` is the age on the operation date, quantised to 5-year bins, so a patient with several
-  operations in one admission can straddle a bin boundary and carry two ages.
+    operations in one admission can straddle a bin boundary and carry two ages.
 - `inhosp_death_time` appears only on the rows of the admission during which the patient died,
-  while `allcause_death_time` is invariant across all their rows.
+    while `allcause_death_time` is invariant across all their rows.
 
 MESSY cannot reduce a table over its own rows — self-joins are rejected and dftly is strictly
 row-wise — so `INSPIRE_MEDS.pre_MEDS` reduces `operations` to one row per subject and the config
 joins it back. That is the only Python this package ships. It runs against a staging directory of
 symlinks, so the checksum-verified download is never modified.
 
-| Was (`pre_MEDS.py`) | Now |
-| --- | --- |
-| `ORIGIN_PSUEDOTIME` | `_origin: ("2016-01-01"::?"%Y-%m-%d")::datetime` |
-| `+ pl.duration(minutes=offset)` | `$_origin + $<col>::minutes` |
+| Was (`pre_MEDS.py`)                                  | Now                                                                                                     |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `ORIGIN_PSUEDOTIME`                                  | `_origin: ("2016-01-01"::?"%Y-%m-%d")::datetime`                                                        |
+| `+ pl.duration(minutes=offset)`                      | `$_origin + $<col>::minutes`                                                                            |
 | `.sort(admission_time).group_by(subject_id).first()` | self-join `cols: {age: min, admission_time: min}` plus an `_is_first` guard on the patient-level events |
-| `min(inhosp_death_time, allcause_death_time)` | a dftly conditional |
-
+| `min(inhosp_death_time, allcause_death_time)`        | a dftly conditional                                                                                     |
 
 ## MEDS-transforms settings
 

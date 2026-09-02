@@ -18,12 +18,12 @@ Under MEDS-Transforms 0.2.x an ETL was a Python package: `pre_MEDS.py` reshaped 
 `event_configs.yaml` described the events. **0.7 replaces all four with a single MESSY file**
 (MEDS-Extract Specification Syntax YAML):
 
-| Used to be | Now |
-| --- | --- |
-| `dataset.yaml` + `download.py` | the `sources:` block |
-| `configs/ETL.yaml` | nothing — the stage sequence is canonical and not configurable |
-| `configs/event_configs.yaml` | the event tables, written in [dftly](https://github.com/mmcdermott/dftly) |
-| `pre_MEDS.py` | mostly `_table.join` / `_table.cols` (see the exception below) |
+| Used to be                     | Now                                                                       |
+| ------------------------------ | ------------------------------------------------------------------------- |
+| `dataset.yaml` + `download.py` | the `sources:` block                                                      |
+| `configs/ETL.yaml`             | nothing — the stage sequence is canonical and not configurable            |
+| `configs/event_configs.yaml`   | the event tables, written in [dftly](https://github.com/mmcdermott/dftly) |
+| `pre_MEDS.py`                  | mostly `_table.join` / `_table.cols` (see the exception below)            |
 
 The file lives at [`src/INSPIRE_MEDS/messy.yaml`](src/INSPIRE_MEDS/messy.yaml) and is registered
 under the `MEDS_extract.pipelines` entry-point group in `pyproject.toml`:

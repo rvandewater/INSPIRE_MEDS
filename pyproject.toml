@@ -45,5 +45,5 @@ MEDS_extract-INSPIRE = "INSPIRE_MEDS.__main__:main"
 INSPIRE = "INSPIRE_MEDS:messy.yaml"
 
 [project.urls]
-Homepage = "https://github.com/rvandewater/INSPIRE_MEDS_Template"
-Issues = "https://github.com/rvandewater/INSPIRE_MEDS_Template/issues"
+Homepage = "https://github.com/rvandewater/INSPIRE_MEDS"
+Issues = "https://github.com/rvandewater/INSPIRE_MEDS/issues"

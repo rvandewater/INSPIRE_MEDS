@@ -1,10 +1,23 @@
 name: Synthetic ETL for MESSY files using MESSY_synth
 
+# Generates raw files straight from the shipped MESSY config with MESSY-synth and runs the ETL over
+# them. MESSY-synth validates that every event block yields events and fails the job otherwise, so
+# this catches expressions that only work on the dtypes of one particular release. It complements
+# the hand-written fixture in tests/e2e_synthetic_test.py, which checks specific values.
+
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main, "release/*", "dev", "feat/*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   synthetic-etl:
@@ -13,19 +26,29 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ["3.11", "3.12", "3.13"]
+        # MESSY-synth requires Python >= 3.12.
+        python-version: ["3.12", "3.13"]
+      fail-fast: false
+
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
+          python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
         run: uv sync --locked
 
       - name: Generate and extract synthetic data
         run: |
-          uv pip install https://github.com/rvandewater/MESSY_synth.git
+          uv pip install "MESSY_synth==0.0.1"
           uv run MESSY_synth ./src/INSPIRE_MEDS/messy.yaml -o raw_synthetic/ --explain
-          uv run meds-extract-run spec=INSPIRE output_dir=./inspire_meds_synth input_dir=raw_synthetic do_download=False
+          uv run meds-extract-run spec=INSPIRE output_dir=./INSPIRE_meds_synth \
+            input_dir=raw_synthetic do_download=false
+          for f in dataset.json codes.parquet subject_splits.parquet; do
+            test -f "INSPIRE_meds_synth/metadata/$f"
+          done

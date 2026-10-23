@@ -46,7 +46,7 @@ jobs:
       - name: Generate and extract synthetic data
         run: |
           uv pip install "MESSY_synth==0.0.1"
-          uv run MESSY_synth ./src/INSPIRE_MEDS/messy.yaml -o raw_synthetic/ --explain
+          uv run MESSY-synth ./src/INSPIRE_MEDS/messy.yaml -o raw_synthetic/ --explain
           uv run meds-extract-run spec=INSPIRE output_dir=./INSPIRE_meds_synth \
             input_dir=raw_synthetic do_download=false
           for f in dataset.json codes.parquet subject_splits.parquet; do

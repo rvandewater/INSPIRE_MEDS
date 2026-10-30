@@ -66,11 +66,11 @@ subject, and the config joins that side table back.
 `meds-extract-run`. It stages the side table in a directory of **symlinks** to the raw release, so
 the checksum-verified download is never modified.
 
-The code metadata adds two small steps around the pipeline
-([`src/INSPIRE_MEDS/code_descriptions.py`](src/INSPIRE_MEDS/code_descriptions.py)): staging also
-writes the packaged ICD-10-CM and ICD-10-PCS vocabulary tables that the config reads, and a final
-step fills the descriptions of literal codes into `metadata/codes.parquet`. See the README section
-"Code metadata".
+The code metadata adds one small step after the pipeline
+([`src/INSPIRE_MEDS/code_descriptions.py`](src/INSPIRE_MEDS/code_descriptions.py)): it fills the
+descriptions of literal codes into `metadata/codes.parquet`. Vocabulary parents and titles come from
+suMEDS with [`src/INSPIRE_MEDS/sumeds_rules.yaml`](src/INSPIRE_MEDS/sumeds_rules.yaml). See the
+README section "Code metadata".
 
 If you are porting another dataset and it needs no such reduction, drop the Python entirely and
 let users call `meds-extract-run spec=<NAME>` directly.

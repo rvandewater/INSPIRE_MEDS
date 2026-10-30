@@ -129,11 +129,6 @@ operations:
         description: >-
           f"Operation, ICD-10-PCS code cut to its first five characters (section, body system, root
           operation, body part, approach): {$icd10_pcs ?? 'UNK'} (INSPIRE operations.icd10_pcs)"
-      # Every valid 5-character ICD-10-PCS prefix (CMS FY2026 tables), staged next to the raw
-      # tables by pre_MEDS. A code outside it gets no parent rather than a dangling one.
-      icd10pcs_codes:
-        icd10_pcs: $code
-        parent_codes: f"ICD10PCS/{$code}"
   orin_time: # Relative Time, The time for entering the operating room
     code: OR_IN
     time: $orin_t
@@ -206,33 +201,16 @@ medications:
         description: >-
           f"Medication administered, WHO ATC code {$atc_code ?? 'UNK'}, route {$route} (INSPIRE
           medications.atc_code and route; the ingredient name is in text_value)"
-        # The dataset's own ATC code, when it has the shape of an ATC code of any level.
-        parent_codes: >-
-          f"ATC/{$atc_code}" if /^[A-Z](?:[0-9]{2}(?:[A-Z](?:[A-Z](?:[0-9]{2})?)?)?)?$/ in $atc_code
 
 diagnosis:
   _table:
-    # The ICD-10-CM 3-character categories (CMS FY2026), staged next to the raw tables by pre_MEDS.
-    join:
-      icd10cm_categories:
-        left_on: icd10_cm
-        right_on: code
-        cols: [description]
     cols:
       _origin: '("2016-01-01"::?"%Y-%m-%d")::datetime'
       chart_t: "$_origin + $chart_time::minutes"
   diagnosis:
     code: 'f"DIAGNOSIS//ICD//10//{$icd10_cm ?? ''UNK''}"'
     time: $chart_t
-    _metadata:
-      _self:
-        # A code that is not an ICD-10-CM category keeps a description but gets no parent.
-        description: >-
-          f"{$description} (ICD-10-CM category {$icd10_cm}; INSPIRE diagnosis.icd10_cm, codes cut to
-          three characters)" if $description == $description else f"ICD-10 diagnosis code cut to three
-          characters, not an ICD-10-CM category: {$icd10_cm} (INSPIRE diagnosis.icd10_cm)" if $icd10_cm ==
-          $icd10_cm else "Diagnosis without an ICD-10 code (INSPIRE diagnosis.icd10_cm is null)"
-        parent_codes: f"ICD10CM/{$icd10_cm}" if $description == $description
+    # No `_metadata`: suMEDS adds the ICD-10-CM category title and parents (sumeds_rules.yaml).
 
 vitals:
   _table:

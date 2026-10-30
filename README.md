@@ -123,7 +123,7 @@ suMEDS-enrich $ROOT_OUTPUT_DIR/MEDS_cohort/metadata/codes.parquet -o codes_enric
 ```
 
 ICD-10-CM and ICD-10-PCS codes are validated against suMEDS's versioned ontology data
-(sumeds-ontologies, pinned release), built from the public-domain CMS and CDC files. The rules add:
+(sumeds-ontologies, pinned release), built from the CMS and CDC files. The rules add:
 
 - **Diagnoses** (`inspire-icd10cm-categories`). INSPIRE documents its diagnoses as ICD-10-CM, cut
     to the first three characters, with a list of sensitive categories removed

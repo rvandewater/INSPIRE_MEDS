@@ -54,7 +54,7 @@ Also worth knowing: a table may declare **exactly one** `_table.join`, `_table.c
 evaluated in order so later ones may reference earlier ones, and adding a Duration to a Datetime
 must be written as `anchor - (-$offset)::minutes` because `+` does not lower correctly.
 
-## The one piece of Python
+## The pieces of Python
 
 `MEDS_BIRTH` and `MEDS_DEATH` are per-**subject** facts, but INSPIRE records what they derive from
 on `operations`, which is one row per **operation**. MESSY cannot reduce a table over its own rows
@@ -65,6 +65,12 @@ subject, and the config joins that side table back.
 `MEDS_extract-INSPIRE` chains the three steps: `meds-extract-download`, that reduction, then
 `meds-extract-run`. It stages the side table in a directory of **symlinks** to the raw release, so
 the checksum-verified download is never modified.
+
+The code metadata adds one small step after the pipeline
+([`src/INSPIRE_MEDS/code_descriptions.py`](src/INSPIRE_MEDS/code_descriptions.py)): it fills the
+descriptions of literal codes into `metadata/codes.parquet`. Vocabulary parents and titles come from
+suMEDS with [`src/INSPIRE_MEDS/sumeds_rules.yaml`](src/INSPIRE_MEDS/sumeds_rules.yaml). See the
+README section "Code metadata".
 
 If you are porting another dataset and it needs no such reduction, drop the Python entirely and
 let users call `meds-extract-run spec=<NAME>` directly.

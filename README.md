@@ -36,8 +36,8 @@ MEDS_extract-INSPIRE $ROOT_OUTPUT_DIR --raw-input-dir $RAW_INPUT_DIR --do-downlo
 
 Nearly all of the pipeline is one file,
 [`src/INSPIRE_MEDS/messy.yaml`](src/INSPIRE_MEDS/messy.yaml), registered under the
-`MEDS_extract.pipelines` entry-point group. The one exception is described under
-[Birth and death](#birth-and-death) below.
+`MEDS_extract.pipelines` entry-point group. The exceptions are described under
+[Birth and death](#birth-and-death) and [Code metadata](#code-metadata) below.
 
 ### Pseudo-timestamps
 
@@ -71,8 +71,9 @@ derive from on `operations`, which is one row per **operation**:
 
 MESSY cannot reduce a table over its own rows — self-joins are rejected and dftly is strictly
 row-wise — so `INSPIRE_MEDS.pre_MEDS` reduces `operations` to one row per subject and the config
-joins it back. That is the only Python this package ships. It runs against a staging directory of
-symlinks, so the checksum-verified download is never modified.
+joins it back. Apart from the [code metadata](#code-metadata) step, that is the only Python this
+package ships. It runs against a staging directory of symlinks, so the checksum-verified download is
+never modified.
 
 | Was (`pre_MEDS.py`)                                  | Now                                                                                                     |
 | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
@@ -80,6 +81,71 @@ symlinks, so the checksum-verified download is never modified.
 | `+ pl.duration(minutes=offset)`                      | `$_origin + $<col>::minutes`                                                                            |
 | `.sort(admission_time).group_by(subject_id).first()` | self-join `cols: {age: min, admission_time: min}` plus an `_is_first` guard on the patient-level events |
 | `min(inhosp_death_time, allcause_death_time)`        | a dftly conditional                                                                                     |
+
+## Code metadata
+
+`metadata/codes.parquet` carries `code`, `description`, `parent_codes` and `code_template`. Up to
+1.0.0 only the lab and vital codes had a description (from the release's `parameters.csv`) and no
+code had a parent. The ETL now describes every code family whose meaning INSPIRE itself documents,
+except the diagnoses, and writes no parent codes: the ICD-10-CM category titles and the
+vocabulary parents come from suMEDS (see
+[Enriching code metadata with suMEDS](#enriching-code-metadata-with-sumeds)). Nothing in the event
+data changes.
+
+| Code family                                                                | Route                                                                                                                                         | Source                                                                                                                                                                                                                                                                            |
+| -------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `LAB//…`, `VITAL//…`, `WARD_VITAL//…`                                      | `_metadata: _self:` from the `parameters.csv` join (unchanged)                                                                                | the release's `parameters.csv`                                                                                                                                                                                                                                                    |
+| `ADMISSION_DEPARTMENT//…`                                                  | `_metadata: department:` joins the release's own `department.csv` at ETL time                                                                 | the release's `department.csv` (nothing from it is copied into this repository)                                                                                                                                                                                                   |
+| `DIAGNOSIS//ICD//10//…`                                                    | none in the ETL                                                                                                                               | the CMS ICD-10-CM category title, added by suMEDS                                                                                                                                                                                                                                 |
+| `ICD10_PCS//…`                                                             | `_self` description: the code, cut to its first five characters, and what those characters are                                                | the column documentation ([PhysioNet INSPIRE 1.4.2](https://physionet.org/content/inspire/1.4.2/))                                                                                                                                                                                |
+| `MEDICATION//…`                                                            | `_self` description naming the release's own `atc_code` and route                                                                             | the release's own `atc_code` (documented as WHO ATC, mapped by the dataset authors)                                                                                                                                                                                               |
+| `SEX`, `RACE`, `ASA`, `EMERGENCY_OPERATION`, `ANESTHESIA_TYPE`             | `_self` templates                                                                                                                             | the column documentation ([PhysioNet INSPIRE 1.4.2](https://physionet.org/content/inspire/1.4.2/) and the column comments in `messy.yaml`); ASA classes paraphrase the ASA Physical Status Classification System (American Society of Anesthesiologists, last amended 2020-12-13) |
+| the 19 literal codes (`OR_IN`, `WEIGHT`, `ICU_ADMISSION`, `MEDS_BIRTH`, …) | `src/INSPIRE_MEDS/metadata/static_code_descriptions.csv`, filled into the finished `codes.parquet` by the last step of `MEDS_extract-INSPIRE` | per row, in the table's `source` column: the PhysioNet INSPIRE 1.4.2 documentation section or the `messy.yaml` column comment                                                                                                                                                     |
+
+Literal codes need the post-pipeline step because MEDS-Extract joins `_metadata` on a code's
+components, which a literal code does not have, and the pre-existing `metadata/codes.parquet` route
+it documents is not read by the standard pipeline. The step only fills null descriptions, never
+adds codes, and rewrites the file with the MEDS code-metadata types (`string`, `list<string>`).
+
+### Enriching code metadata with suMEDS
+
+Vocabulary work is maintained once, in [suMEDS](https://github.com/rvandewater/SumMEDS), rather
+than in every ETL. This package ships the rules for it,
+[`src/INSPIRE_MEDS/sumeds_rules.yaml`](src/INSPIRE_MEDS/sumeds_rules.yaml):
+
+```bash
+pip install sumeds  # a release with rules support (newer than 0.3.2)
+suMEDS-enrich $ROOT_OUTPUT_DIR/MEDS_cohort/metadata/codes.parquet -o codes_enriched.parquet \
+    --rules src/INSPIRE_MEDS/sumeds_rules.yaml
+# Optional: validate the ATC codes against your own OHDSI Athena download.
+suMEDS-enrich $ROOT_OUTPUT_DIR/MEDS_cohort/metadata/codes.parquet -o codes_enriched.parquet \
+    --rules src/INSPIRE_MEDS/sumeds_rules.yaml --athena-csv /path/to/athena
+```
+
+ICD-10-CM and ICD-10-PCS codes are validated against suMEDS's versioned ontology data
+(sumeds-ontologies, pinned release), built from the CMS and CDC files. The rules add:
+
+- **Diagnoses** (`inspire-icd10cm-categories`). INSPIRE documents its diagnoses as ICD-10-CM, cut
+    to the first three characters, with a list of sensitive categories removed
+    (`icd10_excluded.csv`). A code that is an ICD-10-CM category gets the CMS title and the parent
+    `ICD10CM//<category>`. Codes that ICD-10-CM does not have (likely codes from the Korean KCD that
+    were not converted) get neither.
+- **Operations** (`inspire-icd10pcs-prefixes`). INSPIRE documents `icd10_pcs` as the first five
+    characters of an ICD-10-PCS code (section, body system, root operation, body part, approach),
+    mapped by hand from the operation name. A valid five-character prefix gets the parent
+    `ICD10PCS//<prefix>` and its shorter prefixes (OMOP holds partial codes as
+    `ICD10PCS Hierarchy` concepts).
+- **Medications** (`inspire-atc-medications`). The parent is the dataset's own ATC code,
+    `ATC//<atc_code>`, when it has the shape of an ATC code of any level. ATC is licensed, so
+    suMEDS only tags it, unless your Athena download validates it and adds its ancestors.
+- **Same-dataset parents** (`inspire-medication-atc-prefixes`). A medication code also gets the
+    nearest shorter ATC code given by the same route that INSPIRE contains, e.g.
+    `MEDICATION//N02BE//IV` for `MEDICATION//N02BE01//IV`. Diagnosis and operation codes all sit at
+    one level (three and five characters), so they have no same-dataset parents.
+
+suMEDS fills only missing descriptions, never removes or rewrites existing metadata, and writes
+parents as `VOCABULARY//CODE`. The ETL alone no longer emits these parent codes or the diagnosis
+descriptions.
 
 ## MEDS-transforms settings
 

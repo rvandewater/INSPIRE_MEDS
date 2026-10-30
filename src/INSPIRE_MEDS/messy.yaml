@@ -55,6 +55,10 @@ operations:
   sex: # M/F, Sex of the patient
     code: 'f"SEX//{$sex ?? ''UNK''}"'
     time: null
+    _metadata:
+      _self:
+        description: >-
+          f"Sex of the patient: {$sex ?? 'UNK'} (INSPIRE operations.sex, M or F)"
   weight: # Number, Weight measured before operation
     code: WEIGHT
     numeric_value: $weight
@@ -66,21 +70,65 @@ operations:
   race: # String, Race of the patient
     code: 'f"RACE//{$race ?? ''UNK''}"'
     time: null
+    _metadata:
+      _self:
+        description: >-
+          f"Race of the patient: {$race ?? 'UNK'} (INSPIRE operations.race)"
   asa: # 1/2/3/4/5, American Society of Anesthesiologists physical status classification
     code: 'f"ASA//{$asa ?? ''UNK''}"'
     time: $opdate_t
+    _metadata:
+      _self:
+        # The classes paraphrase the ASA Physical Status Classification System (American Society
+        # of Anesthesiologists, last amended 2020-12-13).
+        description: >-
+          "ASA physical status 1, a healthy patient without systemic disease (INSPIRE operations.asa)"
+          if $asa::str == '1' else
+          "ASA physical status 2, mild systemic disease (INSPIRE operations.asa)"
+          if $asa::str == '2' else
+          "ASA physical status 3, severe systemic disease (INSPIRE operations.asa)"
+          if $asa::str == '3' else
+          "ASA physical status 4, severe systemic disease that is a constant threat to life (INSPIRE operations.asa)"
+          if $asa::str == '4' else
+          "ASA physical status 5, moribund patient not expected to survive without the operation (INSPIRE operations.asa)"
+          if $asa::str == '5' else
+          "ASA physical status 6, brain-dead patient whose organs are being removed for donation (INSPIRE operations.asa)"
+          if $asa::str == '6' else
+          f"ASA physical status {$asa ?? 'UNK'} (INSPIRE operations.asa)"
   emop: # Binary, Emergency of the operation
     code: 'f"EMERGENCY_OPERATION//{$emop ?? ''UNK''}"'
     time: $opdate_t
+    _metadata:
+      _self:
+        description: >-
+          f"Emergency operation flag: {$emop ?? 'UNK'} (INSPIRE operations.emop, binary indicator of an
+          emergency operation)"
   department: # String, Surgical department for admission
     code: 'f"ADMISSION_DEPARTMENT//{$department ?? ''UNK''}"'
     time: $opdate_t
+    _metadata:
+      # The release's own department.csv spells out each abbreviation.
+      department:
+        department: $Abbreviations
+        description: >-
+          f"Surgical department for admission: {$`Full name`} (INSPIRE operations.department
+          '{$Abbreviations}', expanded by the release's department.csv)"
   antype: # String, Anesthesia Type (General / Neuraxial / Regional / MAC)
     code: 'f"ANESTHESIA_TYPE//{$antype ?? ''UNK''}"'
     time: $opdate_t
+    _metadata:
+      _self:
+        description: >-
+          f"Anesthesia type: {$antype ?? 'UNK'} (INSPIRE operations.antype: General, Neuraxial, Regional,
+          or MAC = monitored anesthesia care)"
   icd10_pcs: # String, ICD-10 Procedure Coding System code
     code: 'f"ICD10_PCS//{$icd10_pcs ?? ''UNK''}"'
     time: $opdate_t
+    _metadata:
+      _self:
+        description: >-
+          f"Operation, ICD-10-PCS code cut to its first five characters (section, body system, root
+          operation, body part, approach): {$icd10_pcs ?? 'UNK'} (INSPIRE operations.icd10_pcs)"
   orin_time: # Relative Time, The time for entering the operating room
     code: OR_IN
     time: $orin_t
@@ -148,6 +196,11 @@ medications:
     code: 'f"MEDICATION//{$atc_code ?? ''UNK''}//{$route}"'
     time: $chart_t
     text_value: $drug_name
+    _metadata:
+      _self:
+        description: >-
+          f"Medication administered, WHO ATC code {$atc_code ?? 'UNK'}, route {$route} (INSPIRE
+          medications.atc_code and route; the ingredient name is in text_value)"
 
 diagnosis:
   _table:
@@ -157,6 +210,7 @@ diagnosis:
   diagnosis:
     code: 'f"DIAGNOSIS//ICD//10//{$icd10_cm ?? ''UNK''}"'
     time: $chart_t
+    # No `_metadata`: suMEDS adds the ICD-10-CM category title and parents (sumeds_rules.yaml).
 
 vitals:
   _table:

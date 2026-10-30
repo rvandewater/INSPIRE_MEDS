@@ -1,0 +1,40 @@
+# suMEDS enrichment rules for INSPIRE_MEDS code metadata (https://github.com/rvandewater/SumMEDS).
+#
+# The ETL describes codes from INSPIRE's own tables and documentation. Vocabulary parent codes, and
+# the official ICD-10-CM category titles, come from suMEDS:
+#
+#   suMEDS-enrich $MEDS_OUTPUT_DIR/metadata/codes.parquet -o codes_enriched.parquet \
+#     --rules src/INSPIRE_MEDS/sumeds_rules.yaml
+#
+# Every pattern matches a code layout of `messy.yaml` exactly; tests/test_sumeds_rules.py checks
+# them against example codes built from that config.
+schema: sumeds-rules/0.1
+
+ontology:
+  # DIAGNOSIS//ICD//10//{icd10_cm}: INSPIRE cuts ICD-10-CM codes to their three-character category,
+  # which suMEDS's ICD-10-CM data holds with its CMS title. The config writes a null code as UNK.
+  - id: inspire-icd10cm-categories
+    pattern: "^DIAGNOSIS//ICD//10//(?P<code>(?!UNK$)[A-Z][0-9A-Z]{2})$"
+    vocabulary: ICD10CM
+    validate: pack
+  # ICD10_PCS//{icd10_pcs}: the first five ICD-10-PCS characters (section, body system, root
+  # operation, body part, approach). suMEDS's ICD-10-PCS data holds every valid 1- to 6-character
+  # prefix, described by its axis labels.
+  - id: inspire-icd10pcs-prefixes
+    pattern: "^ICD10_PCS//(?P<code>[0-9A-HJ-NP-Z]{5})$"
+    vocabulary: ICD10PCS
+    validate: pack
+  # MEDICATION//{atc_code}//{route}: the release's own WHO ATC code, at any ATC level. ATC is
+  # licensed and has no suMEDS data: tagged only, or validated by your own Athena download.
+  - id: inspire-atc-medications
+    pattern: "^MEDICATION//(?P<code>[A-Z](?:[0-9]{2}(?:[A-Z](?:[A-Z](?:[0-9]{2})?)?)?)?)//[^/]+$"
+    vocabulary: ATC
+    validate: none
+
+hierarchy:
+  # Same-dataset parents: the nearest shorter ATC code given by the same route that INSPIRE itself
+  # contains, e.g. MEDICATION//N02BE//IV for MEDICATION//N02BE01//IV.
+  - id: inspire-medication-atc-prefixes
+    pattern: "^(?P<prefix>MEDICATION//)(?P<atc>[A-Z](?:[0-9]{2}(?:[A-Z](?:[A-Z](?:[0-9]{2})?)?)?)?)//[^/]+$"
+    group: atc
+    mode: prefix

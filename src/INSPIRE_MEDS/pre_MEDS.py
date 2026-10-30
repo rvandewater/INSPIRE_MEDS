@@ -15,7 +15,8 @@ row-wise with no aggregates -- so the reduction happens here instead, and the ev
 the result back per subject.
 
 The output is written into a staging directory alongside symlinks to the raw release, so the
-credentialed raw tree the downloader verified is never modified.
+credentialed raw tree the downloader verified is never modified. The same directory receives the
+two public vocabulary tables the config reads code metadata from (see `code_descriptions`).
 """
 
 from __future__ import annotations
@@ -24,6 +25,8 @@ import logging
 from pathlib import Path
 
 import polars as pl
+
+from .code_descriptions import write_vocabulary_tables
 
 logger = logging.getLogger(__name__)
 
@@ -88,10 +91,12 @@ def build_subject_table(operations: pl.LazyFrame) -> pl.LazyFrame:
 
 
 def stage_input(raw_input_dir: Path, staging_dir: Path) -> Path:
-    """Mirror `raw_input_dir` into `staging_dir` by symlink and add the derived side table.
+    """Mirror `raw_input_dir` into `staging_dir` by symlink and add the derived side tables.
 
     The raw release is left untouched: every entry is symlinked, so the staging directory costs
-    nothing on disk and the checksum-verified files are never rewritten.
+    nothing on disk and the checksum-verified files are never rewritten. Besides the subject
+    table, the packaged ICD-10-CM and ICD-10-PCS vocabulary tables are written here, because the
+    config reads them as input tables.
 
     Args:
         raw_input_dir: The downloaded INSPIRE release.
@@ -122,4 +127,6 @@ def stage_input(raw_input_dir: Path, staging_dir: Path) -> Path:
     ).collect()
     table.write_parquet(out)
     logger.info(f"Wrote {table.height:,} subject rows to {out}")
+    for fp in write_vocabulary_tables(staging_dir):
+        logger.info(f"Wrote the packaged vocabulary table {fp}")
     return staging_dir

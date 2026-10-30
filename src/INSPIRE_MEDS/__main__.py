@@ -8,11 +8,15 @@ Three steps, each of which is just the underlying tool:
 3. `meds-extract-run` runs the canonical pipeline over that staged input, with the download
    step disabled because step 1 already did it.
 
-Step 2 is the only reason this wrapper exists. `MEDS_BIRTH` and `MEDS_DEATH` need a per-subject
+Step 2 is the main reason this wrapper exists. `MEDS_BIRTH` and `MEDS_DEATH` need a per-subject
 reduction that MESSY cannot express, and MEDS-Extract's `etl:` block deliberately does not let a
 config insert its own stage into the pipeline. Everything else is unchanged: the spec is still
 the shipped MESSY file, resolved by `pkg://` reference, and the stage DAG is still the canonical
 one.
+
+A last step fills the descriptions of the literal codes (`OR_IN`, `WEIGHT`, `MEDS_BIRTH`, ...)
+into the finished `metadata/codes.parquet`; see :mod:`INSPIRE_MEDS.code_descriptions` for why
+no `_metadata` block can reach them.
 """
 
 from __future__ import annotations
@@ -24,6 +28,7 @@ import sys
 import sysconfig
 from pathlib import Path
 
+from .code_descriptions import apply_static_descriptions
 from .pre_MEDS import stage_input
 
 logger = logging.getLogger(__name__)
@@ -102,6 +107,17 @@ def main(argv: list[str] | None = None) -> None:
             *args.overrides,
         ]
     )
+
+    codes_fp = out / "metadata" / "codes.parquet"
+    if codes_fp.is_file():
+        n_filled = apply_static_descriptions(codes_fp)
+        logger.info(
+            "Filled the descriptions of %d literal codes in %s", n_filled, codes_fp
+        )
+    else:  # pragma: no cover - the pipeline always writes it
+        logger.warning(
+            "%s not found; literal-code descriptions were not applied.", codes_fp
+        )
     logger.info("Done. MEDS cohort at %s", out)
 
 

@@ -1,0 +1,1919 @@
+code,description,source
+A00,Cholera,cms:icd10cm_order_2026
+A01,Typhoid and paratyphoid fevers,cms:icd10cm_order_2026
+A02,Other salmonella infections,cms:icd10cm_order_2026
+A03,Shigellosis,cms:icd10cm_order_2026
+A04,Other bacterial intestinal infections,cms:icd10cm_order_2026
+A05,"Other bacterial foodborne intoxications, not elsewhere classified",cms:icd10cm_order_2026
+A06,Amebiasis,cms:icd10cm_order_2026
+A07,Other protozoal intestinal diseases,cms:icd10cm_order_2026
+A08,Viral and other specified intestinal infections,cms:icd10cm_order_2026
+A09,"Infectious gastroenteritis and colitis, unspecified",cms:icd10cm_order_2026
+A15,Respiratory tuberculosis,cms:icd10cm_order_2026
+A17,Tuberculosis of nervous system,cms:icd10cm_order_2026
+A18,Tuberculosis of other organs,cms:icd10cm_order_2026
+A19,Miliary tuberculosis,cms:icd10cm_order_2026
+A20,Plague,cms:icd10cm_order_2026
+A21,Tularemia,cms:icd10cm_order_2026
+A22,Anthrax,cms:icd10cm_order_2026
+A23,Brucellosis,cms:icd10cm_order_2026
+A24,Glanders and melioidosis,cms:icd10cm_order_2026
+A25,Rat-bite fevers,cms:icd10cm_order_2026
+A26,Erysipeloid,cms:icd10cm_order_2026
+A27,Leptospirosis,cms:icd10cm_order_2026
+A28,"Other zoonotic bacterial diseases, not elsewhere classified",cms:icd10cm_order_2026
+A30,Leprosy [Hansen's disease],cms:icd10cm_order_2026
+A31,Infection due to other mycobacteria,cms:icd10cm_order_2026
+A32,Listeriosis,cms:icd10cm_order_2026
+A33,Tetanus neonatorum,cms:icd10cm_order_2026
+A34,Obstetrical tetanus,cms:icd10cm_order_2026
+A35,Other tetanus,cms:icd10cm_order_2026
+A36,Diphtheria,cms:icd10cm_order_2026
+A37,Whooping cough,cms:icd10cm_order_2026
+A38,Scarlet fever,cms:icd10cm_order_2026
+A39,Meningococcal infection,cms:icd10cm_order_2026
+A40,Streptococcal sepsis,cms:icd10cm_order_2026
+A41,Other sepsis,cms:icd10cm_order_2026
+A42,Actinomycosis,cms:icd10cm_order_2026
+A43,Nocardiosis,cms:icd10cm_order_2026
+A44,Bartonellosis,cms:icd10cm_order_2026
+A46,Erysipelas,cms:icd10cm_order_2026
+A48,"Other bacterial diseases, not elsewhere classified",cms:icd10cm_order_2026
+A49,Bacterial infection of unspecified site,cms:icd10cm_order_2026
+A50,Congenital syphilis,cms:icd10cm_order_2026
+A51,Early syphilis,cms:icd10cm_order_2026
+A52,Late syphilis,cms:icd10cm_order_2026
+A53,Other and unspecified syphilis,cms:icd10cm_order_2026
+A54,Gonococcal infection,cms:icd10cm_order_2026
+A55,Chlamydial lymphogranuloma (venereum),cms:icd10cm_order_2026
+A56,Other sexually transmitted chlamydial diseases,cms:icd10cm_order_2026
+A57,Chancroid,cms:icd10cm_order_2026
+A58,Granuloma inguinale,cms:icd10cm_order_2026
+A59,Trichomoniasis,cms:icd10cm_order_2026
+A60,Anogenital herpesviral [herpes simplex] infections,cms:icd10cm_order_2026
+A63,"Other predominantly sexually transmitted diseases, not elsewhere classified",cms:icd10cm_order_2026
+A64,Unspecified sexually transmitted disease,cms:icd10cm_order_2026
+A65,Nonvenereal syphilis,cms:icd10cm_order_2026
+A66,Yaws,cms:icd10cm_order_2026
+A67,Pinta [carate],cms:icd10cm_order_2026
+A68,Relapsing fevers,cms:icd10cm_order_2026
+A69,Other spirochetal infections,cms:icd10cm_order_2026
+A70,Chlamydia psittaci infections,cms:icd10cm_order_2026
+A71,Trachoma,cms:icd10cm_order_2026
+A74,Other diseases caused by chlamydiae,cms:icd10cm_order_2026
+A75,Typhus fever,cms:icd10cm_order_2026
+A77,Spotted fever [tick-borne rickettsioses],cms:icd10cm_order_2026
+A78,Q fever,cms:icd10cm_order_2026
+A79,Other rickettsioses,cms:icd10cm_order_2026
+A80,Acute poliomyelitis,cms:icd10cm_order_2026
+A81,Atypical virus infections of central nervous system,cms:icd10cm_order_2026
+A82,Rabies,cms:icd10cm_order_2026
+A83,Mosquito-borne viral encephalitis,cms:icd10cm_order_2026
+A84,Tick-borne viral encephalitis,cms:icd10cm_order_2026
+A85,"Other viral encephalitis, not elsewhere classified",cms:icd10cm_order_2026
+A86,Unspecified viral encephalitis,cms:icd10cm_order_2026
+A87,Viral meningitis,cms:icd10cm_order_2026
+A88,"Other viral infections of central nervous system, not elsewhere classified",cms:icd10cm_order_2026
+A89,Unspecified viral infection of central nervous system,cms:icd10cm_order_2026
+A90,Dengue fever [classical dengue],cms:icd10cm_order_2026
+A91,Dengue hemorrhagic fever,cms:icd10cm_order_2026
+A92,Other mosquito-borne viral fevers,cms:icd10cm_order_2026
+A93,"Other arthropod-borne viral fevers, not elsewhere classified",cms:icd10cm_order_2026
+A94,Unspecified arthropod-borne viral fever,cms:icd10cm_order_2026
+A95,Yellow fever,cms:icd10cm_order_2026
+A96,Arenaviral hemorrhagic fever,cms:icd10cm_order_2026
+A98,"Other viral hemorrhagic fevers, not elsewhere classified",cms:icd10cm_order_2026
+A99,Unspecified viral hemorrhagic fever,cms:icd10cm_order_2026
+B00,Herpesviral [herpes simplex] infections,cms:icd10cm_order_2026
+B01,Varicella [chickenpox],cms:icd10cm_order_2026
+B02,Zoster [herpes zoster],cms:icd10cm_order_2026
+B03,Smallpox,cms:icd10cm_order_2026
+B04,Monkeypox,cms:icd10cm_order_2026
+B05,Measles,cms:icd10cm_order_2026
+B06,Rubella [German measles],cms:icd10cm_order_2026
+B07,Viral warts,cms:icd10cm_order_2026
+B08,"Other viral infections characterized by skin and mucous membrane lesions, not elsewhere classified",cms:icd10cm_order_2026
+B09,Unspecified viral infection characterized by skin and mucous membrane lesions,cms:icd10cm_order_2026
+B10,Other human herpesviruses,cms:icd10cm_order_2026
+B15,Acute hepatitis A,cms:icd10cm_order_2026
+B16,Acute hepatitis B,cms:icd10cm_order_2026
+B17,Other acute viral hepatitis,cms:icd10cm_order_2026
+B18,Chronic viral hepatitis,cms:icd10cm_order_2026
+B19,Unspecified viral hepatitis,cms:icd10cm_order_2026
+B20,Human immunodeficiency virus [HIV] disease,cms:icd10cm_order_2026
+B25,Cytomegaloviral disease,cms:icd10cm_order_2026
+B26,Mumps,cms:icd10cm_order_2026
+B27,Infectious mononucleosis,cms:icd10cm_order_2026
+B30,Viral conjunctivitis,cms:icd10cm_order_2026
+B33,"Other viral diseases, not elsewhere classified",cms:icd10cm_order_2026
+B34,Viral infection of unspecified site,cms:icd10cm_order_2026
+B35,Dermatophytosis,cms:icd10cm_order_2026
+B36,Other superficial mycoses,cms:icd10cm_order_2026
+B37,Candidiasis,cms:icd10cm_order_2026
+B38,Coccidioidomycosis,cms:icd10cm_order_2026
+B39,Histoplasmosis,cms:icd10cm_order_2026
+B40,Blastomycosis,cms:icd10cm_order_2026
+B41,Paracoccidioidomycosis,cms:icd10cm_order_2026
+B42,Sporotrichosis,cms:icd10cm_order_2026
+B43,Chromomycosis and pheomycotic abscess,cms:icd10cm_order_2026
+B44,Aspergillosis,cms:icd10cm_order_2026
+B45,Cryptococcosis,cms:icd10cm_order_2026
+B46,Zygomycosis,cms:icd10cm_order_2026
+B47,Mycetoma,cms:icd10cm_order_2026
+B48,"Other mycoses, not elsewhere classified",cms:icd10cm_order_2026
+B49,Unspecified mycosis,cms:icd10cm_order_2026
+B50,Plasmodium falciparum malaria,cms:icd10cm_order_2026
+B51,Plasmodium vivax malaria,cms:icd10cm_order_2026
+B52,Plasmodium malariae malaria,cms:icd10cm_order_2026
+B53,Other specified malaria,cms:icd10cm_order_2026
+B54,Unspecified malaria,cms:icd10cm_order_2026
+B55,Leishmaniasis,cms:icd10cm_order_2026
+B56,African trypanosomiasis,cms:icd10cm_order_2026
+B57,Chagas' disease,cms:icd10cm_order_2026
+B58,Toxoplasmosis,cms:icd10cm_order_2026
+B59,Pneumocystosis,cms:icd10cm_order_2026
+B60,"Other protozoal diseases, not elsewhere classified",cms:icd10cm_order_2026
+B64,Unspecified protozoal disease,cms:icd10cm_order_2026
+B65,Schistosomiasis [bilharziasis],cms:icd10cm_order_2026
+B66,Other fluke infections,cms:icd10cm_order_2026
+B67,Echinococcosis,cms:icd10cm_order_2026
+B68,Taeniasis,cms:icd10cm_order_2026
+B69,Cysticercosis,cms:icd10cm_order_2026
+B70,Diphyllobothriasis and sparganosis,cms:icd10cm_order_2026
+B71,Other cestode infections,cms:icd10cm_order_2026
+B72,Dracunculiasis,cms:icd10cm_order_2026
+B73,Onchocerciasis,cms:icd10cm_order_2026
+B74,Filariasis,cms:icd10cm_order_2026
+B75,Trichinellosis,cms:icd10cm_order_2026
+B76,Hookworm diseases,cms:icd10cm_order_2026
+B77,Ascariasis,cms:icd10cm_order_2026
+B78,Strongyloidiasis,cms:icd10cm_order_2026
+B79,Trichuriasis,cms:icd10cm_order_2026
+B80,Enterobiasis,cms:icd10cm_order_2026
+B81,"Other intestinal helminthiases, not elsewhere classified",cms:icd10cm_order_2026
+B82,Unspecified intestinal parasitism,cms:icd10cm_order_2026
+B83,Other helminthiases,cms:icd10cm_order_2026
+B85,Pediculosis and phthiriasis,cms:icd10cm_order_2026
+B86,Scabies,cms:icd10cm_order_2026
+B87,Myiasis,cms:icd10cm_order_2026
+B88,Other infestations,cms:icd10cm_order_2026
+B89,Unspecified parasitic disease,cms:icd10cm_order_2026
+B90,Sequelae of tuberculosis,cms:icd10cm_order_2026
+B91,Sequelae of poliomyelitis,cms:icd10cm_order_2026
+B92,Sequelae of leprosy,cms:icd10cm_order_2026
+B94,Sequelae of other and unspecified infectious and parasitic diseases,cms:icd10cm_order_2026
+B95,"Streptococcus, Staphylococcus, and Enterococcus as the cause of diseases classified elsewhere",cms:icd10cm_order_2026
+B96,Other bacterial agents as the cause of diseases classified elsewhere,cms:icd10cm_order_2026
+B97,Viral agents as the cause of diseases classified elsewhere,cms:icd10cm_order_2026
+B99,Other and unspecified infectious diseases,cms:icd10cm_order_2026
+C00,Malignant neoplasm of lip,cms:icd10cm_order_2026
+C01,Malignant neoplasm of base of tongue,cms:icd10cm_order_2026
+C02,Malignant neoplasm of other and unspecified parts of tongue,cms:icd10cm_order_2026
+C03,Malignant neoplasm of gum,cms:icd10cm_order_2026
+C04,Malignant neoplasm of floor of mouth,cms:icd10cm_order_2026
+C05,Malignant neoplasm of palate,cms:icd10cm_order_2026
+C06,Malignant neoplasm of other and unspecified parts of mouth,cms:icd10cm_order_2026
+C07,Malignant neoplasm of parotid gland,cms:icd10cm_order_2026
+C08,Malignant neoplasm of other and unspecified major salivary glands,cms:icd10cm_order_2026
+C09,Malignant neoplasm of tonsil,cms:icd10cm_order_2026
+C10,Malignant neoplasm of oropharynx,cms:icd10cm_order_2026
+C11,Malignant neoplasm of nasopharynx,cms:icd10cm_order_2026
+C12,Malignant neoplasm of pyriform sinus,cms:icd10cm_order_2026
+C13,Malignant neoplasm of hypopharynx,cms:icd10cm_order_2026
+C14,"Malignant neoplasm of other and ill-defined sites in the lip, oral cavity and pharynx",cms:icd10cm_order_2026
+C15,Malignant neoplasm of esophagus,cms:icd10cm_order_2026
+C16,Malignant neoplasm of stomach,cms:icd10cm_order_2026
+C17,Malignant neoplasm of small intestine,cms:icd10cm_order_2026
+C18,Malignant neoplasm of colon,cms:icd10cm_order_2026
+C19,Malignant neoplasm of rectosigmoid junction,cms:icd10cm_order_2026
+C20,Malignant neoplasm of rectum,cms:icd10cm_order_2026
+C21,Malignant neoplasm of anus and anal canal,cms:icd10cm_order_2026
+C22,Malignant neoplasm of liver and intrahepatic bile ducts,cms:icd10cm_order_2026
+C23,Malignant neoplasm of gallbladder,cms:icd10cm_order_2026
+C24,Malignant neoplasm of other and unspecified parts of biliary tract,cms:icd10cm_order_2026
+C25,Malignant neoplasm of pancreas,cms:icd10cm_order_2026
+C26,Malignant neoplasm of other and ill-defined digestive organs,cms:icd10cm_order_2026
+C30,Malignant neoplasm of nasal cavity and middle ear,cms:icd10cm_order_2026
+C31,Malignant neoplasm of accessory sinuses,cms:icd10cm_order_2026
+C32,Malignant neoplasm of larynx,cms:icd10cm_order_2026
+C33,Malignant neoplasm of trachea,cms:icd10cm_order_2026
+C34,Malignant neoplasm of bronchus and lung,cms:icd10cm_order_2026
+C37,Malignant neoplasm of thymus,cms:icd10cm_order_2026
+C38,"Malignant neoplasm of heart, mediastinum and pleura",cms:icd10cm_order_2026
+C39,Malignant neoplasm of other and ill-defined sites in the respiratory system and intrathoracic organs,cms:icd10cm_order_2026
+C40,Malignant neoplasm of bone and articular cartilage of limbs,cms:icd10cm_order_2026
+C41,Malignant neoplasm of bone and articular cartilage of other and unspecified sites,cms:icd10cm_order_2026
+C43,Malignant melanoma of skin,cms:icd10cm_order_2026
+C44,Other and unspecified malignant neoplasm of skin,cms:icd10cm_order_2026
+C45,Mesothelioma,cms:icd10cm_order_2026
+C46,Kaposi's sarcoma,cms:icd10cm_order_2026
+C47,Malignant neoplasm of peripheral nerves and autonomic nervous system,cms:icd10cm_order_2026
+C48,Malignant neoplasm of retroperitoneum and peritoneum,cms:icd10cm_order_2026
+C49,Malignant neoplasm of other connective and soft tissue,cms:icd10cm_order_2026
+C4A,Merkel cell carcinoma,cms:icd10cm_order_2026
+C50,Malignant neoplasm of breast,cms:icd10cm_order_2026
+C51,Malignant neoplasm of vulva,cms:icd10cm_order_2026
+C52,Malignant neoplasm of vagina,cms:icd10cm_order_2026
+C53,Malignant neoplasm of cervix uteri,cms:icd10cm_order_2026
+C54,Malignant neoplasm of corpus uteri,cms:icd10cm_order_2026
+C55,"Malignant neoplasm of uterus, part unspecified",cms:icd10cm_order_2026
+C56,Malignant neoplasm of ovary,cms:icd10cm_order_2026
+C57,Malignant neoplasm of other and unspecified female genital organs,cms:icd10cm_order_2026
+C58,Malignant neoplasm of placenta,cms:icd10cm_order_2026
+C60,Malignant neoplasm of penis,cms:icd10cm_order_2026
+C61,Malignant neoplasm of prostate,cms:icd10cm_order_2026
+C62,Malignant neoplasm of testis,cms:icd10cm_order_2026
+C63,Malignant neoplasm of other and unspecified male genital organs,cms:icd10cm_order_2026
+C64,"Malignant neoplasm of kidney, except renal pelvis",cms:icd10cm_order_2026
+C65,Malignant neoplasm of renal pelvis,cms:icd10cm_order_2026
+C66,Malignant neoplasm of ureter,cms:icd10cm_order_2026
+C67,Malignant neoplasm of bladder,cms:icd10cm_order_2026
+C68,Malignant neoplasm of other and unspecified urinary organs,cms:icd10cm_order_2026
+C69,Malignant neoplasm of eye and adnexa,cms:icd10cm_order_2026
+C70,Malignant neoplasm of meninges,cms:icd10cm_order_2026
+C71,Malignant neoplasm of brain,cms:icd10cm_order_2026
+C72,"Malignant neoplasm of spinal cord, cranial nerves and other parts of central nervous system",cms:icd10cm_order_2026
+C73,Malignant neoplasm of thyroid gland,cms:icd10cm_order_2026
+C74,Malignant neoplasm of adrenal gland,cms:icd10cm_order_2026
+C75,Malignant neoplasm of other endocrine glands and related structures,cms:icd10cm_order_2026
+C76,Malignant neoplasm of other and ill-defined sites,cms:icd10cm_order_2026
+C77,Secondary and unspecified malignant neoplasm of lymph nodes,cms:icd10cm_order_2026
+C78,Secondary malignant neoplasm of respiratory and digestive organs,cms:icd10cm_order_2026
+C79,Secondary malignant neoplasm of other and unspecified sites,cms:icd10cm_order_2026
+C7A,Malignant neuroendocrine tumors,cms:icd10cm_order_2026
+C7B,Secondary neuroendocrine tumors,cms:icd10cm_order_2026
+C80,Malignant neoplasm without specification of site,cms:icd10cm_order_2026
+C81,Hodgkin lymphoma,cms:icd10cm_order_2026
+C82,Follicular lymphoma,cms:icd10cm_order_2026
+C83,Non-follicular lymphoma,cms:icd10cm_order_2026
+C84,Mature T/NK-cell lymphomas,cms:icd10cm_order_2026
+C85,Other specified and unspecified types of non-Hodgkin lymphoma,cms:icd10cm_order_2026
+C86,Other specified types of T/NK-cell lymphoma,cms:icd10cm_order_2026
+C88,Malignant immunoproliferative diseases and certain other B-cell lymphomas,cms:icd10cm_order_2026
+C90,Multiple myeloma and malignant plasma cell neoplasms,cms:icd10cm_order_2026
+C91,Lymphoid leukemia,cms:icd10cm_order_2026
+C92,Myeloid leukemia,cms:icd10cm_order_2026
+C93,Monocytic leukemia,cms:icd10cm_order_2026
+C94,Other leukemias of specified cell type,cms:icd10cm_order_2026
+C95,Leukemia of unspecified cell type,cms:icd10cm_order_2026
+C96,"Other and unspecified malignant neoplasms of lymphoid, hematopoietic and related tissue",cms:icd10cm_order_2026
+D00,"Carcinoma in situ of oral cavity, esophagus and stomach",cms:icd10cm_order_2026
+D01,Carcinoma in situ of other and unspecified digestive organs,cms:icd10cm_order_2026
+D02,Carcinoma in situ of middle ear and respiratory system,cms:icd10cm_order_2026
+D03,Melanoma in situ,cms:icd10cm_order_2026
+D04,Carcinoma in situ of skin,cms:icd10cm_order_2026
+D05,Carcinoma in situ of breast,cms:icd10cm_order_2026
+D06,Carcinoma in situ of cervix uteri,cms:icd10cm_order_2026
+D07,Carcinoma in situ of other and unspecified genital organs,cms:icd10cm_order_2026
+D09,Carcinoma in situ of other and unspecified sites,cms:icd10cm_order_2026
+D10,Benign neoplasm of mouth and pharynx,cms:icd10cm_order_2026
+D11,Benign neoplasm of major salivary glands,cms:icd10cm_order_2026
+D12,"Benign neoplasm of colon, rectum, anus and anal canal",cms:icd10cm_order_2026
+D13,Benign neoplasm of other and ill-defined parts of digestive system,cms:icd10cm_order_2026
+D14,Benign neoplasm of middle ear and respiratory system,cms:icd10cm_order_2026
+D15,Benign neoplasm of other and unspecified intrathoracic organs,cms:icd10cm_order_2026
+D16,Benign neoplasm of bone and articular cartilage,cms:icd10cm_order_2026
+D17,Benign lipomatous neoplasm,cms:icd10cm_order_2026
+D18,"Hemangioma and lymphangioma, any site",cms:icd10cm_order_2026
+D19,Benign neoplasm of mesothelial tissue,cms:icd10cm_order_2026
+D20,Benign neoplasm of soft tissue of retroperitoneum and peritoneum,cms:icd10cm_order_2026
+D21,Other benign neoplasms of connective and other soft tissue,cms:icd10cm_order_2026
+D22,Melanocytic nevi,cms:icd10cm_order_2026
+D23,Other benign neoplasms of skin,cms:icd10cm_order_2026
+D24,Benign neoplasm of breast,cms:icd10cm_order_2026
+D25,Leiomyoma of uterus,cms:icd10cm_order_2026
+D26,Other benign neoplasms of uterus,cms:icd10cm_order_2026
+D27,Benign neoplasm of ovary,cms:icd10cm_order_2026
+D28,Benign neoplasm of other and unspecified female genital organs,cms:icd10cm_order_2026
+D29,Benign neoplasm of male genital organs,cms:icd10cm_order_2026
+D30,Benign neoplasm of urinary organs,cms:icd10cm_order_2026
+D31,Benign neoplasm of eye and adnexa,cms:icd10cm_order_2026
+D32,Benign neoplasm of meninges,cms:icd10cm_order_2026
+D33,Benign neoplasm of brain and other parts of central nervous system,cms:icd10cm_order_2026
+D34,Benign neoplasm of thyroid gland,cms:icd10cm_order_2026
+D35,Benign neoplasm of other and unspecified endocrine glands,cms:icd10cm_order_2026
+D36,Benign neoplasm of other and unspecified sites,cms:icd10cm_order_2026
+D37,Neoplasm of uncertain behavior of oral cavity and digestive organs,cms:icd10cm_order_2026
+D38,Neoplasm of uncertain behavior of middle ear and respiratory and intrathoracic organs,cms:icd10cm_order_2026
+D39,Neoplasm of uncertain behavior of female genital organs,cms:icd10cm_order_2026
+D3A,Benign neuroendocrine tumors,cms:icd10cm_order_2026
+D40,Neoplasm of uncertain behavior of male genital organs,cms:icd10cm_order_2026
+D41,Neoplasm of uncertain behavior of urinary organs,cms:icd10cm_order_2026
+D42,Neoplasm of uncertain behavior of meninges,cms:icd10cm_order_2026
+D43,Neoplasm of uncertain behavior of brain and central nervous system,cms:icd10cm_order_2026
+D44,Neoplasm of uncertain behavior of endocrine glands,cms:icd10cm_order_2026
+D45,Polycythemia vera,cms:icd10cm_order_2026
+D46,Myelodysplastic syndromes,cms:icd10cm_order_2026
+D47,"Other neoplasms of uncertain behavior of lymphoid, hematopoietic and related tissue",cms:icd10cm_order_2026
+D48,Neoplasm of uncertain behavior of other and unspecified sites,cms:icd10cm_order_2026
+D49,Neoplasms of unspecified behavior,cms:icd10cm_order_2026
+D50,Iron deficiency anemia,cms:icd10cm_order_2026
+D51,Vitamin B12 deficiency anemia,cms:icd10cm_order_2026
+D52,Folate deficiency anemia,cms:icd10cm_order_2026
+D53,Other nutritional anemias,cms:icd10cm_order_2026
+D55,Anemia due to enzyme disorders,cms:icd10cm_order_2026
+D56,Thalassemia,cms:icd10cm_order_2026
+D57,Sickle-cell disorders,cms:icd10cm_order_2026
+D58,Other hereditary hemolytic anemias,cms:icd10cm_order_2026
+D59,Acquired hemolytic anemia,cms:icd10cm_order_2026
+D60,Acquired pure red cell aplasia [erythroblastopenia],cms:icd10cm_order_2026
+D61,Other aplastic anemias and other bone marrow failure syndromes,cms:icd10cm_order_2026
+D62,Acute posthemorrhagic anemia,cms:icd10cm_order_2026
+D63,Anemia in chronic diseases classified elsewhere,cms:icd10cm_order_2026
+D64,Other anemias,cms:icd10cm_order_2026
+D65,Disseminated intravascular coagulation [defibrination syndrome],cms:icd10cm_order_2026
+D66,Hereditary factor VIII deficiency,cms:icd10cm_order_2026
+D67,Hereditary factor IX deficiency,cms:icd10cm_order_2026
+D68,Other coagulation defects,cms:icd10cm_order_2026
+D69,Purpura and other hemorrhagic conditions,cms:icd10cm_order_2026
+D70,Neutropenia,cms:icd10cm_order_2026
+D71,Functional disorders of polymorphonuclear neutrophils,cms:icd10cm_order_2026
+D72,Other disorders of white blood cells,cms:icd10cm_order_2026
+D73,Diseases of spleen,cms:icd10cm_order_2026
+D74,Methemoglobinemia,cms:icd10cm_order_2026
+D75,Other and unspecified diseases of blood and blood-forming organs,cms:icd10cm_order_2026
+D76,Other specified diseases with participation of lymphoreticular and reticulohistiocytic tissue,cms:icd10cm_order_2026
+D77,Other disorders of blood and blood-forming organs in diseases classified elsewhere,cms:icd10cm_order_2026
+D78,Intraoperative and postprocedural complications of the spleen,cms:icd10cm_order_2026
+D80,Immunodeficiency with predominantly antibody defects,cms:icd10cm_order_2026
+D81,Combined immunodeficiencies,cms:icd10cm_order_2026
+D82,Immunodeficiency associated with other major defects,cms:icd10cm_order_2026
+D83,Common variable immunodeficiency,cms:icd10cm_order_2026
+D84,Other immunodeficiencies,cms:icd10cm_order_2026
+D86,Sarcoidosis,cms:icd10cm_order_2026
+D89,"Other disorders involving the immune mechanism, not elsewhere classified",cms:icd10cm_order_2026
+E00,Congenital iodine-deficiency syndrome,cms:icd10cm_order_2026
+E01,Iodine-deficiency related thyroid disorders and allied conditions,cms:icd10cm_order_2026
+E02,Subclinical iodine-deficiency hypothyroidism,cms:icd10cm_order_2026
+E03,Other hypothyroidism,cms:icd10cm_order_2026
+E04,Other nontoxic goiter,cms:icd10cm_order_2026
+E05,Thyrotoxicosis [hyperthyroidism],cms:icd10cm_order_2026
+E06,Thyroiditis,cms:icd10cm_order_2026
+E07,Other disorders of thyroid,cms:icd10cm_order_2026
+E08,Diabetes mellitus due to underlying condition,cms:icd10cm_order_2026
+E09,Drug or chemical induced diabetes mellitus,cms:icd10cm_order_2026
+E10,Type 1 diabetes mellitus,cms:icd10cm_order_2026
+E11,Type 2 diabetes mellitus,cms:icd10cm_order_2026
+E13,Other specified diabetes mellitus,cms:icd10cm_order_2026
+E15,Nondiabetic hypoglycemic coma,cms:icd10cm_order_2026
+E16,Other disorders of pancreatic internal secretion,cms:icd10cm_order_2026
+E20,Hypoparathyroidism,cms:icd10cm_order_2026
+E21,Hyperparathyroidism and other disorders of parathyroid gland,cms:icd10cm_order_2026
+E22,Hyperfunction of pituitary gland,cms:icd10cm_order_2026
+E23,Hypofunction and other disorders of the pituitary gland,cms:icd10cm_order_2026
+E24,Cushing's syndrome,cms:icd10cm_order_2026
+E25,Adrenogenital disorders,cms:icd10cm_order_2026
+E26,Hyperaldosteronism,cms:icd10cm_order_2026
+E27,Other disorders of adrenal gland,cms:icd10cm_order_2026
+E28,Ovarian dysfunction,cms:icd10cm_order_2026
+E29,Testicular dysfunction,cms:icd10cm_order_2026
+E30,"Disorders of puberty, not elsewhere classified",cms:icd10cm_order_2026
+E31,Polyglandular dysfunction,cms:icd10cm_order_2026
+E32,Diseases of thymus,cms:icd10cm_order_2026
+E34,Other endocrine disorders,cms:icd10cm_order_2026
+E35,Disorders of endocrine glands in diseases classified elsewhere,cms:icd10cm_order_2026
+E36,Intraoperative complications of endocrine system,cms:icd10cm_order_2026
+E40,Kwashiorkor,cms:icd10cm_order_2026
+E41,Nutritional marasmus,cms:icd10cm_order_2026
+E42,Marasmic kwashiorkor,cms:icd10cm_order_2026
+E43,Unspecified severe protein-calorie malnutrition,cms:icd10cm_order_2026
+E44,Protein-calorie malnutrition of moderate and mild degree,cms:icd10cm_order_2026
+E45,Retarded development following protein-calorie malnutrition,cms:icd10cm_order_2026
+E46,Unspecified protein-calorie malnutrition,cms:icd10cm_order_2026
+E50,Vitamin A deficiency,cms:icd10cm_order_2026
+E51,Thiamine deficiency,cms:icd10cm_order_2026
+E52,Niacin deficiency [pellagra],cms:icd10cm_order_2026
+E53,Deficiency of other B group vitamins,cms:icd10cm_order_2026
+E54,Ascorbic acid deficiency,cms:icd10cm_order_2026
+E55,Vitamin D deficiency,cms:icd10cm_order_2026
+E56,Other vitamin deficiencies,cms:icd10cm_order_2026
+E58,Dietary calcium deficiency,cms:icd10cm_order_2026
+E59,Dietary selenium deficiency,cms:icd10cm_order_2026
+E60,Dietary zinc deficiency,cms:icd10cm_order_2026
+E61,Deficiency of other nutrient elements,cms:icd10cm_order_2026
+E63,Other nutritional deficiencies,cms:icd10cm_order_2026
+E64,Sequelae of malnutrition and other nutritional deficiencies,cms:icd10cm_order_2026
+E65,Localized adiposity,cms:icd10cm_order_2026
+E66,Overweight and obesity,cms:icd10cm_order_2026
+E67,Other hyperalimentation,cms:icd10cm_order_2026
+E68,Sequelae of hyperalimentation,cms:icd10cm_order_2026
+E70,Disorders of aromatic amino-acid metabolism,cms:icd10cm_order_2026
+E71,Disorders of branched-chain amino-acid metabolism and fatty-acid metabolism,cms:icd10cm_order_2026
+E72,Other disorders of amino-acid metabolism,cms:icd10cm_order_2026
+E73,Lactose intolerance,cms:icd10cm_order_2026
+E74,Other disorders of carbohydrate metabolism,cms:icd10cm_order_2026
+E75,Disorders of sphingolipid metabolism and other lipid storage disorders,cms:icd10cm_order_2026
+E76,Disorders of glycosaminoglycan metabolism,cms:icd10cm_order_2026
+E77,Disorders of glycoprotein metabolism,cms:icd10cm_order_2026
+E78,Disorders of lipoprotein metabolism and other lipidemias,cms:icd10cm_order_2026
+E79,Disorders of purine and pyrimidine metabolism,cms:icd10cm_order_2026
+E80,Disorders of porphyrin and bilirubin metabolism,cms:icd10cm_order_2026
+E83,Disorders of mineral metabolism,cms:icd10cm_order_2026
+E84,Cystic fibrosis,cms:icd10cm_order_2026
+E85,Amyloidosis,cms:icd10cm_order_2026
+E86,Volume depletion,cms:icd10cm_order_2026
+E87,"Other disorders of fluid, electrolyte and acid-base balance",cms:icd10cm_order_2026
+E88,Other and unspecified metabolic disorders,cms:icd10cm_order_2026
+E89,"Postprocedural endocrine and metabolic complications and disorders, not elsewhere classified",cms:icd10cm_order_2026
+F01,Vascular dementia,cms:icd10cm_order_2026
+F02,Dementia in other diseases classified elsewhere,cms:icd10cm_order_2026
+F03,Unspecified dementia,cms:icd10cm_order_2026
+F04,Amnestic disorder due to known physiological condition,cms:icd10cm_order_2026
+F05,Delirium due to known physiological condition,cms:icd10cm_order_2026
+F06,Other mental disorders due to known physiological condition,cms:icd10cm_order_2026
+F07,Personality and behavioral disorders due to known physiological condition,cms:icd10cm_order_2026
+F09,Unspecified mental disorder due to known physiological condition,cms:icd10cm_order_2026
+F10,Alcohol related disorders,cms:icd10cm_order_2026
+F11,Opioid related disorders,cms:icd10cm_order_2026
+F12,Cannabis related disorders,cms:icd10cm_order_2026
+F13,"Sedative, hypnotic, or anxiolytic related disorders",cms:icd10cm_order_2026
+F14,Cocaine related disorders,cms:icd10cm_order_2026
+F15,Other stimulant related disorders,cms:icd10cm_order_2026
+F16,Hallucinogen related disorders,cms:icd10cm_order_2026
+F17,Nicotine dependence,cms:icd10cm_order_2026
+F18,Inhalant related disorders,cms:icd10cm_order_2026
+F19,Other psychoactive substance related disorders,cms:icd10cm_order_2026
+F20,Schizophrenia,cms:icd10cm_order_2026
+F21,Schizotypal disorder,cms:icd10cm_order_2026
+F22,Delusional disorders,cms:icd10cm_order_2026
+F23,Brief psychotic disorder,cms:icd10cm_order_2026
+F24,Shared psychotic disorder,cms:icd10cm_order_2026
+F25,Schizoaffective disorders,cms:icd10cm_order_2026
+F28,Other psychotic disorder not due to a substance or known physiological condition,cms:icd10cm_order_2026
+F29,Unspecified psychosis not due to a substance or known physiological condition,cms:icd10cm_order_2026
+F30,Manic episode,cms:icd10cm_order_2026
+F31,Bipolar disorder,cms:icd10cm_order_2026
+F32,Depressive episode,cms:icd10cm_order_2026
+F33,"Major depressive disorder, recurrent",cms:icd10cm_order_2026
+F34,Persistent mood [affective] disorders,cms:icd10cm_order_2026
+F39,Unspecified mood [affective] disorder,cms:icd10cm_order_2026
+F40,Phobic anxiety disorders,cms:icd10cm_order_2026
+F41,Other anxiety disorders,cms:icd10cm_order_2026
+F42,Obsessive-compulsive disorder,cms:icd10cm_order_2026
+F43,"Reaction to severe stress, and adjustment disorders",cms:icd10cm_order_2026
+F44,Dissociative and conversion disorders,cms:icd10cm_order_2026
+F45,Somatoform disorders,cms:icd10cm_order_2026
+F48,Other nonpsychotic mental disorders,cms:icd10cm_order_2026
+F50,Eating disorders,cms:icd10cm_order_2026
+F51,Sleep disorders not due to a substance or known physiological condition,cms:icd10cm_order_2026
+F52,Sexual dysfunction not due to a substance or known physiological condition,cms:icd10cm_order_2026
+F53,"Mental and behavioral disorders associated with the puerperium, not elsewhere classified",cms:icd10cm_order_2026
+F54,Psychological and behavioral factors associated with disorders or diseases classified elsewhere,cms:icd10cm_order_2026
+F55,Abuse of non-psychoactive substances,cms:icd10cm_order_2026
+F59,Unspecified behavioral syndromes associated with physiological disturbances and physical factors,cms:icd10cm_order_2026
+F60,Specific personality disorders,cms:icd10cm_order_2026
+F63,Impulse disorders,cms:icd10cm_order_2026
+F64,Gender identity disorders,cms:icd10cm_order_2026
+F65,Paraphilias,cms:icd10cm_order_2026
+F66,Other sexual disorders,cms:icd10cm_order_2026
+F68,Other disorders of adult personality and behavior,cms:icd10cm_order_2026
+F69,Unspecified disorder of adult personality and behavior,cms:icd10cm_order_2026
+F70,Mild intellectual disabilities,cms:icd10cm_order_2026
+F71,Moderate intellectual disabilities,cms:icd10cm_order_2026
+F72,Severe intellectual disabilities,cms:icd10cm_order_2026
+F73,Profound intellectual disabilities,cms:icd10cm_order_2026
+F78,Other intellectual disabilities,cms:icd10cm_order_2026
+F79,Unspecified intellectual disabilities,cms:icd10cm_order_2026
+F80,Specific developmental disorders of speech and language,cms:icd10cm_order_2026
+F81,Specific developmental disorders of scholastic skills,cms:icd10cm_order_2026
+F82,Specific developmental disorder of motor function,cms:icd10cm_order_2026
+F84,Pervasive developmental disorders,cms:icd10cm_order_2026
+F88,Other disorders of psychological development,cms:icd10cm_order_2026
+F89,Unspecified disorder of psychological development,cms:icd10cm_order_2026
+F90,Attention-deficit hyperactivity disorders,cms:icd10cm_order_2026
+F91,Conduct disorders,cms:icd10cm_order_2026
+F93,Emotional disorders with onset specific to childhood,cms:icd10cm_order_2026
+F94,Disorders of social functioning with onset specific to childhood and adolescence,cms:icd10cm_order_2026
+F95,Tic disorder,cms:icd10cm_order_2026
+F98,Other behavioral and emotional disorders with onset usually occurring in childhood and adolescence,cms:icd10cm_order_2026
+F99,"Mental disorder, not otherwise specified",cms:icd10cm_order_2026
+G00,"Bacterial meningitis, not elsewhere classified",cms:icd10cm_order_2026
+G01,Meningitis in bacterial diseases classified elsewhere,cms:icd10cm_order_2026
+G02,Meningitis in other infectious and parasitic diseases classified elsewhere,cms:icd10cm_order_2026
+G03,Meningitis due to other and unspecified causes,cms:icd10cm_order_2026
+G04,"Encephalitis, myelitis and encephalomyelitis",cms:icd10cm_order_2026
+G05,"Encephalitis, myelitis and encephalomyelitis in diseases classified elsewhere",cms:icd10cm_order_2026
+G06,Intracranial and intraspinal abscess and granuloma,cms:icd10cm_order_2026
+G07,Intracranial and intraspinal abscess and granuloma in diseases classified elsewhere,cms:icd10cm_order_2026
+G08,Intracranial and intraspinal phlebitis and thrombophlebitis,cms:icd10cm_order_2026
+G09,Sequelae of inflammatory diseases of central nervous system,cms:icd10cm_order_2026
+G10,Huntington's disease,cms:icd10cm_order_2026
+G11,Hereditary ataxia,cms:icd10cm_order_2026
+G12,Spinal muscular atrophy and related syndromes,cms:icd10cm_order_2026
+G13,Systemic atrophies primarily affecting central nervous system in diseases classified elsewhere,cms:icd10cm_order_2026
+G14,Postpolio syndrome,cms:icd10cm_order_2026
+G20,Parkinson's disease,cms:icd10cm_order_2026
+G21,Secondary parkinsonism,cms:icd10cm_order_2026
+G23,Other degenerative diseases of basal ganglia,cms:icd10cm_order_2026
+G24,Dystonia,cms:icd10cm_order_2026
+G25,Other extrapyramidal and movement disorders,cms:icd10cm_order_2026
+G26,Extrapyramidal and movement disorders in diseases classified elsewhere,cms:icd10cm_order_2026
+G30,Alzheimer's disease,cms:icd10cm_order_2026
+G31,"Other degenerative diseases of nervous system, not elsewhere classified",cms:icd10cm_order_2026
+G32,Other degenerative disorders of nervous system in diseases classified elsewhere,cms:icd10cm_order_2026
+G35,Multiple sclerosis,cms:icd10cm_order_2026
+G36,Other acute disseminated demyelination,cms:icd10cm_order_2026
+G37,Other demyelinating diseases of central nervous system,cms:icd10cm_order_2026
+G40,Epilepsy and recurrent seizures,cms:icd10cm_order_2026
+G43,Migraine,cms:icd10cm_order_2026
+G44,Other headache syndromes,cms:icd10cm_order_2026
+G45,Transient cerebral ischemic attacks and related syndromes,cms:icd10cm_order_2026
+G46,Vascular syndromes of brain in cerebrovascular diseases,cms:icd10cm_order_2026
+G47,Sleep disorders,cms:icd10cm_order_2026
+G50,Disorders of trigeminal nerve,cms:icd10cm_order_2026
+G51,Facial nerve disorders,cms:icd10cm_order_2026
+G52,Disorders of other cranial nerves,cms:icd10cm_order_2026
+G53,Cranial nerve disorders in diseases classified elsewhere,cms:icd10cm_order_2026
+G54,Nerve root and plexus disorders,cms:icd10cm_order_2026
+G55,Nerve root and plexus compressions in diseases classified elsewhere,cms:icd10cm_order_2026
+G56,Mononeuropathies of upper limb,cms:icd10cm_order_2026
+G57,Mononeuropathies of lower limb,cms:icd10cm_order_2026
+G58,Other mononeuropathies,cms:icd10cm_order_2026
+G59,Mononeuropathy in diseases classified elsewhere,cms:icd10cm_order_2026
+G60,Hereditary and idiopathic neuropathy,cms:icd10cm_order_2026
+G61,Inflammatory polyneuropathy,cms:icd10cm_order_2026
+G62,Other and unspecified polyneuropathies,cms:icd10cm_order_2026
+G63,Polyneuropathy in diseases classified elsewhere,cms:icd10cm_order_2026
+G64,Other disorders of peripheral nervous system,cms:icd10cm_order_2026
+G65,Sequelae of inflammatory and toxic polyneuropathies,cms:icd10cm_order_2026
+G70,Myasthenia gravis and other myoneural disorders,cms:icd10cm_order_2026
+G71,Primary disorders of muscles,cms:icd10cm_order_2026
+G72,Other and unspecified myopathies,cms:icd10cm_order_2026
+G73,Disorders of myoneural junction and muscle in diseases classified elsewhere,cms:icd10cm_order_2026
+G80,Cerebral palsy,cms:icd10cm_order_2026
+G81,Hemiplegia and hemiparesis,cms:icd10cm_order_2026
+G82,Paraplegia (paraparesis) and quadriplegia (quadriparesis),cms:icd10cm_order_2026
+G83,Other paralytic syndromes,cms:icd10cm_order_2026
+G89,"Pain, not elsewhere classified",cms:icd10cm_order_2026
+G90,Disorders of autonomic nervous system,cms:icd10cm_order_2026
+G91,Hydrocephalus,cms:icd10cm_order_2026
+G92,Toxic encephalopathy,cms:icd10cm_order_2026
+G93,Other disorders of brain,cms:icd10cm_order_2026
+G94,Other disorders of brain in diseases classified elsewhere,cms:icd10cm_order_2026
+G95,Other and unspecified diseases of spinal cord,cms:icd10cm_order_2026
+G96,Other disorders of central nervous system,cms:icd10cm_order_2026
+G97,"Intraoperative and postprocedural complications and disorders of nervous system, not elsewhere classified",cms:icd10cm_order_2026
+G98,Other disorders of nervous system not elsewhere classified,cms:icd10cm_order_2026
+G99,Other disorders of nervous system in diseases classified elsewhere,cms:icd10cm_order_2026
+H00,Hordeolum and chalazion,cms:icd10cm_order_2026
+H01,Other inflammation of eyelid,cms:icd10cm_order_2026
+H02,Other disorders of eyelid,cms:icd10cm_order_2026
+H04,Disorders of lacrimal system,cms:icd10cm_order_2026
+H05,Disorders of orbit,cms:icd10cm_order_2026
+H10,Conjunctivitis,cms:icd10cm_order_2026
+H11,Other disorders of conjunctiva,cms:icd10cm_order_2026
+H15,Disorders of sclera,cms:icd10cm_order_2026
+H16,Keratitis,cms:icd10cm_order_2026
+H17,Corneal scars and opacities,cms:icd10cm_order_2026
+H18,Other disorders of cornea,cms:icd10cm_order_2026
+H20,Iridocyclitis,cms:icd10cm_order_2026
+H21,Other disorders of iris and ciliary body,cms:icd10cm_order_2026
+H22,Disorders of iris and ciliary body in diseases classified elsewhere,cms:icd10cm_order_2026
+H25,Age-related cataract,cms:icd10cm_order_2026
+H26,Other cataract,cms:icd10cm_order_2026
+H27,Other disorders of lens,cms:icd10cm_order_2026
+H28,Cataract in diseases classified elsewhere,cms:icd10cm_order_2026
+H30,Chorioretinal inflammation,cms:icd10cm_order_2026
+H31,Other disorders of choroid,cms:icd10cm_order_2026
+H32,Chorioretinal disorders in diseases classified elsewhere,cms:icd10cm_order_2026
+H33,Retinal detachments and breaks,cms:icd10cm_order_2026
+H34,Retinal vascular occlusions,cms:icd10cm_order_2026
+H35,Other retinal disorders,cms:icd10cm_order_2026
+H36,Retinal disorders in diseases classified elsewhere,cms:icd10cm_order_2026
+H40,Glaucoma,cms:icd10cm_order_2026
+H42,Glaucoma in diseases classified elsewhere,cms:icd10cm_order_2026
+H43,Disorders of vitreous body,cms:icd10cm_order_2026
+H44,Disorders of globe,cms:icd10cm_order_2026
+H46,Optic neuritis,cms:icd10cm_order_2026
+H47,Other disorders of optic [2nd] nerve and visual pathways,cms:icd10cm_order_2026
+H49,Paralytic strabismus,cms:icd10cm_order_2026
+H50,Other strabismus,cms:icd10cm_order_2026
+H51,Other disorders of binocular movement,cms:icd10cm_order_2026
+H52,Disorders of refraction and accommodation,cms:icd10cm_order_2026
+H53,Visual disturbances,cms:icd10cm_order_2026
+H54,Blindness and low vision,cms:icd10cm_order_2026
+H55,Nystagmus and other irregular eye movements,cms:icd10cm_order_2026
+H57,Other disorders of eye and adnexa,cms:icd10cm_order_2026
+H59,"Intraoperative and postprocedural complications and disorders of eye and adnexa, not elsewhere classified",cms:icd10cm_order_2026
+H60,Otitis externa,cms:icd10cm_order_2026
+H61,Other disorders of external ear,cms:icd10cm_order_2026
+H62,Disorders of external ear in diseases classified elsewhere,cms:icd10cm_order_2026
+H65,Nonsuppurative otitis media,cms:icd10cm_order_2026
+H66,Suppurative and unspecified otitis media,cms:icd10cm_order_2026
+H67,Otitis media in diseases classified elsewhere,cms:icd10cm_order_2026
+H68,Eustachian salpingitis and obstruction,cms:icd10cm_order_2026
+H69,Other and unspecified disorders of Eustachian tube,cms:icd10cm_order_2026
+H70,Mastoiditis and related conditions,cms:icd10cm_order_2026
+H71,Cholesteatoma of middle ear,cms:icd10cm_order_2026
+H72,Perforation of tympanic membrane,cms:icd10cm_order_2026
+H73,Other disorders of tympanic membrane,cms:icd10cm_order_2026
+H74,Other disorders of middle ear mastoid,cms:icd10cm_order_2026
+H75,Other disorders of middle ear and mastoid in diseases classified elsewhere,cms:icd10cm_order_2026
+H80,Otosclerosis,cms:icd10cm_order_2026
+H81,Disorders of vestibular function,cms:icd10cm_order_2026
+H82,Vertiginous syndromes in diseases classified elsewhere,cms:icd10cm_order_2026
+H83,Other diseases of inner ear,cms:icd10cm_order_2026
+H90,Conductive and sensorineural hearing loss,cms:icd10cm_order_2026
+H91,Other and unspecified hearing loss,cms:icd10cm_order_2026
+H92,Otalgia and effusion of ear,cms:icd10cm_order_2026
+H93,"Other disorders of ear, not elsewhere classified",cms:icd10cm_order_2026
+H94,Other disorders of ear in diseases classified elsewhere,cms:icd10cm_order_2026
+H95,"Intraoperative and postprocedural complications and disorders of ear and mastoid process, not elsewhere classified",cms:icd10cm_order_2026
+I00,Rheumatic fever without heart involvement,cms:icd10cm_order_2026
+I01,Rheumatic fever with heart involvement,cms:icd10cm_order_2026
+I02,Rheumatic chorea,cms:icd10cm_order_2026
+I05,Rheumatic mitral valve diseases,cms:icd10cm_order_2026
+I06,Rheumatic aortic valve diseases,cms:icd10cm_order_2026
+I07,Rheumatic tricuspid valve diseases,cms:icd10cm_order_2026
+I08,Multiple valve diseases,cms:icd10cm_order_2026
+I09,Other rheumatic heart diseases,cms:icd10cm_order_2026
+I10,Essential (primary) hypertension,cms:icd10cm_order_2026
+I11,Hypertensive heart disease,cms:icd10cm_order_2026
+I12,Hypertensive chronic kidney disease,cms:icd10cm_order_2026
+I13,Hypertensive heart and chronic kidney disease,cms:icd10cm_order_2026
+I15,Secondary hypertension,cms:icd10cm_order_2026
+I16,Hypertensive crisis,cms:icd10cm_order_2026
+I1A,Other hypertension,cms:icd10cm_order_2026
+I20,Angina pectoris,cms:icd10cm_order_2026
+I21,Acute myocardial infarction,cms:icd10cm_order_2026
+I22,Subsequent ST elevation (STEMI) and non-ST elevation (NSTEMI) myocardial infarction,cms:icd10cm_order_2026
+I23,Certain current complications following ST elevation (STEMI) and non-ST elevation (NSTEMI) myocardial infarction (within the 28 day period),cms:icd10cm_order_2026
+I24,Other acute ischemic heart diseases,cms:icd10cm_order_2026
+I25,Chronic ischemic heart disease,cms:icd10cm_order_2026
+I26,Pulmonary embolism,cms:icd10cm_order_2026
+I27,Other pulmonary heart diseases,cms:icd10cm_order_2026
+I28,Other diseases of pulmonary vessels,cms:icd10cm_order_2026
+I30,Acute pericarditis,cms:icd10cm_order_2026
+I31,Other diseases of pericardium,cms:icd10cm_order_2026
+I32,Pericarditis in diseases classified elsewhere,cms:icd10cm_order_2026
+I33,Acute and subacute endocarditis,cms:icd10cm_order_2026
+I34,Nonrheumatic mitral valve disorders,cms:icd10cm_order_2026
+I35,Nonrheumatic aortic valve disorders,cms:icd10cm_order_2026
+I36,Nonrheumatic tricuspid valve disorders,cms:icd10cm_order_2026
+I37,Nonrheumatic pulmonary valve disorders,cms:icd10cm_order_2026
+I38,"Endocarditis, valve unspecified",cms:icd10cm_order_2026
+I39,Endocarditis and heart valve disorders in diseases classified elsewhere,cms:icd10cm_order_2026
+I40,Acute myocarditis,cms:icd10cm_order_2026
+I41,Myocarditis in diseases classified elsewhere,cms:icd10cm_order_2026
+I42,Cardiomyopathy,cms:icd10cm_order_2026
+I43,Cardiomyopathy in diseases classified elsewhere,cms:icd10cm_order_2026
+I44,Atrioventricular and left bundle-branch block,cms:icd10cm_order_2026
+I45,Other conduction disorders,cms:icd10cm_order_2026
+I46,Cardiac arrest,cms:icd10cm_order_2026
+I47,Paroxysmal tachycardia,cms:icd10cm_order_2026
+I48,Atrial fibrillation and flutter,cms:icd10cm_order_2026
+I49,Other cardiac arrhythmias,cms:icd10cm_order_2026
+I50,Heart failure,cms:icd10cm_order_2026
+I51,Complications and ill-defined descriptions of heart disease,cms:icd10cm_order_2026
+I52,Other heart disorders in diseases classified elsewhere,cms:icd10cm_order_2026
+I5A,Non-ischemic myocardial injury (non-traumatic),cms:icd10cm_order_2026
+I60,Nontraumatic subarachnoid hemorrhage,cms:icd10cm_order_2026
+I61,Nontraumatic intracerebral hemorrhage,cms:icd10cm_order_2026
+I62,Other and unspecified nontraumatic intracranial hemorrhage,cms:icd10cm_order_2026
+I63,Cerebral infarction,cms:icd10cm_order_2026
+I65,"Occlusion and stenosis of precerebral arteries, not resulting in cerebral infarction",cms:icd10cm_order_2026
+I66,"Occlusion and stenosis of cerebral arteries, not resulting in cerebral infarction",cms:icd10cm_order_2026
+I67,Other cerebrovascular diseases,cms:icd10cm_order_2026
+I68,Cerebrovascular disorders in diseases classified elsewhere,cms:icd10cm_order_2026
+I69,Sequelae of cerebrovascular disease,cms:icd10cm_order_2026
+I70,Atherosclerosis,cms:icd10cm_order_2026
+I71,Aortic aneurysm and dissection,cms:icd10cm_order_2026
+I72,Other aneurysm,cms:icd10cm_order_2026
+I73,Other peripheral vascular diseases,cms:icd10cm_order_2026
+I74,Arterial embolism and thrombosis,cms:icd10cm_order_2026
+I75,Atheroembolism,cms:icd10cm_order_2026
+I76,Septic arterial embolism,cms:icd10cm_order_2026
+I77,Other disorders of arteries and arterioles,cms:icd10cm_order_2026
+I78,Diseases of capillaries,cms:icd10cm_order_2026
+I79,"Disorders of arteries, arterioles and capillaries in diseases classified elsewhere",cms:icd10cm_order_2026
+I80,Phlebitis and thrombophlebitis,cms:icd10cm_order_2026
+I81,Portal vein thrombosis,cms:icd10cm_order_2026
+I82,Other venous embolism and thrombosis,cms:icd10cm_order_2026
+I83,Varicose veins of lower extremities,cms:icd10cm_order_2026
+I85,Esophageal varices,cms:icd10cm_order_2026
+I86,Varicose veins of other sites,cms:icd10cm_order_2026
+I87,Other disorders of veins,cms:icd10cm_order_2026
+I88,Nonspecific lymphadenitis,cms:icd10cm_order_2026
+I89,Other noninfective disorders of lymphatic vessels and lymph nodes,cms:icd10cm_order_2026
+I95,Hypotension,cms:icd10cm_order_2026
+I96,"Gangrene, not elsewhere classified",cms:icd10cm_order_2026
+I97,"Intraoperative and postprocedural complications and disorders of circulatory system, not elsewhere classified",cms:icd10cm_order_2026
+I99,Other and unspecified disorders of circulatory system,cms:icd10cm_order_2026
+J00,Acute nasopharyngitis [common cold],cms:icd10cm_order_2026
+J01,Acute sinusitis,cms:icd10cm_order_2026
+J02,Acute pharyngitis,cms:icd10cm_order_2026
+J03,Acute tonsillitis,cms:icd10cm_order_2026
+J04,Acute laryngitis and tracheitis,cms:icd10cm_order_2026
+J05,Acute obstructive laryngitis [croup] and epiglottitis,cms:icd10cm_order_2026
+J06,Acute upper respiratory infections of multiple and unspecified sites,cms:icd10cm_order_2026
+J09,Influenza due to certain identified influenza viruses,cms:icd10cm_order_2026
+J10,Influenza due to other identified influenza virus,cms:icd10cm_order_2026
+J11,Influenza due to unidentified influenza virus,cms:icd10cm_order_2026
+J12,"Viral pneumonia, not elsewhere classified",cms:icd10cm_order_2026
+J13,Pneumonia due to Streptococcus pneumoniae,cms:icd10cm_order_2026
+J14,Pneumonia due to Hemophilus influenzae,cms:icd10cm_order_2026
+J15,"Bacterial pneumonia, not elsewhere classified",cms:icd10cm_order_2026
+J16,"Pneumonia due to other infectious organisms, not elsewhere classified",cms:icd10cm_order_2026
+J17,Pneumonia in diseases classified elsewhere,cms:icd10cm_order_2026
+J18,"Pneumonia, unspecified organism",cms:icd10cm_order_2026
+J20,Acute bronchitis,cms:icd10cm_order_2026
+J21,Acute bronchiolitis,cms:icd10cm_order_2026
+J22,Unspecified acute lower respiratory infection,cms:icd10cm_order_2026
+J30,Vasomotor and allergic rhinitis,cms:icd10cm_order_2026
+J31,"Chronic rhinitis, nasopharyngitis and pharyngitis",cms:icd10cm_order_2026
+J32,Chronic sinusitis,cms:icd10cm_order_2026
+J33,Nasal polyp,cms:icd10cm_order_2026
+J34,Other and unspecified disorders of nose and nasal sinuses,cms:icd10cm_order_2026
+J35,Chronic diseases of tonsils and adenoids,cms:icd10cm_order_2026
+J36,Peritonsillar abscess,cms:icd10cm_order_2026
+J37,Chronic laryngitis and laryngotracheitis,cms:icd10cm_order_2026
+J38,"Diseases of vocal cords and larynx, not elsewhere classified",cms:icd10cm_order_2026
+J39,Other diseases of upper respiratory tract,cms:icd10cm_order_2026
+J40,"Bronchitis, not specified as acute or chronic",cms:icd10cm_order_2026
+J41,Simple and mucopurulent chronic bronchitis,cms:icd10cm_order_2026
+J42,Unspecified chronic bronchitis,cms:icd10cm_order_2026
+J43,Emphysema,cms:icd10cm_order_2026
+J44,Other chronic obstructive pulmonary disease,cms:icd10cm_order_2026
+J45,Asthma,cms:icd10cm_order_2026
+J47,Bronchiectasis,cms:icd10cm_order_2026
+J4A,Chronic lung allograft dysfunction,cms:icd10cm_order_2026
+J60,Coalworker's pneumoconiosis,cms:icd10cm_order_2026
+J61,Pneumoconiosis due to asbestos and other mineral fibers,cms:icd10cm_order_2026
+J62,Pneumoconiosis due to dust containing silica,cms:icd10cm_order_2026
+J63,Pneumoconiosis due to other inorganic dusts,cms:icd10cm_order_2026
+J64,Unspecified pneumoconiosis,cms:icd10cm_order_2026
+J65,Pneumoconiosis associated with tuberculosis,cms:icd10cm_order_2026
+J66,Airway disease due to specific organic dust,cms:icd10cm_order_2026
+J67,Hypersensitivity pneumonitis due to organic dust,cms:icd10cm_order_2026
+J68,"Respiratory conditions due to inhalation of chemicals, gases, fumes and vapors",cms:icd10cm_order_2026
+J69,Pneumonitis due to solids and liquids,cms:icd10cm_order_2026
+J70,Respiratory conditions due to other external agents,cms:icd10cm_order_2026
+J80,Acute respiratory distress syndrome,cms:icd10cm_order_2026
+J81,Pulmonary edema,cms:icd10cm_order_2026
+J82,"Pulmonary eosinophilia, not elsewhere classified",cms:icd10cm_order_2026
+J84,Other interstitial pulmonary diseases,cms:icd10cm_order_2026
+J85,Abscess of lung and mediastinum,cms:icd10cm_order_2026
+J86,Pyothorax,cms:icd10cm_order_2026
+J90,"Pleural effusion, not elsewhere classified",cms:icd10cm_order_2026
+J91,Pleural effusion in conditions classified elsewhere,cms:icd10cm_order_2026
+J92,Pleural plaque,cms:icd10cm_order_2026
+J93,Pneumothorax and air leak,cms:icd10cm_order_2026
+J94,Other pleural conditions,cms:icd10cm_order_2026
+J95,"Intraoperative and postprocedural complications and disorders of respiratory system, not elsewhere classified",cms:icd10cm_order_2026
+J96,"Respiratory failure, not elsewhere classified",cms:icd10cm_order_2026
+J98,Other respiratory disorders,cms:icd10cm_order_2026
+J99,Respiratory disorders in diseases classified elsewhere,cms:icd10cm_order_2026
+K00,Disorders of tooth development and eruption,cms:icd10cm_order_2026
+K01,Embedded and impacted teeth,cms:icd10cm_order_2026
+K02,Dental caries,cms:icd10cm_order_2026
+K03,Other diseases of hard tissues of teeth,cms:icd10cm_order_2026
+K04,Diseases of pulp and periapical tissues,cms:icd10cm_order_2026
+K05,Gingivitis and periodontal diseases,cms:icd10cm_order_2026
+K06,Other disorders of gingiva and edentulous alveolar ridge,cms:icd10cm_order_2026
+K08,Other disorders of teeth and supporting structures,cms:icd10cm_order_2026
+K09,"Cysts of oral region, not elsewhere classified",cms:icd10cm_order_2026
+K11,Diseases of salivary glands,cms:icd10cm_order_2026
+K12,Stomatitis and related lesions,cms:icd10cm_order_2026
+K13,Other diseases of lip and oral mucosa,cms:icd10cm_order_2026
+K14,Diseases of tongue,cms:icd10cm_order_2026
+K20,Esophagitis,cms:icd10cm_order_2026
+K21,Gastro-esophageal reflux disease,cms:icd10cm_order_2026
+K22,Other diseases of esophagus,cms:icd10cm_order_2026
+K23,Disorders of esophagus in diseases classified elsewhere,cms:icd10cm_order_2026
+K25,Gastric ulcer,cms:icd10cm_order_2026
+K26,Duodenal ulcer,cms:icd10cm_order_2026
+K27,"Peptic ulcer, site unspecified",cms:icd10cm_order_2026
+K28,Gastrojejunal ulcer,cms:icd10cm_order_2026
+K29,Gastritis and duodenitis,cms:icd10cm_order_2026
+K30,Functional dyspepsia,cms:icd10cm_order_2026
+K31,Other diseases of stomach and duodenum,cms:icd10cm_order_2026
+K35,Acute appendicitis,cms:icd10cm_order_2026
+K36,Other appendicitis,cms:icd10cm_order_2026
+K37,Unspecified appendicitis,cms:icd10cm_order_2026
+K38,Other diseases of appendix,cms:icd10cm_order_2026
+K40,Inguinal hernia,cms:icd10cm_order_2026
+K41,Femoral hernia,cms:icd10cm_order_2026
+K42,Umbilical hernia,cms:icd10cm_order_2026
+K43,Ventral hernia,cms:icd10cm_order_2026
+K44,Diaphragmatic hernia,cms:icd10cm_order_2026
+K45,Other abdominal hernia,cms:icd10cm_order_2026
+K46,Unspecified abdominal hernia,cms:icd10cm_order_2026
+K50,Crohn's disease [regional enteritis],cms:icd10cm_order_2026
+K51,Ulcerative colitis,cms:icd10cm_order_2026
+K52,Other and unspecified noninfective gastroenteritis and colitis,cms:icd10cm_order_2026
+K55,Vascular disorders of intestine,cms:icd10cm_order_2026
+K56,Paralytic ileus and intestinal obstruction without hernia,cms:icd10cm_order_2026
+K57,Diverticular disease of intestine,cms:icd10cm_order_2026
+K58,Irritable bowel syndrome,cms:icd10cm_order_2026
+K59,Other functional intestinal disorders,cms:icd10cm_order_2026
+K60,Fissure and fistula of anal and rectal regions,cms:icd10cm_order_2026
+K61,Abscess of anal and rectal regions,cms:icd10cm_order_2026
+K62,Other diseases of anus and rectum,cms:icd10cm_order_2026
+K63,Other diseases of intestine,cms:icd10cm_order_2026
+K64,Hemorrhoids and perianal venous thrombosis,cms:icd10cm_order_2026
+K65,Peritonitis,cms:icd10cm_order_2026
+K66,Other disorders of peritoneum,cms:icd10cm_order_2026
+K67,Disorders of peritoneum in infectious diseases classified elsewhere,cms:icd10cm_order_2026
+K68,Disorders of retroperitoneum,cms:icd10cm_order_2026
+K70,Alcoholic liver disease,cms:icd10cm_order_2026
+K71,Toxic liver disease,cms:icd10cm_order_2026
+K72,"Hepatic failure, not elsewhere classified",cms:icd10cm_order_2026
+K73,"Chronic hepatitis, not elsewhere classified",cms:icd10cm_order_2026
+K74,Fibrosis and cirrhosis of liver,cms:icd10cm_order_2026
+K75,Other inflammatory liver diseases,cms:icd10cm_order_2026
+K76,Other diseases of liver,cms:icd10cm_order_2026
+K77,Liver disorders in diseases classified elsewhere,cms:icd10cm_order_2026
+K80,Cholelithiasis,cms:icd10cm_order_2026
+K81,Cholecystitis,cms:icd10cm_order_2026
+K82,Other diseases of gallbladder,cms:icd10cm_order_2026
+K83,Other diseases of biliary tract,cms:icd10cm_order_2026
+K85,Acute pancreatitis,cms:icd10cm_order_2026
+K86,Other diseases of pancreas,cms:icd10cm_order_2026
+K87,"Disorders of gallbladder, biliary tract and pancreas in diseases classified elsewhere",cms:icd10cm_order_2026
+K90,Intestinal malabsorption,cms:icd10cm_order_2026
+K91,"Intraoperative and postprocedural complications and disorders of digestive system, not elsewhere classified",cms:icd10cm_order_2026
+K92,Other diseases of digestive system,cms:icd10cm_order_2026
+K94,Complications of artificial openings of the digestive system,cms:icd10cm_order_2026
+K95,Complications of bariatric procedures,cms:icd10cm_order_2026
+L00,Staphylococcal scalded skin syndrome,cms:icd10cm_order_2026
+L01,Impetigo,cms:icd10cm_order_2026
+L02,"Cutaneous abscess, furuncle and carbuncle",cms:icd10cm_order_2026
+L03,Cellulitis and acute lymphangitis,cms:icd10cm_order_2026
+L04,Acute lymphadenitis,cms:icd10cm_order_2026
+L05,Pilonidal cyst and sinus,cms:icd10cm_order_2026
+L08,Other local infections of skin and subcutaneous tissue,cms:icd10cm_order_2026
+L10,Pemphigus,cms:icd10cm_order_2026
+L11,Other acantholytic disorders,cms:icd10cm_order_2026
+L12,Pemphigoid,cms:icd10cm_order_2026
+L13,Other bullous disorders,cms:icd10cm_order_2026
+L14,Bullous disorders in diseases classified elsewhere,cms:icd10cm_order_2026
+L20,Atopic dermatitis,cms:icd10cm_order_2026
+L21,Seborrheic dermatitis,cms:icd10cm_order_2026
+L22,Diaper dermatitis,cms:icd10cm_order_2026
+L23,Allergic contact dermatitis,cms:icd10cm_order_2026
+L24,Irritant contact dermatitis,cms:icd10cm_order_2026
+L25,Unspecified contact dermatitis,cms:icd10cm_order_2026
+L26,Exfoliative dermatitis,cms:icd10cm_order_2026
+L27,Dermatitis due to substances taken internally,cms:icd10cm_order_2026
+L28,Lichen simplex chronicus and prurigo,cms:icd10cm_order_2026
+L29,Pruritus,cms:icd10cm_order_2026
+L30,Other and unspecified dermatitis,cms:icd10cm_order_2026
+L40,Psoriasis,cms:icd10cm_order_2026
+L41,Parapsoriasis,cms:icd10cm_order_2026
+L42,Pityriasis rosea,cms:icd10cm_order_2026
+L43,Lichen planus,cms:icd10cm_order_2026
+L44,Other papulosquamous disorders,cms:icd10cm_order_2026
+L45,Papulosquamous disorders in diseases classified elsewhere,cms:icd10cm_order_2026
+L49,Exfoliation due to erythematous conditions according to extent of body surface involved,cms:icd10cm_order_2026
+L50,Urticaria,cms:icd10cm_order_2026
+L51,Erythema multiforme,cms:icd10cm_order_2026
+L52,Erythema nodosum,cms:icd10cm_order_2026
+L53,Other erythematous conditions,cms:icd10cm_order_2026
+L54,Erythema in diseases classified elsewhere,cms:icd10cm_order_2026
+L55,Sunburn,cms:icd10cm_order_2026
+L56,Other acute skin changes due to ultraviolet radiation,cms:icd10cm_order_2026
+L57,Skin changes due to chronic exposure to nonionizing radiation,cms:icd10cm_order_2026
+L58,Radiodermatitis,cms:icd10cm_order_2026
+L59,Other disorders of skin and subcutaneous tissue related to radiation,cms:icd10cm_order_2026
+L60,Nail disorders,cms:icd10cm_order_2026
+L62,Nail disorders in diseases classified elsewhere,cms:icd10cm_order_2026
+L63,Alopecia areata,cms:icd10cm_order_2026
+L64,Androgenic alopecia,cms:icd10cm_order_2026
+L65,Other nonscarring hair loss,cms:icd10cm_order_2026
+L66,Cicatricial alopecia [scarring hair loss],cms:icd10cm_order_2026
+L67,Hair color and hair shaft abnormalities,cms:icd10cm_order_2026
+L68,Hypertrichosis,cms:icd10cm_order_2026
+L70,Acne,cms:icd10cm_order_2026
+L71,Rosacea,cms:icd10cm_order_2026
+L72,Follicular cysts of skin and subcutaneous tissue,cms:icd10cm_order_2026
+L73,Other follicular disorders,cms:icd10cm_order_2026
+L74,Eccrine sweat disorders,cms:icd10cm_order_2026
+L75,Apocrine sweat disorders,cms:icd10cm_order_2026
+L76,Intraoperative and postprocedural complications of skin and subcutaneous tissue,cms:icd10cm_order_2026
+L80,Vitiligo,cms:icd10cm_order_2026
+L81,Other disorders of pigmentation,cms:icd10cm_order_2026
+L82,Seborrheic keratosis,cms:icd10cm_order_2026
+L83,Acanthosis nigricans,cms:icd10cm_order_2026
+L84,Corns and callosities,cms:icd10cm_order_2026
+L85,Other epidermal thickening,cms:icd10cm_order_2026
+L86,Keratoderma in diseases classified elsewhere,cms:icd10cm_order_2026
+L87,Transepidermal elimination disorders,cms:icd10cm_order_2026
+L88,Pyoderma gangrenosum,cms:icd10cm_order_2026
+L89,Pressure ulcer,cms:icd10cm_order_2026
+L90,Atrophic disorders of skin,cms:icd10cm_order_2026
+L91,Hypertrophic disorders of skin,cms:icd10cm_order_2026
+L92,Granulomatous disorders of skin and subcutaneous tissue,cms:icd10cm_order_2026
+L93,Lupus erythematosus,cms:icd10cm_order_2026
+L94,Other localized connective tissue disorders,cms:icd10cm_order_2026
+L95,"Vasculitis limited to skin, not elsewhere classified",cms:icd10cm_order_2026
+L97,"Non-pressure chronic ulcer of lower limb, not elsewhere classified",cms:icd10cm_order_2026
+L98,"Other disorders of skin and subcutaneous tissue, not elsewhere classified",cms:icd10cm_order_2026
+L99,Other disorders of skin and subcutaneous tissue in diseases classified elsewhere,cms:icd10cm_order_2026
+M00,Pyogenic arthritis,cms:icd10cm_order_2026
+M01,Direct infections of joint in infectious and parasitic diseases classified elsewhere,cms:icd10cm_order_2026
+M02,Postinfective and reactive arthropathies,cms:icd10cm_order_2026
+M04,Autoinflammatory syndromes,cms:icd10cm_order_2026
+M05,Rheumatoid arthritis with rheumatoid factor,cms:icd10cm_order_2026
+M06,Other rheumatoid arthritis,cms:icd10cm_order_2026
+M07,Enteropathic arthropathies,cms:icd10cm_order_2026
+M08,Juvenile arthritis,cms:icd10cm_order_2026
+M10,Gout,cms:icd10cm_order_2026
+M11,Other crystal arthropathies,cms:icd10cm_order_2026
+M12,Other and unspecified arthropathy,cms:icd10cm_order_2026
+M13,Other arthritis,cms:icd10cm_order_2026
+M14,Arthropathies in other diseases classified elsewhere,cms:icd10cm_order_2026
+M15,Polyosteoarthritis,cms:icd10cm_order_2026
+M16,Osteoarthritis of hip,cms:icd10cm_order_2026
+M17,Osteoarthritis of knee,cms:icd10cm_order_2026
+M18,Osteoarthritis of first carpometacarpal joint,cms:icd10cm_order_2026
+M19,Other and unspecified osteoarthritis,cms:icd10cm_order_2026
+M1A,Chronic gout,cms:icd10cm_order_2026
+M20,Acquired deformities of fingers and toes,cms:icd10cm_order_2026
+M21,Other acquired deformities of limbs,cms:icd10cm_order_2026
+M22,Disorder of patella,cms:icd10cm_order_2026
+M23,Internal derangement of knee,cms:icd10cm_order_2026
+M24,Other specific joint derangements,cms:icd10cm_order_2026
+M25,"Other joint disorder, not elsewhere classified",cms:icd10cm_order_2026
+M26,Dentofacial anomalies [including malocclusion],cms:icd10cm_order_2026
+M27,Other diseases of jaws,cms:icd10cm_order_2026
+M30,Polyarteritis nodosa and related conditions,cms:icd10cm_order_2026
+M31,Other necrotizing vasculopathies,cms:icd10cm_order_2026
+M32,Systemic lupus erythematosus (SLE),cms:icd10cm_order_2026
+M33,Dermatopolymyositis,cms:icd10cm_order_2026
+M34,Systemic sclerosis [scleroderma],cms:icd10cm_order_2026
+M35,Other systemic involvement of connective tissue,cms:icd10cm_order_2026
+M36,Systemic disorders of connective tissue in diseases classified elsewhere,cms:icd10cm_order_2026
+M40,Kyphosis and lordosis,cms:icd10cm_order_2026
+M41,Scoliosis,cms:icd10cm_order_2026
+M42,Spinal osteochondrosis,cms:icd10cm_order_2026
+M43,Other deforming dorsopathies,cms:icd10cm_order_2026
+M45,Ankylosing spondylitis,cms:icd10cm_order_2026
+M46,Other inflammatory spondylopathies,cms:icd10cm_order_2026
+M47,Spondylosis,cms:icd10cm_order_2026
+M48,Other spondylopathies,cms:icd10cm_order_2026
+M49,Spondylopathies in diseases classified elsewhere,cms:icd10cm_order_2026
+M50,Cervical disc disorders,cms:icd10cm_order_2026
+M51,"Thoracic, thoracolumbar, and lumbosacral intervertebral disc disorders",cms:icd10cm_order_2026
+M53,"Other and unspecified dorsopathies, not elsewhere classified",cms:icd10cm_order_2026
+M54,Dorsalgia,cms:icd10cm_order_2026
+M60,Myositis,cms:icd10cm_order_2026
+M61,Calcification and ossification of muscle,cms:icd10cm_order_2026
+M62,Other disorders of muscle,cms:icd10cm_order_2026
+M63,Disorders of muscle in diseases classified elsewhere,cms:icd10cm_order_2026
+M65,Synovitis and tenosynovitis,cms:icd10cm_order_2026
+M66,Spontaneous rupture of synovium and tendon,cms:icd10cm_order_2026
+M67,Other disorders of synovium and tendon,cms:icd10cm_order_2026
+M70,"Soft tissue disorders related to use, overuse and pressure",cms:icd10cm_order_2026
+M71,Other bursopathies,cms:icd10cm_order_2026
+M72,Fibroblastic disorders,cms:icd10cm_order_2026
+M75,Shoulder lesions,cms:icd10cm_order_2026
+M76,"Enthesopathies, lower limb, excluding foot",cms:icd10cm_order_2026
+M77,Other enthesopathies,cms:icd10cm_order_2026
+M79,"Other and unspecified soft tissue disorders, not elsewhere classified",cms:icd10cm_order_2026
+M80,Osteoporosis with current pathological fracture,cms:icd10cm_order_2026
+M81,Osteoporosis without current pathological fracture,cms:icd10cm_order_2026
+M83,Adult osteomalacia,cms:icd10cm_order_2026
+M84,Disorder of continuity of bone,cms:icd10cm_order_2026
+M85,Other disorders of bone density and structure,cms:icd10cm_order_2026
+M86,Osteomyelitis,cms:icd10cm_order_2026
+M87,Osteonecrosis,cms:icd10cm_order_2026
+M88,Osteitis deformans [Paget's disease of bone],cms:icd10cm_order_2026
+M89,Other disorders of bone,cms:icd10cm_order_2026
+M90,Osteopathies in diseases classified elsewhere,cms:icd10cm_order_2026
+M91,Juvenile osteochondrosis of hip and pelvis,cms:icd10cm_order_2026
+M92,Other juvenile osteochondrosis,cms:icd10cm_order_2026
+M93,Other osteochondropathies,cms:icd10cm_order_2026
+M94,Other disorders of cartilage,cms:icd10cm_order_2026
+M95,Other acquired deformities of musculoskeletal system and connective tissue,cms:icd10cm_order_2026
+M96,"Intraoperative and postprocedural complications and disorders of musculoskeletal system, not elsewhere classified",cms:icd10cm_order_2026
+M97,Periprosthetic fracture around internal prosthetic joint,cms:icd10cm_order_2026
+M99,"Biomechanical lesions, not elsewhere classified",cms:icd10cm_order_2026
+N00,Acute nephritic syndrome,cms:icd10cm_order_2026
+N01,Rapidly progressive nephritic syndrome,cms:icd10cm_order_2026
+N02,Recurrent and persistent hematuria,cms:icd10cm_order_2026
+N03,Chronic nephritic syndrome,cms:icd10cm_order_2026
+N04,Nephrotic syndrome,cms:icd10cm_order_2026
+N05,Unspecified nephritic syndrome,cms:icd10cm_order_2026
+N06,Isolated proteinuria with specified morphological lesion,cms:icd10cm_order_2026
+N07,"Hereditary nephropathy, not elsewhere classified",cms:icd10cm_order_2026
+N08,Glomerular disorders in diseases classified elsewhere,cms:icd10cm_order_2026
+N10,Acute pyelonephritis,cms:icd10cm_order_2026
+N11,Chronic tubulo-interstitial nephritis,cms:icd10cm_order_2026
+N12,"Tubulo-interstitial nephritis, not specified as acute or chronic",cms:icd10cm_order_2026
+N13,Obstructive and reflux uropathy,cms:icd10cm_order_2026
+N14,Drug- and heavy-metal-induced tubulo-interstitial and tubular conditions,cms:icd10cm_order_2026
+N15,Other renal tubulo-interstitial diseases,cms:icd10cm_order_2026
+N16,Renal tubulo-interstitial disorders in diseases classified elsewhere,cms:icd10cm_order_2026
+N17,Acute kidney failure,cms:icd10cm_order_2026
+N18,Chronic kidney disease (CKD),cms:icd10cm_order_2026
+N19,Unspecified kidney failure,cms:icd10cm_order_2026
+N20,Calculus of kidney and ureter,cms:icd10cm_order_2026
+N21,Calculus of lower urinary tract,cms:icd10cm_order_2026
+N22,Calculus of urinary tract in diseases classified elsewhere,cms:icd10cm_order_2026
+N23,Unspecified renal colic,cms:icd10cm_order_2026
+N25,Disorders resulting from impaired renal tubular function,cms:icd10cm_order_2026
+N26,Unspecified contracted kidney,cms:icd10cm_order_2026
+N27,Small kidney of unknown cause,cms:icd10cm_order_2026
+N28,"Other disorders of kidney and ureter, not elsewhere classified",cms:icd10cm_order_2026
+N29,Other disorders of kidney and ureter in diseases classified elsewhere,cms:icd10cm_order_2026
+N30,Cystitis,cms:icd10cm_order_2026
+N31,"Neuromuscular dysfunction of bladder, not elsewhere classified",cms:icd10cm_order_2026
+N32,Other disorders of bladder,cms:icd10cm_order_2026
+N33,Bladder disorders in diseases classified elsewhere,cms:icd10cm_order_2026
+N34,Urethritis and urethral syndrome,cms:icd10cm_order_2026
+N35,Urethral stricture,cms:icd10cm_order_2026
+N36,Other disorders of urethra,cms:icd10cm_order_2026
+N37,Urethral disorders in diseases classified elsewhere,cms:icd10cm_order_2026
+N39,Other disorders of urinary system,cms:icd10cm_order_2026
+N40,Benign prostatic hyperplasia,cms:icd10cm_order_2026
+N41,Inflammatory diseases of prostate,cms:icd10cm_order_2026
+N42,Other and unspecified disorders of prostate,cms:icd10cm_order_2026
+N43,Hydrocele and spermatocele,cms:icd10cm_order_2026
+N44,Noninflammatory disorders of testis,cms:icd10cm_order_2026
+N45,Orchitis and epididymitis,cms:icd10cm_order_2026
+N46,Male infertility,cms:icd10cm_order_2026
+N47,Disorders of prepuce,cms:icd10cm_order_2026
+N48,Other disorders of penis,cms:icd10cm_order_2026
+N49,"Inflammatory disorders of male genital organs, not elsewhere classified",cms:icd10cm_order_2026
+N50,Other and unspecified disorders of male genital organs,cms:icd10cm_order_2026
+N51,Disorders of male genital organs in diseases classified elsewhere,cms:icd10cm_order_2026
+N52,Male erectile dysfunction,cms:icd10cm_order_2026
+N53,Other male sexual dysfunction,cms:icd10cm_order_2026
+N60,Benign mammary dysplasia,cms:icd10cm_order_2026
+N61,Inflammatory disorders of breast,cms:icd10cm_order_2026
+N62,Hypertrophy of breast,cms:icd10cm_order_2026
+N63,Unspecified lump in breast,cms:icd10cm_order_2026
+N64,Other disorders of breast,cms:icd10cm_order_2026
+N65,Deformity and disproportion of reconstructed breast,cms:icd10cm_order_2026
+N70,Salpingitis and oophoritis,cms:icd10cm_order_2026
+N71,"Inflammatory disease of uterus, except cervix",cms:icd10cm_order_2026
+N72,Inflammatory disease of cervix uteri,cms:icd10cm_order_2026
+N73,Other female pelvic inflammatory diseases,cms:icd10cm_order_2026
+N74,Female pelvic inflammatory disorders in diseases classified elsewhere,cms:icd10cm_order_2026
+N75,Diseases of Bartholin's gland,cms:icd10cm_order_2026
+N76,Other inflammation of vagina and vulva,cms:icd10cm_order_2026
+N77,Vulvovaginal ulceration and inflammation in diseases classified elsewhere,cms:icd10cm_order_2026
+N80,Endometriosis,cms:icd10cm_order_2026
+N81,Female genital prolapse,cms:icd10cm_order_2026
+N82,Fistulae involving female genital tract,cms:icd10cm_order_2026
+N83,"Noninflammatory disorders of ovary, fallopian tube and broad ligament",cms:icd10cm_order_2026
+N84,Polyp of female genital tract,cms:icd10cm_order_2026
+N85,"Other noninflammatory disorders of uterus, except cervix",cms:icd10cm_order_2026
+N86,Erosion and ectropion of cervix uteri,cms:icd10cm_order_2026
+N87,Dysplasia of cervix uteri,cms:icd10cm_order_2026
+N88,Other noninflammatory disorders of cervix uteri,cms:icd10cm_order_2026
+N89,Other noninflammatory disorders of vagina,cms:icd10cm_order_2026
+N90,Other noninflammatory disorders of vulva and perineum,cms:icd10cm_order_2026
+N91,"Absent, scanty and rare menstruation",cms:icd10cm_order_2026
+N92,"Excessive, frequent and irregular menstruation",cms:icd10cm_order_2026
+N93,Other abnormal uterine and vaginal bleeding,cms:icd10cm_order_2026
+N94,Pain and other conditions associated with female genital organs and menstrual cycle,cms:icd10cm_order_2026
+N95,Menopausal and other perimenopausal disorders,cms:icd10cm_order_2026
+N96,Recurrent pregnancy loss,cms:icd10cm_order_2026
+N97,Female infertility,cms:icd10cm_order_2026
+N98,Complications associated with artificial fertilization,cms:icd10cm_order_2026
+N99,"Intraoperative and postprocedural complications and disorders of genitourinary system, not elsewhere classified",cms:icd10cm_order_2026
+O00,Ectopic pregnancy,cms:icd10cm_order_2026
+O01,Hydatidiform mole,cms:icd10cm_order_2026
+O02,Other abnormal products of conception,cms:icd10cm_order_2026
+O03,Spontaneous abortion,cms:icd10cm_order_2026
+O04,Complications following (induced) termination of pregnancy,cms:icd10cm_order_2026
+O07,Failed attempted termination of pregnancy,cms:icd10cm_order_2026
+O08,Complications following ectopic and molar pregnancy,cms:icd10cm_order_2026
+O09,Supervision of high risk pregnancy,cms:icd10cm_order_2026
+O10,"Pre-existing hypertension complicating pregnancy, childbirth and the puerperium",cms:icd10cm_order_2026
+O11,Pre-existing hypertension with pre-eclampsia,cms:icd10cm_order_2026
+O12,Gestational [pregnancy-induced] edema and proteinuria without hypertension,cms:icd10cm_order_2026
+O13,Gestational [pregnancy-induced] hypertension without significant proteinuria,cms:icd10cm_order_2026
+O14,Pre-eclampsia,cms:icd10cm_order_2026
+O15,Eclampsia,cms:icd10cm_order_2026
+O16,Unspecified maternal hypertension,cms:icd10cm_order_2026
+O20,Hemorrhage in early pregnancy,cms:icd10cm_order_2026
+O21,Excessive vomiting in pregnancy,cms:icd10cm_order_2026
+O22,Venous complications and hemorrhoids in pregnancy,cms:icd10cm_order_2026
+O23,Infections of genitourinary tract in pregnancy,cms:icd10cm_order_2026
+O24,"Diabetes mellitus in pregnancy, childbirth, and the puerperium",cms:icd10cm_order_2026
+O25,"Malnutrition in pregnancy, childbirth and the puerperium",cms:icd10cm_order_2026
+O26,Maternal care for other conditions predominantly related to pregnancy,cms:icd10cm_order_2026
+O28,Abnormal findings on antenatal screening of mother,cms:icd10cm_order_2026
+O29,Complications of anesthesia during pregnancy,cms:icd10cm_order_2026
+O30,Multiple gestation,cms:icd10cm_order_2026
+O31,Complications specific to multiple gestation,cms:icd10cm_order_2026
+O32,Maternal care for malpresentation of fetus,cms:icd10cm_order_2026
+O33,Maternal care for disproportion,cms:icd10cm_order_2026
+O34,Maternal care for abnormality of pelvic organs,cms:icd10cm_order_2026
+O35,Maternal care for known or suspected fetal abnormality and damage,cms:icd10cm_order_2026
+O36,Maternal care for other fetal problems,cms:icd10cm_order_2026
+O40,Polyhydramnios,cms:icd10cm_order_2026
+O41,Other disorders of amniotic fluid and membranes,cms:icd10cm_order_2026
+O42,Premature rupture of membranes,cms:icd10cm_order_2026
+O43,Placental disorders,cms:icd10cm_order_2026
+O44,Placenta previa,cms:icd10cm_order_2026
+O45,Premature separation of placenta [abruptio placentae],cms:icd10cm_order_2026
+O46,"Antepartum hemorrhage, not elsewhere classified",cms:icd10cm_order_2026
+O47,False labor,cms:icd10cm_order_2026
+O48,Late pregnancy,cms:icd10cm_order_2026
+O60,Preterm labor,cms:icd10cm_order_2026
+O61,Failed induction of labor,cms:icd10cm_order_2026
+O62,Abnormalities of forces of labor,cms:icd10cm_order_2026
+O63,Long labor,cms:icd10cm_order_2026
+O64,Obstructed labor due to malposition and malpresentation of fetus,cms:icd10cm_order_2026
+O65,Obstructed labor due to maternal pelvic abnormality,cms:icd10cm_order_2026
+O66,Other obstructed labor,cms:icd10cm_order_2026
+O67,"Labor and delivery complicated by intrapartum hemorrhage, not elsewhere classified",cms:icd10cm_order_2026
+O68,Labor and delivery complicated by abnormality of fetal acid-base balance,cms:icd10cm_order_2026
+O69,Labor and delivery complicated by umbilical cord complications,cms:icd10cm_order_2026
+O70,Perineal laceration during delivery,cms:icd10cm_order_2026
+O71,Other obstetric trauma,cms:icd10cm_order_2026
+O72,Postpartum hemorrhage,cms:icd10cm_order_2026
+O73,"Retained placenta and membranes, without hemorrhage",cms:icd10cm_order_2026
+O74,Complications of anesthesia during labor and delivery,cms:icd10cm_order_2026
+O75,"Other complications of labor and delivery, not elsewhere classified",cms:icd10cm_order_2026
+O76,Abnormality in fetal heart rate and rhythm complicating labor and delivery,cms:icd10cm_order_2026
+O77,Other fetal stress complicating labor and delivery,cms:icd10cm_order_2026
+O80,Encounter for full-term uncomplicated delivery,cms:icd10cm_order_2026
+O82,Encounter for cesarean delivery without indication,cms:icd10cm_order_2026
+O85,Puerperal sepsis,cms:icd10cm_order_2026
+O86,Other puerperal infections,cms:icd10cm_order_2026
+O87,Venous complications and hemorrhoids in the puerperium,cms:icd10cm_order_2026
+O88,Obstetric embolism,cms:icd10cm_order_2026
+O89,Complications of anesthesia during the puerperium,cms:icd10cm_order_2026
+O90,"Complications of the puerperium, not elsewhere classified",cms:icd10cm_order_2026
+O91,"Infections of breast associated with pregnancy, the puerperium and lactation",cms:icd10cm_order_2026
+O92,Other disorders of breast and disorders of lactation associated with pregnancy and the puerperium,cms:icd10cm_order_2026
+O94,"Sequelae of complication of pregnancy, childbirth, and the puerperium",cms:icd10cm_order_2026
+O98,"Maternal infectious and parasitic diseases classifiable elsewhere but complicating pregnancy, childbirth and the puerperium",cms:icd10cm_order_2026
+O99,"Other maternal diseases classifiable elsewhere but complicating pregnancy, childbirth and the puerperium",cms:icd10cm_order_2026
+O9A,"Maternal malignant neoplasms, traumatic injuries and abuse classifiable elsewhere but complicating pregnancy, childbirth and the puerperium",cms:icd10cm_order_2026
+P00,Newborn affected by maternal conditions that may be unrelated to present pregnancy,cms:icd10cm_order_2026
+P01,Newborn affected by maternal complications of pregnancy,cms:icd10cm_order_2026
+P02,"Newborn affected by complications of placenta, cord and membranes",cms:icd10cm_order_2026
+P03,Newborn affected by other complications of labor and delivery,cms:icd10cm_order_2026
+P04,Newborn affected by noxious substances transmitted via placenta or breast milk,cms:icd10cm_order_2026
+P05,Disorders of newborn related to slow fetal growth and fetal malnutrition,cms:icd10cm_order_2026
+P07,"Disorders of newborn related to short gestation and low birth weight, not elsewhere classified",cms:icd10cm_order_2026
+P08,Disorders of newborn related to long gestation and high birth weight,cms:icd10cm_order_2026
+P09,Abnormal findings on neonatal screening,cms:icd10cm_order_2026
+P10,Intracranial laceration and hemorrhage due to birth injury,cms:icd10cm_order_2026
+P11,Other birth injuries to central nervous system,cms:icd10cm_order_2026
+P12,Birth injury to scalp,cms:icd10cm_order_2026
+P13,Birth injury to skeleton,cms:icd10cm_order_2026
+P14,Birth injury to peripheral nervous system,cms:icd10cm_order_2026
+P15,Other birth injuries,cms:icd10cm_order_2026
+P19,Metabolic acidemia in newborn,cms:icd10cm_order_2026
+P22,Respiratory distress of newborn,cms:icd10cm_order_2026
+P23,Congenital pneumonia,cms:icd10cm_order_2026
+P24,Neonatal aspiration,cms:icd10cm_order_2026
+P25,Interstitial emphysema and related conditions originating in the perinatal period,cms:icd10cm_order_2026
+P26,Pulmonary hemorrhage originating in the perinatal period,cms:icd10cm_order_2026
+P27,Chronic respiratory disease originating in the perinatal period,cms:icd10cm_order_2026
+P28,Other respiratory conditions originating in the perinatal period,cms:icd10cm_order_2026
+P29,Cardiovascular disorders originating in the perinatal period,cms:icd10cm_order_2026
+P35,Congenital viral diseases,cms:icd10cm_order_2026
+P36,Bacterial sepsis of newborn,cms:icd10cm_order_2026
+P37,Other congenital infectious and parasitic diseases,cms:icd10cm_order_2026
+P38,Omphalitis of newborn,cms:icd10cm_order_2026
+P39,Other infections specific to the perinatal period,cms:icd10cm_order_2026
+P50,Newborn affected by intrauterine (fetal) blood loss,cms:icd10cm_order_2026
+P51,Umbilical hemorrhage of newborn,cms:icd10cm_order_2026
+P52,Intracranial nontraumatic hemorrhage of newborn,cms:icd10cm_order_2026
+P53,Hemorrhagic disease of newborn,cms:icd10cm_order_2026
+P54,Other neonatal hemorrhages,cms:icd10cm_order_2026
+P55,Hemolytic disease of newborn,cms:icd10cm_order_2026
+P56,Hydrops fetalis due to hemolytic disease,cms:icd10cm_order_2026
+P57,Kernicterus,cms:icd10cm_order_2026
+P58,Neonatal jaundice due to other excessive hemolysis,cms:icd10cm_order_2026
+P59,Neonatal jaundice from other and unspecified causes,cms:icd10cm_order_2026
+P60,Disseminated intravascular coagulation of newborn,cms:icd10cm_order_2026
+P61,Other perinatal hematological disorders,cms:icd10cm_order_2026
+P70,Transitory disorders of carbohydrate metabolism specific to newborn,cms:icd10cm_order_2026
+P71,Transitory neonatal disorders of calcium and magnesium metabolism,cms:icd10cm_order_2026
+P72,Other transitory neonatal endocrine disorders,cms:icd10cm_order_2026
+P74,Other transitory neonatal electrolyte and metabolic disturbances,cms:icd10cm_order_2026
+P76,Other intestinal obstruction of newborn,cms:icd10cm_order_2026
+P77,Necrotizing enterocolitis of newborn,cms:icd10cm_order_2026
+P78,Other perinatal digestive system disorders,cms:icd10cm_order_2026
+P80,Hypothermia of newborn,cms:icd10cm_order_2026
+P81,Other disturbances of temperature regulation of newborn,cms:icd10cm_order_2026
+P83,Other conditions of integument specific to newborn,cms:icd10cm_order_2026
+P84,Other problems with newborn,cms:icd10cm_order_2026
+P90,Convulsions of newborn,cms:icd10cm_order_2026
+P91,Other disturbances of cerebral status of newborn,cms:icd10cm_order_2026
+P92,Feeding problems of newborn,cms:icd10cm_order_2026
+P93,Reactions and intoxications due to drugs administered to newborn,cms:icd10cm_order_2026
+P94,Disorders of muscle tone of newborn,cms:icd10cm_order_2026
+P95,Stillbirth,cms:icd10cm_order_2026
+P96,Other conditions originating in the perinatal period,cms:icd10cm_order_2026
+Q00,Anencephaly and similar malformations,cms:icd10cm_order_2026
+Q01,Encephalocele,cms:icd10cm_order_2026
+Q02,Microcephaly,cms:icd10cm_order_2026
+Q03,Congenital hydrocephalus,cms:icd10cm_order_2026
+Q04,Other congenital malformations of brain,cms:icd10cm_order_2026
+Q05,Spina bifida,cms:icd10cm_order_2026
+Q06,Other congenital malformations of spinal cord,cms:icd10cm_order_2026
+Q07,Other congenital malformations of nervous system,cms:icd10cm_order_2026
+Q10,"Congenital malformations of eyelid, lacrimal apparatus and orbit",cms:icd10cm_order_2026
+Q11,"Anophthalmos, microphthalmos and macrophthalmos",cms:icd10cm_order_2026
+Q12,Congenital lens malformations,cms:icd10cm_order_2026
+Q13,Congenital malformations of anterior segment of eye,cms:icd10cm_order_2026
+Q14,Congenital malformations of posterior segment of eye,cms:icd10cm_order_2026
+Q15,Other congenital malformations of eye,cms:icd10cm_order_2026
+Q16,Congenital malformations of ear causing impairment of hearing,cms:icd10cm_order_2026
+Q17,Other congenital malformations of ear,cms:icd10cm_order_2026
+Q18,Other congenital malformations of face and neck,cms:icd10cm_order_2026
+Q20,Congenital malformations of cardiac chambers and connections,cms:icd10cm_order_2026
+Q21,Congenital malformations of cardiac septa,cms:icd10cm_order_2026
+Q22,Congenital malformations of pulmonary and tricuspid valves,cms:icd10cm_order_2026
+Q23,Congenital malformations of aortic and mitral valves,cms:icd10cm_order_2026
+Q24,Other congenital malformations of heart,cms:icd10cm_order_2026
+Q25,Congenital malformations of great arteries,cms:icd10cm_order_2026
+Q26,Congenital malformations of great veins,cms:icd10cm_order_2026
+Q27,Other congenital malformations of peripheral vascular system,cms:icd10cm_order_2026
+Q28,Other congenital malformations of circulatory system,cms:icd10cm_order_2026
+Q30,Congenital malformations of nose,cms:icd10cm_order_2026
+Q31,Congenital malformations of larynx,cms:icd10cm_order_2026
+Q32,Congenital malformations of trachea and bronchus,cms:icd10cm_order_2026
+Q33,Congenital malformations of lung,cms:icd10cm_order_2026
+Q34,Other congenital malformations of respiratory system,cms:icd10cm_order_2026
+Q35,Cleft palate,cms:icd10cm_order_2026
+Q36,Cleft lip,cms:icd10cm_order_2026
+Q37,Cleft palate with cleft lip,cms:icd10cm_order_2026
+Q38,"Other congenital malformations of tongue, mouth and pharynx",cms:icd10cm_order_2026
+Q39,Congenital malformations of esophagus,cms:icd10cm_order_2026
+Q40,Other congenital malformations of upper alimentary tract,cms:icd10cm_order_2026
+Q41,"Congenital absence, atresia and stenosis of small intestine",cms:icd10cm_order_2026
+Q42,"Congenital absence, atresia and stenosis of large intestine",cms:icd10cm_order_2026
+Q43,Other congenital malformations of intestine,cms:icd10cm_order_2026
+Q44,"Congenital malformations of gallbladder, bile ducts and liver",cms:icd10cm_order_2026
+Q45,Other congenital malformations of digestive system,cms:icd10cm_order_2026
+Q50,"Congenital malformations of ovaries, fallopian tubes and broad ligaments",cms:icd10cm_order_2026
+Q51,Congenital malformations of uterus and cervix,cms:icd10cm_order_2026
+Q52,Other congenital malformations of female genitalia,cms:icd10cm_order_2026
+Q53,Undescended and ectopic testicle,cms:icd10cm_order_2026
+Q54,Hypospadias,cms:icd10cm_order_2026
+Q55,Other congenital malformations of male genital organs,cms:icd10cm_order_2026
+Q56,Indeterminate sex and pseudohermaphroditism,cms:icd10cm_order_2026
+Q60,Renal agenesis and other reduction defects of kidney,cms:icd10cm_order_2026
+Q61,Cystic kidney disease,cms:icd10cm_order_2026
+Q62,Congenital obstructive defects of renal pelvis and congenital malformations of ureter,cms:icd10cm_order_2026
+Q63,Other congenital malformations of kidney,cms:icd10cm_order_2026
+Q64,Other congenital malformations of urinary system,cms:icd10cm_order_2026
+Q65,Congenital deformities of hip,cms:icd10cm_order_2026
+Q66,Congenital deformities of feet,cms:icd10cm_order_2026
+Q67,"Congenital musculoskeletal deformities of head, face, spine and chest",cms:icd10cm_order_2026
+Q68,Other congenital musculoskeletal deformities,cms:icd10cm_order_2026
+Q69,Polydactyly,cms:icd10cm_order_2026
+Q70,Syndactyly,cms:icd10cm_order_2026
+Q71,Reduction defects of upper limb,cms:icd10cm_order_2026
+Q72,Reduction defects of lower limb,cms:icd10cm_order_2026
+Q73,Reduction defects of unspecified limb,cms:icd10cm_order_2026
+Q74,Other congenital malformations of limb(s),cms:icd10cm_order_2026
+Q75,Other congenital malformations of skull and face bones,cms:icd10cm_order_2026
+Q76,Congenital malformations of spine and bony thorax,cms:icd10cm_order_2026
+Q77,Osteochondrodysplasia with defects of growth of tubular bones and spine,cms:icd10cm_order_2026
+Q78,Other osteochondrodysplasias,cms:icd10cm_order_2026
+Q79,"Congenital malformations of musculoskeletal system, not elsewhere classified",cms:icd10cm_order_2026
+Q80,Congenital ichthyosis,cms:icd10cm_order_2026
+Q81,Epidermolysis bullosa,cms:icd10cm_order_2026
+Q82,Other congenital malformations of skin,cms:icd10cm_order_2026
+Q83,Congenital malformations of breast,cms:icd10cm_order_2026
+Q84,Other congenital malformations of integument,cms:icd10cm_order_2026
+Q85,"Phakomatoses, not elsewhere classified",cms:icd10cm_order_2026
+Q86,"Congenital malformation syndromes due to known exogenous causes, not elsewhere classified",cms:icd10cm_order_2026
+Q87,Other specified congenital malformation syndromes affecting multiple systems,cms:icd10cm_order_2026
+Q89,"Other congenital malformations, not elsewhere classified",cms:icd10cm_order_2026
+Q90,Down syndrome,cms:icd10cm_order_2026
+Q91,Trisomy 18 and Trisomy 13,cms:icd10cm_order_2026
+Q92,"Other trisomies and partial trisomies of the autosomes, not elsewhere classified",cms:icd10cm_order_2026
+Q93,"Monosomies and deletions from the autosomes, not elsewhere classified",cms:icd10cm_order_2026
+Q95,"Balanced rearrangements and structural markers, not elsewhere classified",cms:icd10cm_order_2026
+Q96,Turner's syndrome,cms:icd10cm_order_2026
+Q97,"Other sex chromosome abnormalities, female phenotype, not elsewhere classified",cms:icd10cm_order_2026
+Q98,"Other sex chromosome abnormalities, male phenotype, not elsewhere classified",cms:icd10cm_order_2026
+Q99,"Other chromosome abnormalities, not elsewhere classified",cms:icd10cm_order_2026
+QA0,Neurodevelopmental disorders related to specific genetic pathogenic variants,cms:icd10cm_order_2026
+R00,Abnormalities of heart beat,cms:icd10cm_order_2026
+R01,Cardiac murmurs and other cardiac sounds,cms:icd10cm_order_2026
+R03,"Abnormal blood-pressure reading, without diagnosis",cms:icd10cm_order_2026
+R04,Hemorrhage from respiratory passages,cms:icd10cm_order_2026
+R05,Cough,cms:icd10cm_order_2026
+R06,Abnormalities of breathing,cms:icd10cm_order_2026
+R07,Pain in throat and chest,cms:icd10cm_order_2026
+R09,Other symptoms and signs involving the circulatory and respiratory system,cms:icd10cm_order_2026
+R10,Abdominal and pelvic pain,cms:icd10cm_order_2026
+R11,Nausea and vomiting,cms:icd10cm_order_2026
+R12,Heartburn,cms:icd10cm_order_2026
+R13,Aphagia and dysphagia,cms:icd10cm_order_2026
+R14,Flatulence and related conditions,cms:icd10cm_order_2026
+R15,Fecal incontinence,cms:icd10cm_order_2026
+R16,"Hepatomegaly and splenomegaly, not elsewhere classified",cms:icd10cm_order_2026
+R17,Unspecified jaundice,cms:icd10cm_order_2026
+R18,Ascites,cms:icd10cm_order_2026
+R19,Other symptoms and signs involving the digestive system and abdomen,cms:icd10cm_order_2026
+R20,Disturbances of skin sensation,cms:icd10cm_order_2026
+R21,Rash and other nonspecific skin eruption,cms:icd10cm_order_2026
+R22,"Localized swelling, mass and lump of skin and subcutaneous tissue",cms:icd10cm_order_2026
+R23,Other skin changes,cms:icd10cm_order_2026
+R25,Abnormal involuntary movements,cms:icd10cm_order_2026
+R26,Abnormalities of gait and mobility,cms:icd10cm_order_2026
+R27,Other lack of coordination,cms:icd10cm_order_2026
+R29,Other symptoms and signs involving the nervous and musculoskeletal systems,cms:icd10cm_order_2026
+R30,Pain associated with micturition,cms:icd10cm_order_2026
+R31,Hematuria,cms:icd10cm_order_2026
+R32,Unspecified urinary incontinence,cms:icd10cm_order_2026
+R33,Retention of urine,cms:icd10cm_order_2026
+R34,Anuria and oliguria,cms:icd10cm_order_2026
+R35,Polyuria,cms:icd10cm_order_2026
+R36,Urethral discharge,cms:icd10cm_order_2026
+R37,"Sexual dysfunction, unspecified",cms:icd10cm_order_2026
+R39,Other and unspecified symptoms and signs involving the genitourinary system,cms:icd10cm_order_2026
+R40,"Somnolence, stupor and coma",cms:icd10cm_order_2026
+R41,Other symptoms and signs involving cognitive functions and awareness,cms:icd10cm_order_2026
+R42,Dizziness and giddiness,cms:icd10cm_order_2026
+R43,Disturbances of smell and taste,cms:icd10cm_order_2026
+R44,Other symptoms and signs involving general sensations and perceptions,cms:icd10cm_order_2026
+R45,Symptoms and signs involving emotional state,cms:icd10cm_order_2026
+R46,Symptoms and signs involving appearance and behavior,cms:icd10cm_order_2026
+R47,"Speech disturbances, not elsewhere classified",cms:icd10cm_order_2026
+R48,"Dyslexia and other symbolic dysfunctions, not elsewhere classified",cms:icd10cm_order_2026
+R49,Voice and resonance disorders,cms:icd10cm_order_2026
+R50,Fever of other and unknown origin,cms:icd10cm_order_2026
+R51,Headache,cms:icd10cm_order_2026
+R52,"Pain, unspecified",cms:icd10cm_order_2026
+R53,Malaise and fatigue,cms:icd10cm_order_2026
+R54,Age-related physical debility,cms:icd10cm_order_2026
+R55,Syncope and collapse,cms:icd10cm_order_2026
+R56,"Convulsions, not elsewhere classified",cms:icd10cm_order_2026
+R57,"Shock, not elsewhere classified",cms:icd10cm_order_2026
+R58,"Hemorrhage, not elsewhere classified",cms:icd10cm_order_2026
+R59,Enlarged lymph nodes,cms:icd10cm_order_2026
+R60,"Edema, not elsewhere classified",cms:icd10cm_order_2026
+R61,Generalized hyperhidrosis,cms:icd10cm_order_2026
+R62,Lack of expected normal physiological development in childhood and adults,cms:icd10cm_order_2026
+R63,Symptoms and signs concerning food and fluid intake,cms:icd10cm_order_2026
+R64,Cachexia,cms:icd10cm_order_2026
+R65,Symptoms and signs specifically associated with systemic inflammation and infection,cms:icd10cm_order_2026
+R68,Other general symptoms and signs,cms:icd10cm_order_2026
+R69,"Illness, unspecified",cms:icd10cm_order_2026
+R70,Elevated erythrocyte sedimentation rate and abnormality of plasma viscosity,cms:icd10cm_order_2026
+R71,Abnormality of red blood cells,cms:icd10cm_order_2026
+R73,Elevated blood glucose level,cms:icd10cm_order_2026
+R74,Abnormal serum enzyme levels,cms:icd10cm_order_2026
+R75,Inconclusive laboratory evidence of human immunodeficiency virus [HIV],cms:icd10cm_order_2026
+R76,Other abnormal immunological findings in serum,cms:icd10cm_order_2026
+R77,Other abnormalities of plasma proteins,cms:icd10cm_order_2026
+R78,"Findings of drugs and other substances, not normally found in blood",cms:icd10cm_order_2026
+R79,Other abnormal findings of blood chemistry,cms:icd10cm_order_2026
+R80,Proteinuria,cms:icd10cm_order_2026
+R81,Glycosuria,cms:icd10cm_order_2026
+R82,Other and unspecified abnormal findings in urine,cms:icd10cm_order_2026
+R83,Abnormal findings in cerebrospinal fluid,cms:icd10cm_order_2026
+R84,Abnormal findings in specimens from respiratory organs and thorax,cms:icd10cm_order_2026
+R85,Abnormal findings in specimens from digestive organs and abdominal cavity,cms:icd10cm_order_2026
+R86,Abnormal findings in specimens from male genital organs,cms:icd10cm_order_2026
+R87,Abnormal findings in specimens from female genital organs,cms:icd10cm_order_2026
+R88,Abnormal findings in other body fluids and substances,cms:icd10cm_order_2026
+R89,"Abnormal findings in specimens from other organs, systems and tissues",cms:icd10cm_order_2026
+R90,Abnormal findings on diagnostic imaging of central nervous system,cms:icd10cm_order_2026
+R91,Abnormal findings on diagnostic imaging of lung,cms:icd10cm_order_2026
+R92,Abnormal and inconclusive findings on diagnostic imaging of breast,cms:icd10cm_order_2026
+R93,Abnormal findings on diagnostic imaging of other body structures,cms:icd10cm_order_2026
+R94,Abnormal results of function studies,cms:icd10cm_order_2026
+R97,Abnormal tumor markers,cms:icd10cm_order_2026
+R99,Ill-defined and unknown cause of mortality,cms:icd10cm_order_2026
+S00,Superficial injury of head,cms:icd10cm_order_2026
+S01,Open wound of head,cms:icd10cm_order_2026
+S02,Fracture of skull and facial bones,cms:icd10cm_order_2026
+S03,Dislocation and sprain of joints and ligaments of head,cms:icd10cm_order_2026
+S04,Injury of cranial nerve,cms:icd10cm_order_2026
+S05,Injury of eye and orbit,cms:icd10cm_order_2026
+S06,Intracranial injury,cms:icd10cm_order_2026
+S07,Crushing injury of head,cms:icd10cm_order_2026
+S08,Avulsion and traumatic amputation of part of head,cms:icd10cm_order_2026
+S09,Other and unspecified injuries of head,cms:icd10cm_order_2026
+S10,Superficial injury of neck,cms:icd10cm_order_2026
+S11,Open wound of neck,cms:icd10cm_order_2026
+S12,Fracture of cervical vertebra and other parts of neck,cms:icd10cm_order_2026
+S13,Dislocation and sprain of joints and ligaments at neck level,cms:icd10cm_order_2026
+S14,Injury of nerves and spinal cord at neck level,cms:icd10cm_order_2026
+S15,Injury of blood vessels at neck level,cms:icd10cm_order_2026
+S16,"Injury of muscle, fascia and tendon at neck level",cms:icd10cm_order_2026
+S17,Crushing injury of neck,cms:icd10cm_order_2026
+S19,Other specified and unspecified injuries of neck,cms:icd10cm_order_2026
+S20,Superficial injury of thorax,cms:icd10cm_order_2026
+S21,Open wound of thorax,cms:icd10cm_order_2026
+S22,"Fracture of rib(s), sternum and thoracic spine",cms:icd10cm_order_2026
+S23,Dislocation and sprain of joints and ligaments of thorax,cms:icd10cm_order_2026
+S24,Injury of nerves and spinal cord at thorax level,cms:icd10cm_order_2026
+S25,Injury of blood vessels of thorax,cms:icd10cm_order_2026
+S26,Injury of heart,cms:icd10cm_order_2026
+S27,Injury of other and unspecified intrathoracic organs,cms:icd10cm_order_2026
+S28,"Crushing injury of thorax, and traumatic amputation of part of thorax",cms:icd10cm_order_2026
+S29,Other and unspecified injuries of thorax,cms:icd10cm_order_2026
+S30,"Superficial injury of abdomen, lower back, pelvis and external genitals",cms:icd10cm_order_2026
+S31,"Open wound of abdomen, lower back, pelvis and external genitals",cms:icd10cm_order_2026
+S32,Fracture of lumbar spine and pelvis,cms:icd10cm_order_2026
+S33,Dislocation and sprain of joints and ligaments of lumbar spine and pelvis,cms:icd10cm_order_2026
+S34,"Injury of lumbar and sacral spinal cord and nerves at abdomen, lower back and pelvis level",cms:icd10cm_order_2026
+S35,"Injury of blood vessels at abdomen, lower back and pelvis level",cms:icd10cm_order_2026
+S36,Injury of intra-abdominal organs,cms:icd10cm_order_2026
+S37,Injury of urinary and pelvic organs,cms:icd10cm_order_2026
+S38,"Crushing injury and traumatic amputation of abdomen, lower back, pelvis and external genitals",cms:icd10cm_order_2026
+S39,"Other and unspecified injuries of abdomen, lower back, pelvis and external genitals",cms:icd10cm_order_2026
+S40,Superficial injury of shoulder and upper arm,cms:icd10cm_order_2026
+S41,Open wound of shoulder and upper arm,cms:icd10cm_order_2026
+S42,Fracture of shoulder and upper arm,cms:icd10cm_order_2026
+S43,Dislocation and sprain of joints and ligaments of shoulder girdle,cms:icd10cm_order_2026
+S44,Injury of nerves at shoulder and upper arm level,cms:icd10cm_order_2026
+S45,Injury of blood vessels at shoulder and upper arm level,cms:icd10cm_order_2026
+S46,"Injury of muscle, fascia and tendon at shoulder and upper arm level",cms:icd10cm_order_2026
+S47,Crushing injury of shoulder and upper arm,cms:icd10cm_order_2026
+S48,Traumatic amputation of shoulder and upper arm,cms:icd10cm_order_2026
+S49,Other and unspecified injuries of shoulder and upper arm,cms:icd10cm_order_2026
+S50,Superficial injury of elbow and forearm,cms:icd10cm_order_2026
+S51,Open wound of elbow and forearm,cms:icd10cm_order_2026
+S52,Fracture of forearm,cms:icd10cm_order_2026
+S53,Dislocation and sprain of joints and ligaments of elbow,cms:icd10cm_order_2026
+S54,Injury of nerves at forearm level,cms:icd10cm_order_2026
+S55,Injury of blood vessels at forearm level,cms:icd10cm_order_2026
+S56,"Injury of muscle, fascia and tendon at forearm level",cms:icd10cm_order_2026
+S57,Crushing injury of elbow and forearm,cms:icd10cm_order_2026
+S58,Traumatic amputation of elbow and forearm,cms:icd10cm_order_2026
+S59,Other and unspecified injuries of elbow and forearm,cms:icd10cm_order_2026
+S60,"Superficial injury of wrist, hand and fingers",cms:icd10cm_order_2026
+S61,"Open wound of wrist, hand and fingers",cms:icd10cm_order_2026
+S62,Fracture at wrist and hand level,cms:icd10cm_order_2026
+S63,Dislocation and sprain of joints and ligaments at wrist and hand level,cms:icd10cm_order_2026
+S64,Injury of nerves at wrist and hand level,cms:icd10cm_order_2026
+S65,Injury of blood vessels at wrist and hand level,cms:icd10cm_order_2026
+S66,"Injury of muscle, fascia and tendon at wrist and hand level",cms:icd10cm_order_2026
+S67,"Crushing injury of wrist, hand and fingers",cms:icd10cm_order_2026
+S68,"Traumatic amputation of wrist, hand and fingers",cms:icd10cm_order_2026
+S69,"Other and unspecified injuries of wrist, hand and finger(s)",cms:icd10cm_order_2026
+S70,Superficial injury of hip and thigh,cms:icd10cm_order_2026
+S71,Open wound of hip and thigh,cms:icd10cm_order_2026
+S72,Fracture of femur,cms:icd10cm_order_2026
+S73,Dislocation and sprain of joint and ligaments of hip,cms:icd10cm_order_2026
+S74,Injury of nerves at hip and thigh level,cms:icd10cm_order_2026
+S75,Injury of blood vessels at hip and thigh level,cms:icd10cm_order_2026
+S76,"Injury of muscle, fascia and tendon at hip and thigh level",cms:icd10cm_order_2026
+S77,Crushing injury of hip and thigh,cms:icd10cm_order_2026
+S78,Traumatic amputation of hip and thigh,cms:icd10cm_order_2026
+S79,Other and unspecified injuries of hip and thigh,cms:icd10cm_order_2026
+S80,Superficial injury of knee and lower leg,cms:icd10cm_order_2026
+S81,Open wound of knee and lower leg,cms:icd10cm_order_2026
+S82,"Fracture of lower leg, including ankle",cms:icd10cm_order_2026
+S83,Dislocation and sprain of joints and ligaments of knee,cms:icd10cm_order_2026
+S84,Injury of nerves at lower leg level,cms:icd10cm_order_2026
+S85,Injury of blood vessels at lower leg level,cms:icd10cm_order_2026
+S86,"Injury of muscle, fascia and tendon at lower leg level",cms:icd10cm_order_2026
+S87,Crushing injury of lower leg,cms:icd10cm_order_2026
+S88,Traumatic amputation of lower leg,cms:icd10cm_order_2026
+S89,Other and unspecified injuries of lower leg,cms:icd10cm_order_2026
+S90,"Superficial injury of ankle, foot and toes",cms:icd10cm_order_2026
+S91,"Open wound of ankle, foot and toes",cms:icd10cm_order_2026
+S92,"Fracture of foot and toe, except ankle",cms:icd10cm_order_2026
+S93,"Dislocation and sprain of joints and ligaments at ankle, foot and toe level",cms:icd10cm_order_2026
+S94,Injury of nerves at ankle and foot level,cms:icd10cm_order_2026
+S95,Injury of blood vessels at ankle and foot level,cms:icd10cm_order_2026
+S96,Injury of muscle and tendon at ankle and foot level,cms:icd10cm_order_2026
+S97,Crushing injury of ankle and foot,cms:icd10cm_order_2026
+S98,Traumatic amputation of ankle and foot,cms:icd10cm_order_2026
+S99,Other and unspecified injuries of ankle and foot,cms:icd10cm_order_2026
+T07,Unspecified multiple injuries,cms:icd10cm_order_2026
+T14,Injury of unspecified body region,cms:icd10cm_order_2026
+T15,Foreign body on external eye,cms:icd10cm_order_2026
+T16,Foreign body in ear,cms:icd10cm_order_2026
+T17,Foreign body in respiratory tract,cms:icd10cm_order_2026
+T18,Foreign body in alimentary tract,cms:icd10cm_order_2026
+T19,Foreign body in genitourinary tract,cms:icd10cm_order_2026
+T20,"Burn and corrosion of head, face, and neck",cms:icd10cm_order_2026
+T21,Burn and corrosion of trunk,cms:icd10cm_order_2026
+T22,"Burn and corrosion of shoulder and upper limb, except wrist and hand",cms:icd10cm_order_2026
+T23,Burn and corrosion of wrist and hand,cms:icd10cm_order_2026
+T24,"Burn and corrosion of lower limb, except ankle and foot",cms:icd10cm_order_2026
+T25,Burn and corrosion of ankle and foot,cms:icd10cm_order_2026
+T26,Burn and corrosion confined to eye and adnexa,cms:icd10cm_order_2026
+T27,Burn and corrosion of respiratory tract,cms:icd10cm_order_2026
+T28,Burn and corrosion of other internal organs,cms:icd10cm_order_2026
+T30,"Burn and corrosion, body region unspecified",cms:icd10cm_order_2026
+T31,Burns classified according to extent of body surface involved,cms:icd10cm_order_2026
+T32,Corrosions classified according to extent of body surface involved,cms:icd10cm_order_2026
+T33,Superficial frostbite,cms:icd10cm_order_2026
+T34,Frostbite with tissue necrosis,cms:icd10cm_order_2026
+T36,"Poisoning by, adverse effect of and underdosing of systemic antibiotics",cms:icd10cm_order_2026
+T37,"Poisoning by, adverse effect of and underdosing of other systemic anti-infectives and antiparasitics",cms:icd10cm_order_2026
+T38,"Poisoning by, adverse effect of and underdosing of hormones and their synthetic substitutes and antagonists, not elsewhere classified",cms:icd10cm_order_2026
+T39,"Poisoning by, adverse effect of and underdosing of nonopioid analgesics, antipyretics and antirheumatics",cms:icd10cm_order_2026
+T40,"Poisoning by, adverse effect of and underdosing of narcotics and psychodysleptics [hallucinogens]",cms:icd10cm_order_2026
+T41,"Poisoning by, adverse effect of and underdosing of anesthetics and therapeutic gases",cms:icd10cm_order_2026
+T42,"Poisoning by, adverse effect of and underdosing of antiepileptic, sedative- hypnotic and antiparkinsonism drugs",cms:icd10cm_order_2026
+T43,"Poisoning by, adverse effect of and underdosing of psychotropic drugs, not elsewhere classified",cms:icd10cm_order_2026
+T44,"Poisoning by, adverse effect of and underdosing of drugs primarily affecting the autonomic nervous system",cms:icd10cm_order_2026
+T45,"Poisoning by, adverse effect of and underdosing of primarily systemic and hematological agents, not elsewhere classified",cms:icd10cm_order_2026
+T46,"Poisoning by, adverse effect of and underdosing of agents primarily affecting the cardiovascular system",cms:icd10cm_order_2026
+T47,"Poisoning by, adverse effect of and underdosing of agents primarily affecting the gastrointestinal system",cms:icd10cm_order_2026
+T48,"Poisoning by, adverse effect of and underdosing of agents primarily acting on smooth and skeletal muscles and the respiratory system",cms:icd10cm_order_2026
+T49,"Poisoning by, adverse effect of and underdosing of topical agents primarily affecting skin and mucous membrane and by ophthalmological, otorhinorlaryngological and dental drugs",cms:icd10cm_order_2026
+T50,"Poisoning by, adverse effect of and underdosing of diuretics and other and unspecified drugs, medicaments and biological substances",cms:icd10cm_order_2026
+T51,Toxic effect of alcohol,cms:icd10cm_order_2026
+T52,Toxic effect of organic solvents,cms:icd10cm_order_2026
+T53,Toxic effect of halogen derivatives of aliphatic and aromatic hydrocarbons,cms:icd10cm_order_2026
+T54,Toxic effect of corrosive substances,cms:icd10cm_order_2026
+T55,Toxic effect of soaps and detergents,cms:icd10cm_order_2026
+T56,Toxic effect of metals,cms:icd10cm_order_2026
+T57,Toxic effect of other inorganic substances,cms:icd10cm_order_2026
+T58,Toxic effect of carbon monoxide,cms:icd10cm_order_2026
+T59,"Toxic effect of other gases, fumes and vapors",cms:icd10cm_order_2026
+T60,Toxic effect of pesticides,cms:icd10cm_order_2026
+T61,Toxic effect of noxious substances eaten as seafood,cms:icd10cm_order_2026
+T62,Toxic effect of other noxious substances eaten as food,cms:icd10cm_order_2026
+T63,Toxic effect of contact with venomous animals and plants,cms:icd10cm_order_2026
+T64,Toxic effect of aflatoxin and other mycotoxin food contaminants,cms:icd10cm_order_2026
+T65,Toxic effect of other and unspecified substances,cms:icd10cm_order_2026
+T66,"Radiation sickness, unspecified",cms:icd10cm_order_2026
+T67,Effects of heat and light,cms:icd10cm_order_2026
+T68,Hypothermia,cms:icd10cm_order_2026
+T69,Other effects of reduced temperature,cms:icd10cm_order_2026
+T70,Effects of air pressure and water pressure,cms:icd10cm_order_2026
+T71,Asphyxiation,cms:icd10cm_order_2026
+T73,Effects of other deprivation,cms:icd10cm_order_2026
+T74,"Adult and child abuse, neglect and other maltreatment, confirmed",cms:icd10cm_order_2026
+T75,Other and unspecified effects of other external causes,cms:icd10cm_order_2026
+T76,"Adult and child abuse, neglect and other maltreatment, suspected",cms:icd10cm_order_2026
+T78,"Adverse effects, not elsewhere classified",cms:icd10cm_order_2026
+T79,"Certain early complications of trauma, not elsewhere classified",cms:icd10cm_order_2026
+T80,"Complications following infusion, transfusion and therapeutic injection",cms:icd10cm_order_2026
+T81,"Complications of procedures, not elsewhere classified",cms:icd10cm_order_2026
+T82,"Complications of cardiac and vascular prosthetic devices, implants and grafts",cms:icd10cm_order_2026
+T83,"Complications of genitourinary prosthetic devices, implants and grafts",cms:icd10cm_order_2026
+T84,"Complications of internal orthopedic prosthetic devices, implants and grafts",cms:icd10cm_order_2026
+T85,"Complications of other internal prosthetic devices, implants and grafts",cms:icd10cm_order_2026
+T86,Complications of transplanted organs and tissue,cms:icd10cm_order_2026
+T87,Complications peculiar to reattachment and amputation,cms:icd10cm_order_2026
+T88,"Other complications of surgical and medical care, not elsewhere classified",cms:icd10cm_order_2026
+U07,Emergency use of U07,cms:icd10cm_order_2026
+U09,Post COVID-19 condition,cms:icd10cm_order_2026
+V00,Pedestrian conveyance accident,cms:icd10cm_order_2026
+V01,Pedestrian injured in collision with pedal cycle,cms:icd10cm_order_2026
+V02,Pedestrian injured in collision with two- or three-wheeled motor vehicle,cms:icd10cm_order_2026
+V03,"Pedestrian injured in collision with car, pick-up truck or van",cms:icd10cm_order_2026
+V04,Pedestrian injured in collision with heavy transport vehicle or bus,cms:icd10cm_order_2026
+V05,Pedestrian injured in collision with railway train or railway vehicle,cms:icd10cm_order_2026
+V06,Pedestrian injured in collision with other nonmotor vehicle,cms:icd10cm_order_2026
+V09,Pedestrian injured in other and unspecified transport accidents,cms:icd10cm_order_2026
+V10,Pedal cycle rider injured in collision with pedestrian or animal,cms:icd10cm_order_2026
+V11,Pedal cycle rider injured in collision with other pedal cycle,cms:icd10cm_order_2026
+V12,Pedal cycle rider injured in collision with two- or three-wheeled motor vehicle,cms:icd10cm_order_2026
+V13,"Pedal cycle rider injured in collision with car, pick-up truck or van",cms:icd10cm_order_2026
+V14,Pedal cycle rider injured in collision with heavy transport vehicle or bus,cms:icd10cm_order_2026
+V15,Pedal cycle rider injured in collision with railway train or railway vehicle,cms:icd10cm_order_2026
+V16,Pedal cycle rider injured in collision with other nonmotor vehicle,cms:icd10cm_order_2026
+V17,Pedal cycle rider injured in collision with fixed or stationary object,cms:icd10cm_order_2026
+V18,Pedal cycle rider injured in noncollision transport accident,cms:icd10cm_order_2026
+V19,Pedal cycle rider injured in other and unspecified transport accidents,cms:icd10cm_order_2026
+V20,Motorcycle rider injured in collision with pedestrian or animal,cms:icd10cm_order_2026
+V21,Motorcycle rider injured in collision with pedal cycle,cms:icd10cm_order_2026
+V22,Motorcycle rider injured in collision with two- or three-wheeled motor vehicle,cms:icd10cm_order_2026
+V23,"Motorcycle rider injured in collision with car, pick-up truck or van",cms:icd10cm_order_2026
+V24,Motorcycle rider injured in collision with heavy transport vehicle or bus,cms:icd10cm_order_2026
+V25,Motorcycle rider injured in collision with railway train or railway vehicle,cms:icd10cm_order_2026
+V26,Motorcycle rider injured in collision with other nonmotor vehicle,cms:icd10cm_order_2026
+V27,Motorcycle rider injured in collision with fixed or stationary object,cms:icd10cm_order_2026
+V28,Motorcycle rider injured in noncollision transport accident,cms:icd10cm_order_2026
+V29,Motorcycle rider injured in other and unspecified transport accidents,cms:icd10cm_order_2026
+V30,Occupant of three-wheeled motor vehicle injured in collision with pedestrian or animal,cms:icd10cm_order_2026
+V31,Occupant of three-wheeled motor vehicle injured in collision with pedal cycle,cms:icd10cm_order_2026
+V32,Occupant of three-wheeled motor vehicle injured in collision with two- or three-wheeled motor vehicle,cms:icd10cm_order_2026
+V33,"Occupant of three-wheeled motor vehicle injured in collision with car, pick-up truck or van",cms:icd10cm_order_2026
+V34,Occupant of three-wheeled motor vehicle injured in collision with heavy transport vehicle or bus,cms:icd10cm_order_2026
+V35,Occupant of three-wheeled motor vehicle injured in collision with railway train or railway vehicle,cms:icd10cm_order_2026
+V36,Occupant of three-wheeled motor vehicle injured in collision with other nonmotor vehicle,cms:icd10cm_order_2026
+V37,Occupant of three-wheeled motor vehicle injured in collision with fixed or stationary object,cms:icd10cm_order_2026
+V38,Occupant of three-wheeled motor vehicle injured in noncollision transport accident,cms:icd10cm_order_2026
+V39,Occupant of three-wheeled motor vehicle injured in other and unspecified transport accidents,cms:icd10cm_order_2026
+V40,Car occupant injured in collision with pedestrian or animal,cms:icd10cm_order_2026
+V41,Car occupant injured in collision with pedal cycle,cms:icd10cm_order_2026
+V42,Car occupant injured in collision with two- or three-wheeled motor vehicle,cms:icd10cm_order_2026
+V43,"Car occupant injured in collision with car, pick-up truck or van",cms:icd10cm_order_2026
+V44,Car occupant injured in collision with heavy transport vehicle or bus,cms:icd10cm_order_2026
+V45,Car occupant injured in collision with railway train or railway vehicle,cms:icd10cm_order_2026
+V46,Car occupant injured in collision with other nonmotor vehicle,cms:icd10cm_order_2026
+V47,Car occupant injured in collision with fixed or stationary object,cms:icd10cm_order_2026
+V48,Car occupant injured in noncollision transport accident,cms:icd10cm_order_2026
+V49,Car occupant injured in other and unspecified transport accidents,cms:icd10cm_order_2026
+V50,Occupant of pick-up truck or van injured in collision with pedestrian or animal,cms:icd10cm_order_2026
+V51,Occupant of pick-up truck or van injured in collision with pedal cycle,cms:icd10cm_order_2026
+V52,Occupant of pick-up truck or van injured in collision with two- or three-wheeled motor vehicle,cms:icd10cm_order_2026
+V53,"Occupant of pick-up truck or van injured in collision with car, pick-up truck or van",cms:icd10cm_order_2026
+V54,Occupant of pick-up truck or van injured in collision with heavy transport vehicle or bus,cms:icd10cm_order_2026
+V55,Occupant of pick-up truck or van injured in collision with railway train or railway vehicle,cms:icd10cm_order_2026
+V56,Occupant of pick-up truck or van injured in collision with other nonmotor vehicle,cms:icd10cm_order_2026
+V57,Occupant of pick-up truck or van injured in collision with fixed or stationary object,cms:icd10cm_order_2026
+V58,Occupant of pick-up truck or van injured in noncollision transport accident,cms:icd10cm_order_2026
+V59,Occupant of pick-up truck or van injured in other and unspecified transport accidents,cms:icd10cm_order_2026
+V60,Occupant of heavy transport vehicle injured in collision with pedestrian or animal,cms:icd10cm_order_2026
+V61,Occupant of heavy transport vehicle injured in collision with pedal cycle,cms:icd10cm_order_2026
+V62,Occupant of heavy transport vehicle injured in collision with two- or three-wheeled motor vehicle,cms:icd10cm_order_2026
+V63,"Occupant of heavy transport vehicle injured in collision with car, pick-up truck or van",cms:icd10cm_order_2026
+V64,Occupant of heavy transport vehicle injured in collision with heavy transport vehicle or bus,cms:icd10cm_order_2026
+V65,Occupant of heavy transport vehicle injured in collision with railway train or railway vehicle,cms:icd10cm_order_2026
+V66,Occupant of heavy transport vehicle injured in collision with other nonmotor vehicle,cms:icd10cm_order_2026
+V67,Occupant of heavy transport vehicle injured in collision with fixed or stationary object,cms:icd10cm_order_2026
+V68,Occupant of heavy transport vehicle injured in noncollision transport accident,cms:icd10cm_order_2026
+V69,Occupant of heavy transport vehicle injured in other and unspecified transport accidents,cms:icd10cm_order_2026
+V70,Bus occupant injured in collision with pedestrian or animal,cms:icd10cm_order_2026
+V71,Bus occupant injured in collision with pedal cycle,cms:icd10cm_order_2026
+V72,Bus occupant injured in collision with two- or three-wheeled motor vehicle,cms:icd10cm_order_2026
+V73,"Bus occupant injured in collision with car, pick-up truck or van",cms:icd10cm_order_2026
+V74,Bus occupant injured in collision with heavy transport vehicle or bus,cms:icd10cm_order_2026
+V75,Bus occupant injured in collision with railway train or railway vehicle,cms:icd10cm_order_2026
+V76,Bus occupant injured in collision with other nonmotor vehicle,cms:icd10cm_order_2026
+V77,Bus occupant injured in collision with fixed or stationary object,cms:icd10cm_order_2026
+V78,Bus occupant injured in noncollision transport accident,cms:icd10cm_order_2026
+V79,Bus occupant injured in other and unspecified transport accidents,cms:icd10cm_order_2026
+V80,Animal-rider or occupant of animal-drawn vehicle injured in transport accident,cms:icd10cm_order_2026
+V81,Occupant of railway train or railway vehicle injured in transport accident,cms:icd10cm_order_2026
+V82,Occupant of powered streetcar injured in transport accident,cms:icd10cm_order_2026
+V83,Occupant of special vehicle mainly used on industrial premises injured in transport accident,cms:icd10cm_order_2026
+V84,Occupant of special vehicle mainly used in agriculture injured in transport accident,cms:icd10cm_order_2026
+V85,Occupant of special construction vehicle injured in transport accident,cms:icd10cm_order_2026
+V86,"Occupant of special all-terrain or other off-road motor vehicle, injured in transport accident",cms:icd10cm_order_2026
+V87,Traffic accident of specified type but victim's mode of transport unknown,cms:icd10cm_order_2026
+V88,Nontraffic accident of specified type but victim's mode of transport unknown,cms:icd10cm_order_2026
+V89,"Motor- or nonmotor-vehicle accident, type of vehicle unspecified",cms:icd10cm_order_2026
+V90,Drowning and submersion due to accident to watercraft,cms:icd10cm_order_2026
+V91,Other injury due to accident to watercraft,cms:icd10cm_order_2026
+V92,"Drowning and submersion due to accident on board watercraft, without accident to watercraft",cms:icd10cm_order_2026
+V93,"Other injury due to accident on board watercraft, without accident to watercraft",cms:icd10cm_order_2026
+V94,Other and unspecified water transport accidents,cms:icd10cm_order_2026
+V95,Accident to powered aircraft causing injury to occupant,cms:icd10cm_order_2026
+V96,Accident to nonpowered aircraft causing injury to occupant,cms:icd10cm_order_2026
+V97,Other specified air transport accidents,cms:icd10cm_order_2026
+V98,Other specified transport accidents,cms:icd10cm_order_2026
+V99,Unspecified transport accident,cms:icd10cm_order_2026
+W00,Fall due to ice and snow,cms:icd10cm_order_2026
+W01,"Fall on same level from slipping, tripping and stumbling",cms:icd10cm_order_2026
+W03,Other fall on same level due to collision with another person,cms:icd10cm_order_2026
+W04,Fall while being carried or supported by other persons,cms:icd10cm_order_2026
+W05,"Fall from non-moving wheelchair, nonmotorized scooter and motorized mobility scooter",cms:icd10cm_order_2026
+W06,Fall from bed,cms:icd10cm_order_2026
+W07,Fall from chair,cms:icd10cm_order_2026
+W08,Fall from other furniture,cms:icd10cm_order_2026
+W09,Fall on and from playground equipment,cms:icd10cm_order_2026
+W10,Fall on and from stairs and steps,cms:icd10cm_order_2026
+W11,Fall on and from ladder,cms:icd10cm_order_2026
+W12,Fall on and from scaffolding,cms:icd10cm_order_2026
+W13,"Fall from, out of or through building or structure",cms:icd10cm_order_2026
+W14,Fall from tree,cms:icd10cm_order_2026
+W15,Fall from cliff,cms:icd10cm_order_2026
+W16,"Fall, jump or diving into water",cms:icd10cm_order_2026
+W17,Other fall from one level to another,cms:icd10cm_order_2026
+W18,"Other slipping, tripping and stumbling and falls",cms:icd10cm_order_2026
+W19,Unspecified fall,cms:icd10cm_order_2026
+W20,"Struck by thrown, projected or falling object",cms:icd10cm_order_2026
+W21,Striking against or struck by sports equipment,cms:icd10cm_order_2026
+W22,Striking against or struck by other objects,cms:icd10cm_order_2026
+W23,"Caught, crushed, jammed or pinched in or between objects",cms:icd10cm_order_2026
+W24,"Contact with lifting and transmission devices, not elsewhere classified",cms:icd10cm_order_2026
+W25,Contact with sharp glass,cms:icd10cm_order_2026
+W26,Contact with other sharp objects,cms:icd10cm_order_2026
+W27,Contact with nonpowered hand tool,cms:icd10cm_order_2026
+W28,Contact with powered lawn mower,cms:icd10cm_order_2026
+W29,Contact with other powered hand tools and household machinery,cms:icd10cm_order_2026
+W30,Contact with agricultural machinery,cms:icd10cm_order_2026
+W31,Contact with other and unspecified machinery,cms:icd10cm_order_2026
+W32,Accidental handgun discharge and malfunction,cms:icd10cm_order_2026
+W33,"Accidental rifle, shotgun and larger firearm discharge and malfunction",cms:icd10cm_order_2026
+W34,Accidental discharge and malfunction from other and unspecified firearms and guns,cms:icd10cm_order_2026
+W35,Explosion and rupture of boiler,cms:icd10cm_order_2026
+W36,Explosion and rupture of gas cylinder,cms:icd10cm_order_2026
+W37,"Explosion and rupture of pressurized tire, pipe or hose",cms:icd10cm_order_2026
+W38,Explosion and rupture of other specified pressurized devices,cms:icd10cm_order_2026
+W39,Discharge of firework,cms:icd10cm_order_2026
+W40,Explosion of other materials,cms:icd10cm_order_2026
+W42,Exposure to noise,cms:icd10cm_order_2026
+W44,Foreign body entering into or through a natural orifice,cms:icd10cm_order_2026
+W45,Foreign body or object entering through skin,cms:icd10cm_order_2026
+W46,Contact with hypodermic needle,cms:icd10cm_order_2026
+W49,Exposure to other inanimate mechanical forces,cms:icd10cm_order_2026
+W50,"Accidental hit, strike, kick, twist, bite or scratch by another person",cms:icd10cm_order_2026
+W51,Accidental striking against or bumped into by another person,cms:icd10cm_order_2026
+W52,"Crushed, pushed or stepped on by crowd or human stampede",cms:icd10cm_order_2026
+W53,Contact with rodent,cms:icd10cm_order_2026
+W54,Contact with dog,cms:icd10cm_order_2026
+W55,Contact with other mammals,cms:icd10cm_order_2026
+W56,Contact with nonvenomous marine animal,cms:icd10cm_order_2026
+W57,Bitten or stung by nonvenomous insect and other nonvenomous arthropods,cms:icd10cm_order_2026
+W58,Contact with crocodile or alligator,cms:icd10cm_order_2026
+W59,Contact with other nonvenomous reptiles,cms:icd10cm_order_2026
+W60,Contact with nonvenomous plant thorns and spines and sharp leaves,cms:icd10cm_order_2026
+W61,Contact with birds (domestic) (wild),cms:icd10cm_order_2026
+W62,Contact with nonvenomous amphibians,cms:icd10cm_order_2026
+W64,Exposure to other animate mechanical forces,cms:icd10cm_order_2026
+W65,Accidental drowning and submersion while in bath-tub,cms:icd10cm_order_2026
+W67,Accidental drowning and submersion while in swimming-pool,cms:icd10cm_order_2026
+W69,Accidental drowning and submersion while in natural water,cms:icd10cm_order_2026
+W73,Other specified cause of accidental non-transport drowning and submersion,cms:icd10cm_order_2026
+W74,Unspecified cause of accidental drowning and submersion,cms:icd10cm_order_2026
+W85,Exposure to electric transmission lines,cms:icd10cm_order_2026
+W86,Exposure to other specified electric current,cms:icd10cm_order_2026
+W88,Exposure to ionizing radiation,cms:icd10cm_order_2026
+W89,Exposure to man-made visible and ultraviolet light,cms:icd10cm_order_2026
+W90,Exposure to other nonionizing radiation,cms:icd10cm_order_2026
+W92,Exposure to excessive heat of man-made origin,cms:icd10cm_order_2026
+W93,Exposure to excessive cold of man-made origin,cms:icd10cm_order_2026
+W94,Exposure to high and low air pressure and changes in air pressure,cms:icd10cm_order_2026
+W99,Exposure to other man-made environmental factors,cms:icd10cm_order_2026
+X00,Exposure to uncontrolled fire in building or structure,cms:icd10cm_order_2026
+X01,"Exposure to uncontrolled fire, not in building or structure",cms:icd10cm_order_2026
+X02,Exposure to controlled fire in building or structure,cms:icd10cm_order_2026
+X03,"Exposure to controlled fire, not in building or structure",cms:icd10cm_order_2026
+X04,Exposure to ignition of highly flammable material,cms:icd10cm_order_2026
+X05,Exposure to ignition or melting of nightwear,cms:icd10cm_order_2026
+X06,Exposure to ignition or melting of other clothing and apparel,cms:icd10cm_order_2026
+X08,"Exposure to other specified smoke, fire and flames",cms:icd10cm_order_2026
+X10,"Contact with hot drinks, food, fats and cooking oils",cms:icd10cm_order_2026
+X11,Contact with hot tap-water,cms:icd10cm_order_2026
+X12,Contact with other hot fluids,cms:icd10cm_order_2026
+X13,Contact with steam and other hot vapors,cms:icd10cm_order_2026
+X14,Contact with hot air and other hot gases,cms:icd10cm_order_2026
+X15,Contact with hot household appliances,cms:icd10cm_order_2026
+X16,"Contact with hot heating appliances, radiators and pipes",cms:icd10cm_order_2026
+X17,"Contact with hot engines, machinery and tools",cms:icd10cm_order_2026
+X18,Contact with other hot metals,cms:icd10cm_order_2026
+X19,Contact with other heat and hot substances,cms:icd10cm_order_2026
+X30,Exposure to excessive natural heat,cms:icd10cm_order_2026
+X31,Exposure to excessive natural cold,cms:icd10cm_order_2026
+X32,Exposure to sunlight,cms:icd10cm_order_2026
+X34,Earthquake,cms:icd10cm_order_2026
+X35,Volcanic eruption,cms:icd10cm_order_2026
+X36,"Avalanche, landslide and other earth movements",cms:icd10cm_order_2026
+X37,Cataclysmic storm,cms:icd10cm_order_2026
+X38,Flood,cms:icd10cm_order_2026
+X39,Exposure to other forces of nature,cms:icd10cm_order_2026
+X50,Overexertion and strenuous or repetitive movements,cms:icd10cm_order_2026
+X52,Prolonged stay in weightless environment,cms:icd10cm_order_2026
+X58,Exposure to other specified factors,cms:icd10cm_order_2026
+X71,Intentional self-harm by drowning and submersion,cms:icd10cm_order_2026
+X72,Intentional self-harm by handgun discharge,cms:icd10cm_order_2026
+X73,"Intentional self-harm by rifle, shotgun and larger firearm discharge",cms:icd10cm_order_2026
+X74,Intentional self-harm by other and unspecified firearm and gun discharge,cms:icd10cm_order_2026
+X75,Intentional self-harm by explosive material,cms:icd10cm_order_2026
+X76,"Intentional self-harm by smoke, fire and flames",cms:icd10cm_order_2026
+X77,"Intentional self-harm by steam, hot vapors and hot objects",cms:icd10cm_order_2026
+X78,Intentional self-harm by sharp object,cms:icd10cm_order_2026
+X79,Intentional self-harm by blunt object,cms:icd10cm_order_2026
+X80,Intentional self-harm by jumping from a high place,cms:icd10cm_order_2026
+X81,Intentional self-harm by jumping or lying in front of moving object,cms:icd10cm_order_2026
+X82,Intentional self-harm by crashing of motor vehicle,cms:icd10cm_order_2026
+X83,Intentional self-harm by other specified means,cms:icd10cm_order_2026
+X92,Assault by drowning and submersion,cms:icd10cm_order_2026
+X93,Assault by handgun discharge,cms:icd10cm_order_2026
+X94,"Assault by rifle, shotgun and larger firearm discharge",cms:icd10cm_order_2026
+X95,Assault by other and unspecified firearm and gun discharge,cms:icd10cm_order_2026
+X96,Assault by explosive material,cms:icd10cm_order_2026
+X97,"Assault by smoke, fire and flames",cms:icd10cm_order_2026
+X98,"Assault by steam, hot vapors and hot objects",cms:icd10cm_order_2026
+X99,Assault by sharp object,cms:icd10cm_order_2026
+Y00,Assault by blunt object,cms:icd10cm_order_2026
+Y01,Assault by pushing from high place,cms:icd10cm_order_2026
+Y02,Assault by pushing or placing victim in front of moving object,cms:icd10cm_order_2026
+Y03,Assault by crashing of motor vehicle,cms:icd10cm_order_2026
+Y04,Assault by bodily force,cms:icd10cm_order_2026
+Y07,"Perpetrator of assault, maltreatment and neglect",cms:icd10cm_order_2026
+Y08,Assault by other specified means,cms:icd10cm_order_2026
+Y09,Assault by unspecified means,cms:icd10cm_order_2026
+Y21,"Drowning and submersion, undetermined intent",cms:icd10cm_order_2026
+Y22,"Handgun discharge, undetermined intent",cms:icd10cm_order_2026
+Y23,"Rifle, shotgun and larger firearm discharge, undetermined intent",cms:icd10cm_order_2026
+Y24,"Other and unspecified firearm discharge, undetermined intent",cms:icd10cm_order_2026
+Y25,"Contact with explosive material, undetermined intent",cms:icd10cm_order_2026
+Y26,"Exposure to smoke, fire and flames, undetermined intent",cms:icd10cm_order_2026
+Y27,"Contact with steam, hot vapors and hot objects, undetermined intent",cms:icd10cm_order_2026
+Y28,"Contact with sharp object, undetermined intent",cms:icd10cm_order_2026
+Y29,"Contact with blunt object, undetermined intent",cms:icd10cm_order_2026
+Y30,"Falling, jumping or pushed from a high place, undetermined intent",cms:icd10cm_order_2026
+Y31,"Falling, lying or running before or into moving object, undetermined intent",cms:icd10cm_order_2026
+Y32,"Crashing of motor vehicle, undetermined intent",cms:icd10cm_order_2026
+Y33,"Other specified events, undetermined intent",cms:icd10cm_order_2026
+Y35,Legal intervention,cms:icd10cm_order_2026
+Y36,Operations of war,cms:icd10cm_order_2026
+Y37,Military operations,cms:icd10cm_order_2026
+Y38,Terrorism,cms:icd10cm_order_2026
+Y62,Failure of sterile precautions during surgical and medical care,cms:icd10cm_order_2026
+Y63,Failure in dosage during surgical and medical care,cms:icd10cm_order_2026
+Y64,Contaminated medical or biological substances,cms:icd10cm_order_2026
+Y65,Other misadventures during surgical and medical care,cms:icd10cm_order_2026
+Y66,Nonadministration of surgical and medical care,cms:icd10cm_order_2026
+Y69,Unspecified misadventure during surgical and medical care,cms:icd10cm_order_2026
+Y70,Anesthesiology devices associated with adverse incidents,cms:icd10cm_order_2026
+Y71,Cardiovascular devices associated with adverse incidents,cms:icd10cm_order_2026
+Y72,Otorhinolaryngological devices associated with adverse incidents,cms:icd10cm_order_2026
+Y73,Gastroenterology and urology devices associated with adverse incidents,cms:icd10cm_order_2026
+Y74,General hospital and personal-use devices associated with adverse incidents,cms:icd10cm_order_2026
+Y75,Neurological devices associated with adverse incidents,cms:icd10cm_order_2026
+Y76,Obstetric and gynecological devices associated with adverse incidents,cms:icd10cm_order_2026
+Y77,Ophthalmic devices associated with adverse incidents,cms:icd10cm_order_2026
+Y78,Radiological devices associated with adverse incidents,cms:icd10cm_order_2026
+Y79,Orthopedic devices associated with adverse incidents,cms:icd10cm_order_2026
+Y80,Physical medicine devices associated with adverse incidents,cms:icd10cm_order_2026
+Y81,General- and plastic-surgery devices associated with adverse incidents,cms:icd10cm_order_2026
+Y82,Other and unspecified medical devices associated with adverse incidents,cms:icd10cm_order_2026
+Y83,"Surgical operation and other surgical procedures as the cause of abnormal reaction of the patient, or of later complication, without mention of misadventure at the time of the procedure",cms:icd10cm_order_2026
+Y84,"Other medical procedures as the cause of abnormal reaction of the patient, or of later complication, without mention of misadventure at the time of the procedure",cms:icd10cm_order_2026
+Y90,Evidence of alcohol involvement determined by blood alcohol level,cms:icd10cm_order_2026
+Y92,Place of occurrence of the external cause,cms:icd10cm_order_2026
+Y93,Activity codes,cms:icd10cm_order_2026
+Y95,Nosocomial condition,cms:icd10cm_order_2026
+Y99,External cause status,cms:icd10cm_order_2026
+Z00,"Encounter for general examination without complaint, suspected or reported diagnosis",cms:icd10cm_order_2026
+Z01,"Encounter for other special examination without complaint, suspected or reported diagnosis",cms:icd10cm_order_2026
+Z02,Encounter for administrative examination,cms:icd10cm_order_2026
+Z03,Encounter for medical observation for suspected diseases and conditions ruled out,cms:icd10cm_order_2026
+Z04,Encounter for examination and observation for other reasons,cms:icd10cm_order_2026
+Z05,Encounter for observation and evaluation of newborn for suspected diseases and conditions ruled out,cms:icd10cm_order_2026
+Z08,Encounter for follow-up examination after completed treatment for malignant neoplasm,cms:icd10cm_order_2026
+Z09,Encounter for follow-up examination after completed treatment for conditions other than malignant neoplasm,cms:icd10cm_order_2026
+Z11,Encounter for screening for infectious and parasitic diseases,cms:icd10cm_order_2026
+Z12,Encounter for screening for malignant neoplasms,cms:icd10cm_order_2026
+Z13,Encounter for screening for other diseases and disorders,cms:icd10cm_order_2026
+Z14,Genetic carrier,cms:icd10cm_order_2026
+Z15,Genetic susceptibility to disease,cms:icd10cm_order_2026
+Z16,Resistance to antimicrobial drugs,cms:icd10cm_order_2026
+Z17,"Estrogen, and other hormones and factors receptor status",cms:icd10cm_order_2026
+Z18,Retained foreign body fragments,cms:icd10cm_order_2026
+Z19,Hormone sensitivity malignancy status,cms:icd10cm_order_2026
+Z20,Contact with and (suspected) exposure to communicable diseases,cms:icd10cm_order_2026
+Z21,Asymptomatic human immunodeficiency virus [HIV] infection status,cms:icd10cm_order_2026
+Z22,Carrier of infectious disease,cms:icd10cm_order_2026
+Z23,Encounter for immunization,cms:icd10cm_order_2026
+Z28,Immunization not carried out and underimmunization status,cms:icd10cm_order_2026
+Z29,Encounter for other prophylactic measures,cms:icd10cm_order_2026
+Z30,Encounter for contraceptive management,cms:icd10cm_order_2026
+Z31,Encounter for procreative management,cms:icd10cm_order_2026
+Z32,Encounter for pregnancy test and childbirth and childcare instruction,cms:icd10cm_order_2026
+Z33,Pregnant state,cms:icd10cm_order_2026
+Z34,Encounter for supervision of normal pregnancy,cms:icd10cm_order_2026
+Z36,Encounter for antenatal screening of mother,cms:icd10cm_order_2026
+Z37,Outcome of delivery,cms:icd10cm_order_2026
+Z38,Liveborn infants according to place of birth and type of delivery,cms:icd10cm_order_2026
+Z39,Encounter for maternal postpartum care and examination,cms:icd10cm_order_2026
+Z3A,Weeks of gestation,cms:icd10cm_order_2026
+Z40,Encounter for prophylactic surgery,cms:icd10cm_order_2026
+Z41,Encounter for procedures for purposes other than remedying health state,cms:icd10cm_order_2026
+Z42,Encounter for plastic and reconstructive surgery following medical procedure or healed injury,cms:icd10cm_order_2026
+Z43,Encounter for attention to artificial openings,cms:icd10cm_order_2026
+Z44,Encounter for fitting and adjustment of external prosthetic device,cms:icd10cm_order_2026
+Z45,Encounter for adjustment and management of implanted device,cms:icd10cm_order_2026
+Z46,Encounter for fitting and adjustment of other devices,cms:icd10cm_order_2026
+Z47,Orthopedic aftercare,cms:icd10cm_order_2026
+Z48,Encounter for other postprocedural aftercare,cms:icd10cm_order_2026
+Z49,Encounter for care involving renal dialysis,cms:icd10cm_order_2026
+Z51,Encounter for other aftercare and medical care,cms:icd10cm_order_2026
+Z52,Donors of organs and tissues,cms:icd10cm_order_2026
+Z53,"Persons encountering health services for specific procedures and treatment, not carried out",cms:icd10cm_order_2026
+Z55,Problems related to education and literacy,cms:icd10cm_order_2026
+Z56,Problems related to employment and unemployment,cms:icd10cm_order_2026
+Z57,Occupational exposure to risk factors,cms:icd10cm_order_2026
+Z58,Problems related to physical environment,cms:icd10cm_order_2026
+Z59,Problems related to housing and economic circumstances,cms:icd10cm_order_2026
+Z60,Problems related to social environment,cms:icd10cm_order_2026
+Z62,Problems related to upbringing,cms:icd10cm_order_2026
+Z63,"Other problems related to primary support group, including family circumstances",cms:icd10cm_order_2026
+Z64,Problems related to certain psychosocial circumstances,cms:icd10cm_order_2026
+Z65,Problems related to other psychosocial circumstances,cms:icd10cm_order_2026
+Z66,Do not resuscitate,cms:icd10cm_order_2026
+Z67,Blood type,cms:icd10cm_order_2026
+Z68,Body mass index [BMI],cms:icd10cm_order_2026
+Z69,Encounter for mental health services for victim and perpetrator of abuse,cms:icd10cm_order_2026
+Z70,"Counseling related to sexual attitude, behavior and orientation",cms:icd10cm_order_2026
+Z71,"Persons encountering health services for other counseling and medical advice, not elsewhere classified",cms:icd10cm_order_2026
+Z72,Problems related to lifestyle,cms:icd10cm_order_2026
+Z73,Problems related to life management difficulty,cms:icd10cm_order_2026
+Z74,Problems related to care provider dependency,cms:icd10cm_order_2026
+Z75,Problems related to medical facilities and other health care,cms:icd10cm_order_2026
+Z76,Persons encountering health services in other circumstances,cms:icd10cm_order_2026
+Z77,Other contact with and (suspected) exposures hazardous to health,cms:icd10cm_order_2026
+Z78,Other specified health status,cms:icd10cm_order_2026
+Z79,Long term (current) drug therapy,cms:icd10cm_order_2026
+Z80,Family history of primary malignant neoplasm,cms:icd10cm_order_2026
+Z81,Family history of mental and behavioral disorders,cms:icd10cm_order_2026
+Z82,Family history of certain disabilities and chronic diseases (leading to disablement),cms:icd10cm_order_2026
+Z83,Family history of other specific disorders,cms:icd10cm_order_2026
+Z84,Family history of other conditions,cms:icd10cm_order_2026
+Z85,Personal history of malignant neoplasm,cms:icd10cm_order_2026
+Z86,Personal history of certain other diseases,cms:icd10cm_order_2026
+Z87,Personal history of other diseases and conditions,cms:icd10cm_order_2026
+Z88,"Allergy status to drugs, medicaments and biological substances",cms:icd10cm_order_2026
+Z89,Acquired absence of limb,cms:icd10cm_order_2026
+Z90,"Acquired absence of organs, not elsewhere classified",cms:icd10cm_order_2026
+Z91,"Personal risk factors, not elsewhere classified",cms:icd10cm_order_2026
+Z92,Personal history of medical treatment,cms:icd10cm_order_2026
+Z93,Artificial opening status,cms:icd10cm_order_2026
+Z94,Transplanted organ and tissue status,cms:icd10cm_order_2026
+Z95,Presence of cardiac and vascular implants and grafts,cms:icd10cm_order_2026
+Z96,Presence of other functional implants,cms:icd10cm_order_2026
+Z97,Presence of other devices,cms:icd10cm_order_2026
+Z98,Other postprocedural states,cms:icd10cm_order_2026
+Z99,"Dependence on enabling machines and devices, not elsewhere classified",cms:icd10cm_order_2026

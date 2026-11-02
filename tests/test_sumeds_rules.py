@@ -1,32 +1,25 @@
-"""The packaged suMEDS rules parse, and their patterns match the code layouts of ``messy.yaml``.
+"""The packaged suMEDS rules load in suMEDS and match the code layouts of ``messy.yaml``.
 
-The example codes are built from the code templates in ``messy.yaml`` with synthetic (public
-example) values, so a change to a code layout that the rules no longer match fails here.
+suMEDS validates the rules file itself (``sumeds.load_rules``) and resolves codes with the rule
+objects its enrichment uses, so these tests only state what INSPIRE's codes must resolve to. The
+example codes are built from the code templates in ``messy.yaml`` with synthetic (public example)
+values, so a change to a code layout that the rules no longer match fails here.
 """
 
+import json
 import re
 from importlib.resources import files
 from pathlib import Path
 
+import polars as pl
+import pytest
 import yaml
+from sumeds import EnrichmentConfig, OntologyRules, enrich_metadata, load_rules
+from sumeds.ontology import INDEX_SCHEMA
 
 from INSPIRE_MEDS import MESSY_CFG
 
 RULES_FP = Path(__file__).parents[1] / "src" / "INSPIRE_MEDS" / "sumeds_rules.yaml"
-
-RULE_KINDS = {"schema", "ontology", "crosswalk", "hierarchy"}
-ONTOLOGY_KEYS = {"id", "pattern", "vocabulary", "normalize", "validate"}
-HIERARCHY_KEYS = {
-    "id",
-    "pattern",
-    "group",
-    "separator",
-    "mode",
-    "ignore",
-    "nearest_only",
-}
-FROM_ONTOLOGY_KEYS = {"id", "from_ontology", "rules", "nearest_only"}
-VALIDATE_MODES = {"pack", "athena", "none"}
 
 # Synthetic column values: public example codes in INSPIRE's truncated layouts, plus null (None).
 VALUES = {
@@ -49,18 +42,14 @@ EXPECTED_ONTOLOGY = {
         for route in VALUES["route"]
     },
 }
-# Hierarchy rule id -> example codes it must match, with the value of its `group`.
+# Hierarchy rule id -> example code -> the parent suMEDS adds from the other example codes.
 EXPECTED_HIERARCHY = {
     "inspire-medication-atc-prefixes": {
-        "MEDICATION//N02BE01//IV": "N02BE01",
-        "MEDICATION//N02BE//PO": "N02BE",
+        "MEDICATION//N02BE01//IV": ["MEDICATION//N02BE//IV"],
+        "MEDICATION//N02BE//PO": ["MEDICATION//N02B//PO"],
     },
 }
 FIELD = re.compile(r"\{\$(\w+)(?: \?\? '([^']*)')?\}")
-
-
-def load_rules() -> dict:
-    return yaml.safe_load(RULES_FP.read_text())
 
 
 def code_templates() -> list[str]:
@@ -98,83 +87,66 @@ def example_codes() -> set[str]:
     return {render(t, vs) for t in code_templates() for vs in value_sets} - {None}
 
 
+@pytest.fixture
+def empty_ontology_source(tmp_path: Path) -> str:
+    """An ontology source with no vocabularies, so enrichment reads nothing over the network."""
+    index = {"schema": INDEX_SCHEMA, "vocabularies": {}}
+    (tmp_path / "index.json").write_text(json.dumps(index))
+    return str(tmp_path)
+
+
 def test_rules_file_is_packaged():
     assert files("INSPIRE_MEDS").joinpath("sumeds_rules.yaml").is_file()
 
 
-def test_rules_file_parses_and_is_well_formed():
-    rules = load_rules()
-    assert set(rules) <= RULE_KINDS
-    assert rules["schema"] == "sumeds-rules/0.1"
-    ids = [
-        r["id"]
-        for kind in ("ontology", "crosswalk", "hierarchy")
-        for r in rules.get(kind) or []
-    ]
-    assert len(ids) == len(set(ids)), "duplicate rule ids"
-
-    ontology_ids = set()
-    for rule in rules["ontology"]:
-        assert set(rule) <= ONTOLOGY_KEYS and {"id", "pattern", "vocabulary"} <= set(
-            rule
-        ), rule["id"]
-        assert "code" in re.compile(rule["pattern"]).groupindex, rule["id"]
-        assert rule["pattern"].startswith("^") and rule["pattern"].endswith("$"), rule[
-            "id"
-        ]
-        assert rule.get("validate", "pack") in VALIDATE_MODES, rule["id"]
-        assert rule["vocabulary"].strip() and "/" not in rule["vocabulary"], rule["id"]
-        for step in rule.get("normalize") or []:
-            assert set(step) == {"pattern", "replace"}
-            re.compile(step["pattern"])
-        ontology_ids.add(rule["id"])
-
-    for rule in rules["hierarchy"]:
-        if rule.get("from_ontology"):
-            assert set(rule) <= FROM_ONTOLOGY_KEYS, rule["id"]
-            assert set(rule.get("rules") or []) <= ontology_ids, rule["id"]
-            continue
-        assert set(rule) <= HIERARCHY_KEYS, rule["id"]
-        pattern = re.compile(rule["pattern"])
-        assert rule["pattern"].startswith("^") and rule["pattern"].endswith("$"), rule[
-            "id"
-        ]
-        assert rule["group"] in pattern.groupindex, rule["id"]
-        assert (rule.get("mode") == "prefix") != ("separator" in rule), rule["id"]
+def test_rules_load_in_sumeds():
+    """suMEDS rejects any malformed rule; each pattern must also span a whole code."""
+    rules = load_rules(RULES_FP)
+    for rule in (*rules.vocabulary_rules, *rules.hierarchy):
+        if rule.pattern is not None:
+            assert rule.pattern.pattern.startswith("^"), rule.id
+            assert rule.pattern.pattern.endswith("$"), rule.id
 
 
 def test_ontology_rules_match_the_config_code_layouts():
-    rules = load_rules()["ontology"]
-    compiled = [(r["id"], re.compile(r["pattern"])) for r in rules]
+    rules = load_rules(RULES_FP).ontology
     examples = example_codes()
     assert set(EXPECTED_ONTOLOGY) <= examples, set(EXPECTED_ONTOLOGY) - examples
 
     resolved = {}
     for code in examples:
-        hit = next(
-            ((rule_id, m) for rule_id, p in compiled if (m := p.search(code))), None
-        )
-        if hit:
-            resolved[code] = (hit[0], hit[1].group("code"))
+        hits = [
+            (rule.id, value)
+            for rule in rules
+            if (value := rule.resolve(code)) is not None
+        ]
+        assert len(hits) <= 1, f"{code} matches several rules: {hits}"
+        if hits:
+            resolved[code] = hits[0]
     # Exactly the expected codes match, which excludes `UNK` codes and the malformed ATC code.
     assert resolved == EXPECTED_ONTOLOGY
-    assert {rule_id for rule_id, _ in resolved.values()} == {r["id"] for r in rules}
+    assert {rule_id for rule_id, _ in resolved.values()} == {rule.id for rule in rules}
 
 
-def test_hierarchy_rules_match_the_config_code_layouts():
-    rules = {
-        r["id"]: r for r in load_rules()["hierarchy"] if not r.get("from_ontology")
-    }
-    assert set(rules) == set(EXPECTED_HIERARCHY)
-    examples = example_codes()
-    for rule_id, expected in EXPECTED_HIERARCHY.items():
-        rule = rules[rule_id]
-        pattern = re.compile(rule["pattern"])
-        matched = {
-            code: m.group(rule["group"])
-            for code in examples
-            if (m := pattern.search(code))
+def test_hierarchy_rules_add_the_expected_parents(empty_ontology_source: str):
+    """Run suMEDS's own enrichment, offline, with the string hierarchy rules over the examples."""
+    hierarchy = tuple(r for r in load_rules(RULES_FP).hierarchy if r.mode != "ontology")
+    assert {rule.id for rule in hierarchy} == set(EXPECTED_HIERARCHY)
+    examples = sorted(example_codes())
+    for rule in hierarchy:
+        expected = EXPECTED_HIERARCHY[rule.id]
+        enriched = enrich_metadata(
+            pl.LazyFrame({"code": examples}),
+            EnrichmentConfig(
+                rules=OntologyRules(hierarchy=(rule,)),
+                ontology_source=empty_ontology_source,
+            ),
+        ).collect()
+        parents = {
+            row["code"]: row["parent_codes"]
+            for row in enriched.select("code", "parent_codes").to_dicts()
+            if row["parent_codes"]
         }
-        assert expected.items() <= matched.items(), rule_id
+        assert expected.items() <= parents.items(), rule.id
         family = next(iter(expected)).split("//")[0]
-        assert all(code.startswith(f"{family}//") for code in matched), rule_id
+        assert all(code.startswith(f"{family}//") for code in parents), rule.id

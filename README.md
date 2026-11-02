@@ -114,7 +114,7 @@ than in every ETL. This package ships the rules for it,
 [`src/INSPIRE_MEDS/sumeds_rules.yaml`](src/INSPIRE_MEDS/sumeds_rules.yaml):
 
 ```bash
-pip install sumeds  # a release with rules support (newer than 0.3.2)
+pip install "sumeds>=0.4"
 suMEDS-enrich $ROOT_OUTPUT_DIR/MEDS_cohort/metadata/codes.parquet -o codes_enriched.parquet \
     --rules src/INSPIRE_MEDS/sumeds_rules.yaml
 # Optional: validate the ATC codes against your own OHDSI Athena download.

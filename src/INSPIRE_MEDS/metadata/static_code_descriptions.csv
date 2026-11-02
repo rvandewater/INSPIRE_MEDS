@@ -1,0 +1,20 @@
+code,description,source
+OPERATION_ID,"Operation identifier, in text_value, recorded at the operation start (INSPIRE operations.op_id; a random number beginning with 4)",physionet:inspire-1.4.2 Anonymization (op_id values begin with 4); messy.yaml column comment op_id
+VITALDB_CASE_ID,"Identifier of the same case in the open VitalDB dataset, in text_value; a static (untimed) event (INSPIRE operations.case_id)",messy.yaml column comment case_id (linker to the VitalDB open dataset); physionet:inspire-1.4.2 Parent Projects (VitalDB)
+OPERATION_DATE,Date of the operation (INSPIRE operations.opdate),messy.yaml column comment opdate
+WEIGHT,"Body weight measured before the operation, kg (INSPIRE operations.weight)",messy.yaml column comment weight; physionet:inspire-1.4.2 Anonymization (weight outside 10-200 kg set to null)
+HEIGHT,"Body height measured before the operation, cm (INSPIRE operations.height)",messy.yaml column comment height; physionet:inspire-1.4.2 Anonymization (height outside 100-200 cm set to null); physionet:inspire-1.4.2 Release Notes 1.4 (height cleaned to cm)
+OR_IN,Patient entered the operating room (INSPIRE operations.orin_time),messy.yaml column comment orin_time
+OR_OUT,Patient left the operating room (INSPIRE operations.orout_time),messy.yaml column comment orout_time
+OPERATION_START,Start of the operation (INSPIRE operations.opstart_time),messy.yaml column comment opstart_time; physionet:inspire-1.4.2 Data Description (Operations)
+OPERATION_END,End of the operation (INSPIRE operations.opend_time),messy.yaml column comment opend_time; physionet:inspire-1.4.2 Data Description (Operations)
+HOSPITAL_ADMISSION,Hospital admission (INSPIRE operations.admission_time),messy.yaml column comment admission_time
+HOSPITAL_DISCHARGE,Hospital discharge (INSPIRE operations.discharge_time),messy.yaml column comment discharge_time
+ANESTHESIA_START,Start of anesthesia (INSPIRE operations.anstart_time),messy.yaml column comment anstart_time; physionet:inspire-1.4.2 Data Description (Operations)
+ANESTHESIA_END,End of anesthesia (INSPIRE operations.anend_time),messy.yaml column comment anend_time; physionet:inspire-1.4.2 Data Description (Operations)
+CPB_ON,Start of cardiopulmonary bypass (INSPIRE operations.cpbon_time),messy.yaml column comment cpbon_time
+CPB_OFF,End of cardiopulmonary bypass (INSPIRE operations.cpboff_time),messy.yaml column comment cpboff_time
+ICU_ADMISSION,ICU admission after surgery (INSPIRE operations.icuin_time); only ICU admissions within 24 hours of surgery are recorded,messy.yaml column comment icuin_time; physionet:inspire-1.4.2 Data Description (Operations: ICU admissions within 24 hours of surgery)
+ICU_DISCHARGE,ICU discharge after surgery (INSPIRE operations.icuout_time); recorded only for ICU admissions within 24 hours of surgery,messy.yaml column comment icuout_time; physionet:inspire-1.4.2 Data Description (Operations: ICU admissions within 24 hours of surgery)
+MEDS_BIRTH,"Birth (MEDS standard code); the date is estimated from the age at the patient's first admission, which INSPIRE reports in 5-year bins (operations.age)",physionet:inspire-1.4.2 Anonymization (age in 5-year intervals); this ETL pre_MEDS.build_subject_table (README Birth and death)
+MEDS_DEATH,Death (MEDS standard code); the earlier of the in-hospital and all-cause death times (operations.inhosp_death_time and allcause_death_time),physionet:inspire-1.4.2 Release Notes 1.3 (all-cause mortality column); this ETL pre_MEDS.build_subject_table (README Birth and death)

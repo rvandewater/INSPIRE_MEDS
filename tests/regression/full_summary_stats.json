@@ -166,7 +166,7 @@
     "n_files": 103,
     "subject_splits": "sha256:f387fc5ba995a9a8b13d2521699dddc0449e80009ee5cd20337915ab66860b92"
   },
-  "extracted_at": "2026-11-04T15:29:13.517742",
+  "extracted_at": "2026-11-04T22:17:10.851861",
   "layout": {
     "code_metadata_columns": {
       "code": "String",
@@ -202,7 +202,7 @@
     "shard_names": null,
     "shard_names_digest": "sha256:aeec345f2acc9082dc765efc97b61e370126623581e51e78a2a09f5778a2f8ba"
   },
-  "meds_summary_stats_version": "0.0.2",
+  "meds_summary_stats_version": "0.0.3",
   "per_subject": {
     "n_events": {
       "mean": 198.037,

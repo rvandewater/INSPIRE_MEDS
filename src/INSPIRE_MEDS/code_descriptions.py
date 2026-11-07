@@ -15,7 +15,8 @@ MEDS-Extract attaches metadata differently by code shape:
 
 Vocabulary work is not done here: the ICD-10-CM category titles of the diagnosis codes and the
 ``ICD10CM``, ``ICD10PCS`` and ``ATC`` parent codes come from suMEDS, with the rules in
-``sumeds_rules.yaml``. The shipped table records the source of each row in a ``source`` column.
+``sumeds_rules.yaml``, which ``MEDS_extract-INSPIRE`` applies right after this step. The shipped
+table records the source of each row in a ``source`` column.
 """
 
 from __future__ import annotations

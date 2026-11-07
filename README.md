@@ -24,13 +24,31 @@ export DATASET_DOWNLOAD_PASSWORD=$PHYSIONET_PASSWORD
 MEDS_extract-INSPIRE $ROOT_OUTPUT_DIR
 ```
 
-That downloads the raw INSPIRE files, builds a small derived table (see
-[Birth and death](#birth-and-death)), and runs the full eight-stage MEDS-Extract pipeline. To
-reuse a download you already have:
+`MEDS_extract-INSPIRE` gives the complete build. It downloads the raw INSPIRE files, builds a small
+derived table (see [Birth and death](#birth-and-death)), runs the full eight-stage MEDS-Extract
+pipeline, describes the literal codes (see [Code metadata](#code-metadata)), and then fills the
+official ICD titles and the vocabulary parents into `metadata/codes.parquet` with
+[suMEDS](https://github.com/rvandewater/SumMEDS) (installed with this package; see
+[Enriching code metadata with suMEDS](#enriching-code-metadata-with-sumeds)). The MEDS dataset is
+written to `$ROOT_OUTPUT_DIR/MEDS_cohort`. `key=value` arguments go to `meds-extract-run`, and
+arguments after a `--` go to `suMEDS-enrich`; `--no-enrich` skips the suMEDS step. To reuse a
+download you already have:
 
 ```bash
 MEDS_extract-INSPIRE $ROOT_OUTPUT_DIR --raw-input-dir $RAW_INPUT_DIR --do-download false
 ```
+
+The extraction alone runs over an input directory that already holds the derived table, such as
+the `staged_input` directory of an earlier build:
+
+```bash
+meds-extract-run spec=INSPIRE output_dir=$OUTPUT_DIR do_download=false input_dir=$ROOT_OUTPUT_DIR/staged_input
+```
+
+It writes neither the literal-code descriptions nor the suMEDS enrichment.
+`suMEDS-extract spec=INSPIRE` runs that same command and then suMEDS, so it too needs the derived
+table and skips the literal-code descriptions: for INSPIRE, the complete build is
+`MEDS_extract-INSPIRE`.
 
 ## Configuration
 
@@ -51,7 +69,7 @@ output are not real dates, and comparing them across subjects is meaningless.
 
 ### Null handling
 
-A null component of a composite code drops the row under MEDS-Extract 0.7, where 0.6.x rendered
+A null component of a composite code drops the row since MEDS-Extract 0.7, where 0.6.x rendered
 it as the literal `UNK` and kept the row. Components are therefore coalesced with `?? 'UNK'`
 wherever a null must not drop the row.
 
@@ -88,19 +106,19 @@ never modified.
 1.0.0 only the lab and vital codes had a description (from the release's `parameters.csv`) and no
 code had a parent. The ETL now describes every code family whose meaning INSPIRE itself documents,
 except the diagnoses, and writes no parent codes: the ICD-10-CM category titles and the
-vocabulary parents come from suMEDS (see
+vocabulary parents come from suMEDS, which `MEDS_extract-INSPIRE` runs last (see
 [Enriching code metadata with suMEDS](#enriching-code-metadata-with-sumeds)). Nothing in the event
 data changes.
 
-| Code family                                                                | Route                                                                                                                                         | Source                                                                                                                                                                                                                                                                            |
-| -------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `LAB//…`, `VITAL//…`, `WARD_VITAL//…`                                      | `_metadata: _self:` from the `parameters.csv` join (unchanged)                                                                                | the release's `parameters.csv`                                                                                                                                                                                                                                                    |
-| `ADMISSION_DEPARTMENT//…`                                                  | `_metadata: department:` joins the release's own `department.csv` at ETL time                                                                 | the release's `department.csv` (nothing from it is copied into this repository)                                                                                                                                                                                                   |
-| `DIAGNOSIS//ICD//10//…`                                                    | none in the ETL                                                                                                                               | the CMS ICD-10-CM category title, added by suMEDS                                                                                                                                                                                                                                 |
-| `ICD10_PCS//…`                                                             | `_self` description: the code, cut to its first five characters, and what those characters are                                                | the column documentation ([PhysioNet INSPIRE 1.4.2](https://physionet.org/content/inspire/1.4.2/))                                                                                                                                                                                |
-| `MEDICATION//…`                                                            | `_self` description naming the release's own `atc_code` and route                                                                             | the release's own `atc_code` (documented as WHO ATC, mapped by the dataset authors)                                                                                                                                                                                               |
-| `SEX`, `RACE`, `ASA`, `EMERGENCY_OPERATION`, `ANESTHESIA_TYPE`             | `_self` templates                                                                                                                             | the column documentation ([PhysioNet INSPIRE 1.4.2](https://physionet.org/content/inspire/1.4.2/) and the column comments in `messy.yaml`); ASA classes paraphrase the ASA Physical Status Classification System (American Society of Anesthesiologists, last amended 2020-12-13) |
-| the 19 literal codes (`OR_IN`, `WEIGHT`, `ICU_ADMISSION`, `MEDS_BIRTH`, …) | `src/INSPIRE_MEDS/metadata/static_code_descriptions.csv`, filled into the finished `codes.parquet` by the last step of `MEDS_extract-INSPIRE` | per row, in the table's `source` column: the PhysioNet INSPIRE 1.4.2 documentation section or the `messy.yaml` column comment                                                                                                                                                     |
+| Code family                                                                | Route                                                                                                                                       | Source                                                                                                                                                                                                                                                                            |
+| -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `LAB//…`, `VITAL//…`, `WARD_VITAL//…`                                      | `_metadata: _self:` from the `parameters.csv` join (unchanged)                                                                              | the release's `parameters.csv`                                                                                                                                                                                                                                                    |
+| `ADMISSION_DEPARTMENT//…`                                                  | `_metadata: department:` joins the release's own `department.csv` at ETL time                                                               | the release's `department.csv` (nothing from it is copied into this repository)                                                                                                                                                                                                   |
+| `DIAGNOSIS//ICD//10//…`                                                    | none in the ETL                                                                                                                             | the CMS ICD-10-CM category title, added by suMEDS                                                                                                                                                                                                                                 |
+| `ICD10_PCS//…`                                                             | `_self` description: the code, cut to its first five characters, and what those characters are                                              | the column documentation ([PhysioNet INSPIRE 1.4.2](https://physionet.org/content/inspire/1.4.2/))                                                                                                                                                                                |
+| `MEDICATION//…`                                                            | `_self` description naming the release's own `atc_code` and route                                                                           | the release's own `atc_code` (documented as WHO ATC, mapped by the dataset authors)                                                                                                                                                                                               |
+| `SEX`, `RACE`, `ASA`, `EMERGENCY_OPERATION`, `ANESTHESIA_TYPE`             | `_self` templates                                                                                                                           | the column documentation ([PhysioNet INSPIRE 1.4.2](https://physionet.org/content/inspire/1.4.2/) and the column comments in `messy.yaml`); ASA classes paraphrase the ASA Physical Status Classification System (American Society of Anesthesiologists, last amended 2020-12-13) |
+| the 19 literal codes (`OR_IN`, `WEIGHT`, `ICU_ADMISSION`, `MEDS_BIRTH`, …) | `src/INSPIRE_MEDS/metadata/static_code_descriptions.csv`, filled into the finished `codes.parquet` by `MEDS_extract-INSPIRE`, before suMEDS | per row, in the table's `source` column: the PhysioNet INSPIRE 1.4.2 documentation section or the `messy.yaml` column comment                                                                                                                                                     |
 
 Literal codes need the post-pipeline step because MEDS-Extract joins `_metadata` on a code's
 components, which a literal code does not have, and the pre-existing `metadata/codes.parquet` route
@@ -111,15 +129,28 @@ adds codes, and rewrites the file with the MEDS code-metadata types (`string`, `
 
 Vocabulary work is maintained once, in [suMEDS](https://github.com/rvandewater/SumMEDS), rather
 than in every ETL. This package ships the rules for it,
-[`src/INSPIRE_MEDS/sumeds_rules.yaml`](src/INSPIRE_MEDS/sumeds_rules.yaml):
+[`src/INSPIRE_MEDS/sumeds_rules.yaml`](src/INSPIRE_MEDS/sumeds_rules.yaml), registered in suMEDS's
+`sumeds.rules` entry-point group under the same name as the MEDS-Extract spec, `INSPIRE`. That is
+how `MEDS_extract-INSPIRE` finds them, and `--rules INSPIRE` works for any suMEDS command. Its last
+step runs `suMEDS-enrich` on `metadata/codes.parquet` in place, after the ETL's own descriptions
+are filled; the table is replaced only once the enriched one is complete, and it stays valid MEDS
+code metadata. By default the ICD data comes from suMEDS's ontology packs, fetched from GitHub on
+first use and cached; no Athena download is needed. suMEDS options go after a `--`:
 
 ```bash
-pip install "sumeds>=0.4"
-suMEDS-enrich $ROOT_OUTPUT_DIR/MEDS_cohort/metadata/codes.parquet -o codes_enriched.parquet \
-    --rules src/INSPIRE_MEDS/sumeds_rules.yaml
-# Optional: validate the ATC codes against your own OHDSI Athena download.
-suMEDS-enrich $ROOT_OUTPUT_DIR/MEDS_cohort/metadata/codes.parquet -o codes_enriched.parquet \
-    --rules src/INSPIRE_MEDS/sumeds_rules.yaml --athena-csv /path/to/athena
+# Also validate the ATC codes against your own OHDSI Athena download:
+MEDS_extract-INSPIRE $ROOT_OUTPUT_DIR -- --athena-csv /path/to/athena
+# Use only already cached packs (no network):
+MEDS_extract-INSPIRE $ROOT_OUTPUT_DIR -- --offline
+```
+
+Running it again on an existing output skips the pipeline stages that are already done and
+enriches again. To enrich the `codes.parquet` of an existing build instead (one made with
+`--no-enrich`, or with an earlier release of this package):
+
+```bash
+OUT=$ROOT_OUTPUT_DIR/MEDS_cohort
+suMEDS-enrich "$OUT/metadata/codes.parquet" -o "$OUT/metadata/codes.parquet" --rules INSPIRE
 ```
 
 ICD-10-CM and ICD-10-PCS codes are validated against suMEDS's versioned ontology data
@@ -143,9 +174,10 @@ ICD-10-CM and ICD-10-PCS codes are validated against suMEDS's versioned ontology
     `MEDICATION//N02BE//IV` for `MEDICATION//N02BE01//IV`. Diagnosis and operation codes all sit at
     one level (three and five characters), so they have no same-dataset parents.
 
-suMEDS fills only missing descriptions, never removes or rewrites existing metadata, and writes
-parents as `VOCABULARY//CODE`. The ETL alone no longer emits these parent codes or the diagnosis
-descriptions.
+suMEDS fills only missing descriptions, never removes or rewrites existing metadata, writes
+parents as `VOCABULARY//CODE`, and names them in `parent_names`, a map from parent code to name.
+`meds-extract-run spec=INSPIRE` and `MEDS_extract-INSPIRE --no-enrich` do not emit these parent
+codes or the diagnosis descriptions.
 
 ## MEDS-transforms settings
 
@@ -175,7 +207,8 @@ export N_SUBJECTS_PER_SHARD=100000
 
 [`tests/regression/full_summary_stats.json`](tests/regression/full_summary_stats.json) is a
 [meds_summary_stats](https://github.com/Medical-Event-Data-Standard/meds_summary_stats) fingerprint of
-the MEDS dataset this ETL builds from the full INSPIRE 1.4.2 release: subject, event and measurement
+the MEDS dataset this ETL builds from the full INSPIRE 1.4.2 release with `MEDS_extract-INSPIRE`, so
+its code-metadata coverage includes the suMEDS enrichment. It covers subject, event and measurement
 counts, digests of the code vocabulary, per-subject, value and time distributions, code-metadata
 coverage, the splits and the schema. It names no code and reports no cell of fewer than 20 subjects and
 no minimum or maximum, which is what makes it safe to publish. Because it is committed next to the ETL,
@@ -196,8 +229,9 @@ Both print how the statistics changed against the committed baseline before over
 [`tests/regression/policy.yaml`](tests/regression/policy.yaml) flags an error. Rebuilding the same
 commit reproduces the baseline exactly, so any finding is a change in the output. CI cannot rebuild the
 credentialed release, so the [Summary stats workflow](.github/workflows/summary-stats.yaml) only warns
-when a pull request changes `src/` without regenerating the baseline. A MEDS-Extract or polars upgrade
-can also move the output, so check it with `--compare`.
+when a pull request changes `src/` (the config, the Python or the suMEDS rules) without regenerating
+the baseline. A MEDS-Extract, suMEDS or polars upgrade can also move the output, so check it with
+`--compare`.
 
 ## Citation
 

@@ -3,7 +3,8 @@ name: Synthetic ETL for MESSY files using MESSY_synth
 # Generates raw files straight from the shipped MESSY config with MESSY-synth and runs the ETL over
 # them. MESSY-synth validates that every event block yields events and fails the job otherwise, so
 # this catches expressions that only work on the dtypes of one particular release. It complements
-# the hand-written fixture in tests/e2e_synthetic_test.py, which checks specific values.
+# the test suite, whose hand-written synthetic release (tests/conftest.py) runs through
+# MEDS_extract-INSPIRE and suMEDS enrichment and checks specific values.
 
 on:
   push:
@@ -41,7 +42,10 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
-        run: uv sync --locked
+        run: uv sync --locked --extra tests
+
+      - name: Run the test suite
+        run: uv run --locked --extra tests pytest tests/ -v
 
       - name: Generate and extract synthetic data
         # MESSY-synth 0.0.1 requires MEDS-Extract <0.8, while the ETL runs on 0.8, so it runs in a

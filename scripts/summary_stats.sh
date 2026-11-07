@@ -34,6 +34,8 @@ build() {
   local kind=$1 input=$2 output=$3
   case $kind in
     full)
+      # MEDS_extract-INSPIRE runs the ETL and then the suMEDS enrichment of metadata/codes.parquet,
+      # so the baseline covers the output of the documented complete build.
       uv run --frozen MEDS_extract-INSPIRE "$output" --raw-input-dir "$input" --do-download false >&2 \
         && echo "$output/MEDS_cohort"
       ;;

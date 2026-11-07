@@ -63,15 +63,17 @@ on `operations`, which is one row per **operation**. MESSY cannot reduce a table
 [`src/INSPIRE_MEDS/pre_MEDS.py`](src/INSPIRE_MEDS/pre_MEDS.py) reduces `operations` to one row per
 subject, and the config joins that side table back.
 
-`MEDS_extract-INSPIRE` chains the three steps: `meds-extract-download`, that reduction, then
-`meds-extract-run`. It stages the side table in a directory of **symlinks** to the raw release, so
-the checksum-verified download is never modified.
+`MEDS_extract-INSPIRE` ([`src/INSPIRE_MEDS/__main__.py`](src/INSPIRE_MEDS/__main__.py)) is the
+complete build and chains five steps: `meds-extract-download`, that reduction, `meds-extract-run`,
+the literal-code descriptions, and suMEDS enrichment. It stages the side table in a directory of
+**symlinks** to the raw release, so the checksum-verified download is never modified.
 
 The code metadata adds one small step after the pipeline
 ([`src/INSPIRE_MEDS/code_descriptions.py`](src/INSPIRE_MEDS/code_descriptions.py)): it fills the
 descriptions of literal codes into `metadata/codes.parquet`. Vocabulary parents and titles come from
-suMEDS with [`src/INSPIRE_MEDS/sumeds_rules.yaml`](src/INSPIRE_MEDS/sumeds_rules.yaml). See the
-README section "Code metadata".
+suMEDS with [`src/INSPIRE_MEDS/sumeds_rules.yaml`](src/INSPIRE_MEDS/sumeds_rules.yaml), registered
+under `sumeds.rules` as `INSPIRE`; the runner's last step is just `suMEDS-enrich ... --rules INSPIRE`
+on that file, so there is no suMEDS code in this package. See the README section "Code metadata".
 
 If you are porting another dataset and it needs no such reduction, drop the Python entirely and
 let users call `meds-extract-run spec=<NAME>` directly.
@@ -84,9 +86,13 @@ uv run pytest tests/
 uv run pre-commit run --all-files
 ```
 
-There is no demo release for INSPIRE, so there is no end-to-end CI test — the credentialed
-download cannot run in CI. Changes that affect the output should be validated by running the ETL
-over the real release and comparing cohort statistics before and after.
+There is no demo release for INSPIRE, and the credentialed download cannot run in CI. Instead,
+`tests/test_run_with_enrichment.py` runs `MEDS_extract-INSPIRE` end to end over a tiny, entirely
+synthetic release in INSPIRE's column layout (`tests/conftest.py`), offline against a tiny synthetic
+suMEDS ontology pack, and the Synthetic ETL workflow runs the extraction over data that MESSY-synth
+generates from the config. Changes that affect the output should still be validated by running the
+ETL over the real release and comparing cohort statistics before and after (see the README section
+"Summary statistics").
 
 ## Changing what the ETL emits
 

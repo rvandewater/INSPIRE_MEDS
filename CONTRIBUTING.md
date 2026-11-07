@@ -1,6 +1,6 @@
 # Contributing
 
-This repository is a **MEDS-Extract 0.7 ETL**. Almost all of it is one declarative file; there is
+This repository is a **MEDS-Extract 0.8 ETL**. Almost all of it is one declarative file; there is
 very little Python to change.
 
 ```bash
@@ -23,7 +23,7 @@ Under MEDS-Transforms 0.2.x an ETL was a Python package: `pre_MEDS.py` reshaped 
 | `dataset.yaml` + `download.py` | the `sources:` block                                                      |
 | `configs/ETL.yaml`             | nothing — the stage sequence is canonical and not configurable            |
 | `configs/event_configs.yaml`   | the event tables, written in [dftly](https://github.com/mmcdermott/dftly) |
-| `pre_MEDS.py`                  | mostly `_table.join` / `_table.cols` (see the exception below)            |
+| `pre_MEDS.py`                  | mostly `_table.joins` / `_table.cols` (see the exception below)           |
 
 The file lives at [`src/INSPIRE_MEDS/messy.yaml`](src/INSPIRE_MEDS/messy.yaml) and is registered
 under the `MEDS_extract.pipelines` entry-point group in `pyproject.toml`:
@@ -50,7 +50,8 @@ Three things bite newcomers, in rough order of how often:
     A bare `null` parses as the *string* `"null"`. Tracked in
     [dftly#113](https://github.com/mmcdermott/dftly/issues/113).
 
-Also worth knowing: a table may declare **exactly one** `_table.join`, `_table.cols` entries are
+Also worth knowing: `_table.joins` may name several targets, but each only once and independent
+of the others (no join may key on a column another join delivers), `_table.cols` entries are
 evaluated in order so later ones may reference earlier ones, and adding a Duration to a Datetime
 must be written as `anchor - (-$offset)::minutes` because `+` does not lower correctly.
 

@@ -64,7 +64,7 @@ def test_config_emits_no_parent_codes():
             assert "parent_codes" not in block, f"{table}/{name}"
     for table, body in _cfg().items():
         if isinstance(body, dict) and isinstance(body.get("_table"), dict):
-            assert "icd10" not in str(body["_table"].get("join", "")), table
+            assert "icd10" not in str(body["_table"].get("joins", "")), table
 
 
 def test_apply_static_descriptions_fills_only_nulls(tmp_path):

@@ -44,10 +44,15 @@ jobs:
         run: uv sync --locked
 
       - name: Generate and extract synthetic data
+        # MESSY-synth 0.0.1 requires MEDS-Extract <0.8, while the ETL runs on 0.8, so it runs in a
+        # tool environment of its own. It cannot parse 0.8's `_table.joins`, so it reads a copy of
+        # the config with the key spelled `_table.join` (the only 0.8 syntax the config uses); the
+        # extraction itself runs the shipped config with this project's locked MEDS-Extract.
         run: |
-          uv pip install "MESSY_synth==0.0.1"
-          uv run MESSY-synth ./src/INSPIRE_MEDS/messy.yaml -o raw_synthetic/ --explain
-          uv run meds-extract-run spec=INSPIRE output_dir=./INSPIRE_meds_synth \
+          sed 's/^    joins:$/    join:/' src/INSPIRE_MEDS/messy.yaml > messy_0.7.yaml
+          uvx --python ${{ matrix.python-version }} --from "MESSY_synth==0.0.1" \
+            MESSY-synth ./messy_0.7.yaml -o raw_synthetic/ --explain
+          uv run --locked meds-extract-run spec=INSPIRE output_dir=./INSPIRE_meds_synth \
             input_dir=raw_synthetic do_download=false
           for f in dataset.json codes.parquet subject_splits.parquet; do
             test -f "INSPIRE_meds_synth/metadata/$f"

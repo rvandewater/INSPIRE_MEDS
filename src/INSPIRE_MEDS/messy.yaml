@@ -17,7 +17,7 @@ _defaults:
 
 operations:
   _table:
-    join:
+    joins:
       subjects:
         key: subject_id
         cols: { birth_age: min, death_min: min }
@@ -171,7 +171,7 @@ operations:
 
 labs:
   _table:
-    join:
+    joins:
       parameters:
         left_on: item_name
         right_on: Label
@@ -214,7 +214,7 @@ diagnosis:
 
 vitals:
   _table:
-    join:
+    joins:
       parameters:
         left_on: item_name
         right_on: Label
@@ -232,7 +232,7 @@ vitals:
 
 ward_vitals:
   _table:
-    join:
+    joins:
       parameters:
         left_on: item_name
         right_on: Label

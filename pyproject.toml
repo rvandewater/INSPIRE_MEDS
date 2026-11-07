@@ -20,9 +20,11 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-# Pure-config ETL: the only runtime dependency is MEDS-Extract itself, which supplies both
-# CLIs (`meds-extract-download`, `meds-extract-run`) and every extraction stage.
-dependencies = ["MEDS-extract[download]>=0.7.0,<0.8", "polars>=1.0"]
+# MEDS-Extract supplies both CLIs (`meds-extract-download`, `meds-extract-run`) and every
+# extraction stage. It is capped below the next minor: MEDS-Extract 0.x minors are breaking (MESSY
+# syntax, runner CLI), so raise this deliberately when migrating. polars builds the subject side
+# table (`pre_MEDS`).
+dependencies = ["MEDS-extract[download]>=0.8.0,<0.9", "polars>=1.0"]
 
 [tool.setuptools_scm]
 

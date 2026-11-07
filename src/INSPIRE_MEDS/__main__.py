@@ -15,7 +15,10 @@ Five steps, each of which is just the underlying tool:
 5. suMEDS enriches `metadata/codes.parquet` in place with the rules this package registers under
    `INSPIRE`, exactly as `suMEDS-enrich CODES -o CODES --rules INSPIRE` would, with every argument
    after a `--`. It only fills what is missing, so the descriptions of steps 3 and 4 are kept.
-   `--no-enrich` skips it.
+   It runs with `--soft-fail`: if it fails (without internet, for example), the table is left as
+   it was, `metadata/dataset.json` records the failure and the command that enriches it later,
+   and the build still succeeds. `-- --strict` makes a failed enrichment an error, and
+   `--no-enrich` skips the step.
 
 Step 2 is the main reason this wrapper exists. `MEDS_BIRTH` and `MEDS_DEATH` need a per-subject
 reduction that MESSY cannot express, and MEDS-Extract's `etl:` block deliberately does not let a
@@ -109,8 +112,12 @@ def main(argv: list[str] | None = None) -> int:
     codes_fp = out.resolve() / "metadata" / "codes.parquet"
     enrich_argv = [str(codes_fp), "-o", str(codes_fp), "--rules", PIPELINE_NAME]
     enrich_argv += enrich_args
-    if args.enrich:  # Fail on bad suMEDS options or rules now, not after the pipeline.
-        sumeds.load_rules(build_enrich_parser().parse_args(enrich_argv).rules)
+    # Bad suMEDS options or rules fail now, not after the pipeline (a local check).
+    if args.enrich:
+        options = build_enrich_parser().parse_args(enrich_argv)
+        sumeds.load_rules(options.rules)
+        if options.soft_fail is None:  # Neither --soft-fail nor --strict given.
+            enrich_argv.append("--soft-fail")
 
     if args.do_download == "true":
         _run(

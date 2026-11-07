@@ -5,7 +5,8 @@ and then hands `metadata/codes.parquet` to suMEDS with the rules this package re
 `INSPIRE`. It runs here twice over the synthetic release of ``conftest.py``: once with
 `--no-enrich`, the ETL's own output, and once with enrichment, which must only add to it. The
 ontology source is a tiny pack repository in suMEDS's `sumeds-ontologies/0.1` layout, built here
-with made-up titles for the synthetic ICD codes, so nothing is read over the network.
+with made-up titles for the synthetic ICD codes, so nothing is read over the network. An empty pack
+source stands in for a site without internet access, where the enrichment soft-fails.
 """
 
 import csv
@@ -13,13 +14,14 @@ import hashlib
 import io
 import json
 import subprocess
+import sys
 from pathlib import Path
 
 import polars as pl
 import pyarrow.parquet as pq
 import pytest
 from conftest import run_command
-from meds import CodeMetadataSchema
+from meds import CodeMetadataSchema, DatasetMetadataSchema
 
 RUNNER = "MEDS_extract-INSPIRE"
 
@@ -135,6 +137,13 @@ def _codes(output: Path) -> dict[str, dict]:
     return {row["code"]: row for row in df.to_dicts()}
 
 
+def _record(output: Path) -> dict:
+    """The enrichment record in `metadata/dataset.json`, which must stay valid MEDS metadata."""
+    metadata = json.loads((output / "metadata" / "dataset.json").read_text())
+    DatasetMetadataSchema.validate(metadata)
+    return metadata["sumeds_enrichment"]
+
+
 @pytest.fixture(scope="session")
 def plain_codes(plain_output: Path) -> dict[str, dict]:
     return _codes(plain_output)
@@ -239,3 +248,69 @@ def test_bad_suMEDS_options_fail_before_the_pipeline(tmp_path: Path, raw_dir: Pa
     assert not (tmp_path / "root").exists(), (
         "the pipeline ran despite invalid suMEDS options"
     )
+
+
+def test_dataset_json_records_the_enrichment(
+    enriched_output: Path, enriched_codes: dict
+):
+    record = _record(enriched_output)
+    assert record["enriched"] is True
+    assert record["rules"] == "INSPIRE"
+    assert record["ontology_source"] == "local"
+    coverage = record["coverage"]
+    assert coverage["codes"] == len(enriched_codes)
+    assert coverage["described"][1] > coverage["described"][0]
+    assert coverage["with_parent_codes"][1] > coverage["with_parent_codes"][0]
+
+
+def test_a_failed_enrichment_keeps_the_build_and_can_be_retried(
+    tmp_path: Path,
+    raw_dir: Path,
+    plain_output: Path,
+    enriched_output: Path,
+    ontology_source: Path,
+):
+    """Without packs (as without internet) the build succeeds; `suMEDS-enrich OUT` finishes it."""
+    no_packs = tmp_path / "no-packs"
+    no_packs.mkdir()
+    argv = [
+        RUNNER,
+        str(tmp_path / "root"),
+        f"--raw-input-dir={raw_dir}",
+        "--do-download=false",
+    ]
+    result = run_command([*argv, "--", "--ontology-source", str(no_packs)])
+    assert "once the cause is fixed, enrich it with" in result.stderr
+    output = tmp_path / "root" / "MEDS_cohort"
+    codes = output / "metadata" / "codes.parquet"
+    plain = plain_output / "metadata" / "codes.parquet"
+    assert codes.read_bytes() == plain.read_bytes()
+    record = _record(output)
+    assert record["enriched"] is False
+    assert record["rules"] == "INSPIRE"
+    assert record["retry"].startswith("suMEDS-enrich <MEDS_ROOT>")
+
+    # The packs directory is a path, which the record never holds, so it is given again.
+    sumeds_enrich = str(Path(sys.executable).parent / "suMEDS-enrich")
+    run_command([sumeds_enrich, str(output), "--ontology-source", str(ontology_source)])
+    assert _record(output)["enriched"] is True
+    direct = pq.read_table(enriched_output / "metadata" / "codes.parquet")
+    assert pq.read_table(codes).equals(direct)
+
+
+def test_strict_makes_a_failed_enrichment_an_error(tmp_path: Path, raw_dir: Path):
+    no_packs = tmp_path / "no-packs"
+    no_packs.mkdir()
+    argv = [
+        RUNNER,
+        str(tmp_path / "root"),
+        f"--raw-input-dir={raw_dir}",
+        "--do-download=false",
+        "--",
+        "--ontology-source",
+        str(no_packs),
+        "--strict",
+    ]
+    result = subprocess.run(argv, capture_output=True, text=True)
+    assert result.returncode == 1
+    assert "suMEDS-enrich: error:" in result.stderr

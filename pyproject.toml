@@ -24,12 +24,14 @@ classifiers = [
 # extraction stage. It is capped below the next minor: MEDS-Extract 0.x minors are breaking (MESSY
 # syntax, runner CLI), so raise this deliberately when migrating. polars builds the subject side
 # table (`pre_MEDS`). suMEDS enriches the finished code metadata with the rules registered below,
-# as the last step of `MEDS_extract-INSPIRE`. It is capped below the next minor for the same
-# reason (its rules format and output columns are still 0.x: 0.6 changed `*_names` to maps).
+# as the last step of `MEDS_extract-INSPIRE`; 0.6.1 adds the soft fail (a failed enrichment, e.g.
+# without internet, leaves the build as it was and exits 0) and the `sumeds_enrichment` record in
+# `metadata/dataset.json`. It is capped below the next minor for the same reason (its rules format
+# and output columns are still 0.x: 0.6 changed `*_names` to maps).
 dependencies = [
   "MEDS-extract[download]>=0.8.0,<0.9",
   "polars>=1.0",
-  "sumeds>=0.6,<0.7",
+  "sumeds>=0.6.1,<0.7",
 ]
 
 [tool.setuptools_scm]

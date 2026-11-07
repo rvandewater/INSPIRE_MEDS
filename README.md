@@ -145,13 +145,26 @@ MEDS_extract-INSPIRE $ROOT_OUTPUT_DIR -- --offline
 ```
 
 Running it again on an existing output skips the pipeline stages that are already done and
-enriches again. To enrich the `codes.parquet` of an existing build instead (one made with
-`--no-enrich`, or with an earlier release of this package):
+enriches again.
+
+Enrichment is on by default and soft-fails: if it cannot finish, for example on a server without
+internet access, `metadata/codes.parquet` is left as the ETL wrote it, a warning gives the command
+that enriches it later, and the build still succeeds. Pass `-- --strict` to make a failed
+enrichment an error, or `--no-enrich` to skip it.
+
+`metadata/dataset.json` tells whether a build was enriched: `sumeds_enrichment.enriched` is `true`
+or `false`, next to the rules, options and coverage used. To enrich a build afterwards, as the
+default run would have:
 
 ```bash
 OUT=$ROOT_OUTPUT_DIR/MEDS_cohort
-suMEDS-enrich "$OUT/metadata/codes.parquet" -o "$OUT/metadata/codes.parquet" --rules INSPIRE
+suMEDS-enrich "$OUT"
+# Air-gapped: from a copy of the sumeds-ontologies packs directory instead of GitHub
+suMEDS-enrich "$OUT" --ontology-source /path/to/sumeds-ontologies/ontologies --offline
 ```
+
+A build made with `--no-enrich`, or with an earlier release of this package, has no record to
+reuse, so add `--rules INSPIRE`.
 
 ICD-10-CM and ICD-10-PCS codes are validated against suMEDS's versioned ontology data
 (sumeds-ontologies, pinned release), built from the CMS and CDC files. The rules add:

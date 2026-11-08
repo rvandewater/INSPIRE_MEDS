@@ -223,12 +223,17 @@
     }
   },
   "dataset": {
-    "created_at": "2026-11-07T19:14:07.951594+00:00",
+    "created_at": "2026-11-08T01:00:05.233258+00:00",
     "dataset_name": "INSPIRE",
-    "dataset_version": "1.4.2",
+    "dataset_version": "1.4.2:1.0.0",
+    "description_uri": "https://physionet.org/content/inspire/1.4.2/",
     "etl_name": "MEDS_transforms",
     "etl_version": "0.7.0",
+    "license": "Korea Credentialed Health Data License-1-0-0",
     "meds_version": "0.4.1",
+    "other_extension_columns": [
+      "source_block"
+    ],
     "present": true,
     "sumeds_enrichment": {
       "athena": false,
@@ -244,7 +249,7 @@
         ]
       },
       "enriched": true,
-      "enriched_at": "2026-11-07T19:14:20Z",
+      "enriched_at": "2026-11-08T01:00:17Z",
       "ontology_source": "rvandewater/sumeds-ontologies@v0.2.0",
       "options": {
         "child_codes": false,
@@ -256,24 +261,24 @@
         "sibling_codes": false
       },
       "rules": "INSPIRE",
-      "rules_sha256": "22f7772239988e1362417688452a254f7a19f57182a1ac13f0e7db66a946ca63",
-      "sumeds_version": "0.6.1"
+      "rules_sha256": "6360ed67604cb6d81e6351f11a3efa906aa8d997c74884d9202ac76feee79a82",
+      "sumeds_version": "0.6.2"
     }
   },
   "dataset_digest": {
     "by_file": null,
-    "code_metadata": "sha256:7b0fe956adc96c8293f93677919083af400f01d0523eeda0380464a8aaf961b7",
-    "combined": "sha256:abebd96b0b400b974d7f0687f5d267239ddebca51ffc0c6d82236ed0b4ae0e37",
+    "code_metadata": "sha256:8b53381e8de1959e9fd9e18d6ca46603d881af4e11aaf84428c29a7a37fe8fea",
+    "combined": "sha256:ef6f4174f81a423389d5cc3bb5c444f4993807966119e2a493735d355547108f",
     "data": {
       "digest": "sha256:82532f482bb74744f318d18c68d2fb9bc2f9a5ea16345ce3f03569d15b9ff6fb",
       "n_files": 100
     },
-    "dataset_metadata": "sha256:076dac9f870294cf1c0817ce2e101bf9fdf42e701f12fa3b27230799e101f236",
+    "dataset_metadata": "sha256:9d4cb5f653d05ad83e51cc0fd16dd5d41a5c01baa9b97eba13c98e84bd62753e",
     "method": "files",
     "n_files": 103,
     "subject_splits": "sha256:f387fc5ba995a9a8b13d2521699dddc0449e80009ee5cd20337915ab66860b92"
   },
-  "extracted_at": "2026-11-07T19:14:27.519746",
+  "extracted_at": "2026-11-08T01:00:25.871936",
   "layout": {
     "code_metadata_columns": {
       "code": "String",

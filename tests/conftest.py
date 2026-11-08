@@ -1,12 +1,14 @@
-"""A tiny, entirely synthetic INSPIRE release, and a helper to run the CLIs over it.
+"""A tiny, entirely synthetic INSPIRE release, and helpers to run the CLIs over it.
 
-The tables have the column layout of the INSPIRE 1.4.2 files that ``messy.yaml`` and
-``pre_MEDS`` read, with made-up values: three subjects, public example ICD-10-CM, ICD-10-PCS and
+The tables have the column layout of the INSPIRE 1.4.2 files that ``messy.yaml`` and the
+``inspire_subject_table`` pre-stage read, with made-up values: three subjects, public example ICD-10-CM, ICD-10-PCS and
 WHO ATC codes in INSPIRE's truncated layouts, and a null in each column the config writes as
 ``UNK``. No real INSPIRE data is used.
 """
 
+import os
 import subprocess
+import sys
 from pathlib import Path
 
 import polars as pl
@@ -99,11 +101,39 @@ def raw_dir(tmp_path_factory) -> Path:
     return root
 
 
-def run_command(argv: list[str]) -> subprocess.CompletedProcess:
+def run_command(
+    argv: list[str], env: dict[str, str] | None = None
+) -> subprocess.CompletedProcess:
     """Run a CLI, failing the test with its full output if it does not succeed."""
-    result = subprocess.run(argv, capture_output=True, text=True)
+    result = subprocess.run(
+        argv,
+        capture_output=True,
+        text=True,
+        env=None if env is None else {**os.environ, **env},
+    )
     assert result.returncode == 0, (
         f"{argv[0]} failed with exit code {result.returncode}.\n"
         f"stdout:\n{result.stdout}\nstderr:\n{result.stderr}"
     )
     return result
+
+
+def etl_argv(output: Path, raw: Path, *args: str) -> list[str]:
+    """``meds-extract-run spec=INSPIRE`` over the release in ``raw``, into ``output``."""
+    meds_extract_run = str(Path(sys.executable).parent / "meds-extract-run")
+    return [
+        meds_extract_run,
+        "spec=INSPIRE",
+        f"output_dir={output}",
+        "do_download=false",
+        f"input_dir={raw}",
+        *args,
+    ]
+
+
+@pytest.fixture(scope="session")
+def plain_output(tmp_path_factory, raw_dir: Path) -> Path:
+    """The ETL without the suMEDS enrichment stage (``skip_stages=[sumeds_enrich]``)."""
+    output = tmp_path_factory.mktemp("inspire_plain") / "meds"
+    run_command(etl_argv(output, raw_dir, "skip_stages=[sumeds_enrich]"))
+    return output

@@ -106,7 +106,7 @@ def test_rules_file_is_packaged():
 
 
 def test_rules_are_registered_under_the_spec_name():
-    """`MEDS_extract-INSPIRE` and `suMEDS-enrich --rules INSPIRE` find the rules by this entry point."""
+    """The spec's `sumeds_enrich: {rules: INSPIRE}` and `suMEDS-enrich --rules INSPIRE` find them here."""
     assert registered_rules()[PIPELINE_NAME] == "INSPIRE_MEDS:sumeds_rules.yaml"
     assert load_rules(PIPELINE_NAME) == load_rules(RULES_FP)
 

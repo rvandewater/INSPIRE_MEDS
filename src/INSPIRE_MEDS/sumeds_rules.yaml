@@ -2,10 +2,12 @@
 #
 # The ETL describes codes from INSPIRE's own tables and documentation. Vocabulary parent codes, and
 # the official ICD-10-CM category titles, come from suMEDS. This file is registered in suMEDS's
-# `sumeds.rules` entry-point group as `INSPIRE` (pyproject.toml); `MEDS_extract-INSPIRE` applies it
-# as its last step, and for an existing build:
+# `sumeds.rules` entry-point group as `INSPIRE` (pyproject.toml); the spec's `sumeds_enrich`
+# post-stage (`etl.post_stages` in messy.yaml) applies it as the last step of
+# `meds-extract-run spec=INSPIRE`. To enrich an existing build later, or again:
 #
-#   suMEDS-enrich "$OUT/metadata/codes.parquet" -o "$OUT/metadata/codes.parquet" --rules INSPIRE
+#   suMEDS-enrich "$OUT"                   # with the rules and options its dataset.json records
+#   suMEDS-enrich "$OUT" --rules INSPIRE   # a build made with skip_stages=[sumeds_enrich]
 #
 # Every pattern matches a code layout of `messy.yaml` exactly; tests/test_sumeds_rules.py checks
 # them against example codes built from that config.

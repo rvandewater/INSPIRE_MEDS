@@ -1,0 +1,198 @@
+{
+  "about": "What the MEDS_extract-INSPIRE runner (INSPIRE_MEDS 291c948, MEDS-Extract 0.8.0) built from the synthetic release of tests/conftest.py with --no-enrich: each code's description and number of events. tests/test_runner_equivalence.py checks that meds-extract-run spec=INSPIRE still builds it.",
+  "events": 100,
+  "codes": {
+    "ADMISSION_DEPARTMENT//CS": {
+      "description": "Surgical department for admission: Cardiothoracic surgery (INSPIRE operations.department 'CS', expanded by the release's department.csv)",
+      "events": 1
+    },
+    "ADMISSION_DEPARTMENT//GS": {
+      "description": "Surgical department for admission: General surgery (INSPIRE operations.department 'GS', expanded by the release's department.csv)",
+      "events": 3
+    },
+    "ANESTHESIA_END": {
+      "description": "End of anesthesia (INSPIRE operations.anend_time)",
+      "events": 4
+    },
+    "ANESTHESIA_START": {
+      "description": "Start of anesthesia (INSPIRE operations.anstart_time)",
+      "events": 4
+    },
+    "ANESTHESIA_TYPE//General": {
+      "description": "Anesthesia type: General (INSPIRE operations.antype: General, Neuraxial, Regional, or MAC = monitored anesthesia care)",
+      "events": 3
+    },
+    "ANESTHESIA_TYPE//Regional": {
+      "description": "Anesthesia type: Regional (INSPIRE operations.antype: General, Neuraxial, Regional, or MAC = monitored anesthesia care)",
+      "events": 1
+    },
+    "ASA//2": {
+      "description": "ASA physical status 2, mild systemic disease (INSPIRE operations.asa)",
+      "events": 2
+    },
+    "ASA//3": {
+      "description": "ASA physical status 3, severe systemic disease (INSPIRE operations.asa)",
+      "events": 1
+    },
+    "ASA//UNK": {
+      "description": "ASA physical status UNK (INSPIRE operations.asa)",
+      "events": 1
+    },
+    "CPB_OFF": {
+      "description": "End of cardiopulmonary bypass (INSPIRE operations.cpboff_time)",
+      "events": 1
+    },
+    "CPB_ON": {
+      "description": "Start of cardiopulmonary bypass (INSPIRE operations.cpbon_time)",
+      "events": 1
+    },
+    "DIAGNOSIS//ICD//10//E11": {
+      "description": null,
+      "events": 1
+    },
+    "DIAGNOSIS//ICD//10//I10": {
+      "description": null,
+      "events": 1
+    },
+    "DIAGNOSIS//ICD//10//J18": {
+      "description": null,
+      "events": 1
+    },
+    "DIAGNOSIS//ICD//10//U99": {
+      "description": null,
+      "events": 1
+    },
+    "DIAGNOSIS//ICD//10//UNK": {
+      "description": null,
+      "events": 1
+    },
+    "EMERGENCY_OPERATION//0": {
+      "description": "Emergency operation flag: 0 (INSPIRE operations.emop, binary indicator of an emergency operation)",
+      "events": 3
+    },
+    "EMERGENCY_OPERATION//1": {
+      "description": "Emergency operation flag: 1 (INSPIRE operations.emop, binary indicator of an emergency operation)",
+      "events": 1
+    },
+    "HEIGHT": {
+      "description": "Body height measured before the operation, cm (INSPIRE operations.height)",
+      "events": 3
+    },
+    "HOSPITAL_ADMISSION": {
+      "description": "Hospital admission (INSPIRE operations.admission_time)",
+      "events": 3
+    },
+    "HOSPITAL_DISCHARGE": {
+      "description": "Hospital discharge (INSPIRE operations.discharge_time)",
+      "events": 3
+    },
+    "ICD10_PCS//02HV3": {
+      "description": "Operation, ICD-10-PCS code cut to its first five characters (section, body system, root operation, body part, approach): 02HV3 (INSPIRE operations.icd10_pcs)",
+      "events": 1
+    },
+    "ICD10_PCS//0DTJ4": {
+      "description": "Operation, ICD-10-PCS code cut to its first five characters (section, body system, root operation, body part, approach): 0DTJ4 (INSPIRE operations.icd10_pcs)",
+      "events": 1
+    },
+    "ICD10_PCS//5A195": {
+      "description": "Operation, ICD-10-PCS code cut to its first five characters (section, body system, root operation, body part, approach): 5A195 (INSPIRE operations.icd10_pcs)",
+      "events": 1
+    },
+    "ICD10_PCS//UNK": {
+      "description": "Operation, ICD-10-PCS code cut to its first five characters (section, body system, root operation, body part, approach): UNK (INSPIRE operations.icd10_pcs)",
+      "events": 1
+    },
+    "ICU_ADMISSION": {
+      "description": "ICU admission after surgery (INSPIRE operations.icuin_time); only ICU admissions within 24 hours of surgery are recorded",
+      "events": 2
+    },
+    "ICU_DISCHARGE": {
+      "description": "ICU discharge after surgery (INSPIRE operations.icuout_time); recorded only for ICU admissions within 24 hours of surgery",
+      "events": 2
+    },
+    "LAB//hb//g/dL": {
+      "description": "Hemoglobin",
+      "events": 2
+    },
+    "LAB//wbc//10^3/uL": {
+      "description": "White blood cell count",
+      "events": 1
+    },
+    "MEDICATION//B05XA03//IV": {
+      "description": "Medication administered, WHO ATC code B05XA03, route IV (INSPIRE medications.atc_code and route; the ingredient name is in text_value)",
+      "events": 1
+    },
+    "MEDICATION//N02BE//IV": {
+      "description": "Medication administered, WHO ATC code N02BE, route IV (INSPIRE medications.atc_code and route; the ingredient name is in text_value)",
+      "events": 1
+    },
+    "MEDICATION//N02BE01//IV": {
+      "description": "Medication administered, WHO ATC code N02BE01, route IV (INSPIRE medications.atc_code and route; the ingredient name is in text_value)",
+      "events": 1
+    },
+    "MEDICATION//UNK//PO": {
+      "description": "Medication administered, WHO ATC code UNK, route PO (INSPIRE medications.atc_code and route; the ingredient name is in text_value)",
+      "events": 1
+    },
+    "MEDS_BIRTH": {
+      "description": "Birth (MEDS standard code); the date is estimated from the age at the patient's first admission, which INSPIRE reports in 5-year bins (operations.age)",
+      "events": 3
+    },
+    "MEDS_DEATH": {
+      "description": "Death (MEDS standard code); the earlier of the in-hospital and all-cause death times (operations.inhosp_death_time and allcause_death_time)",
+      "events": 2
+    },
+    "OPERATION_DATE": {
+      "description": "Date of the operation (INSPIRE operations.opdate)",
+      "events": 4
+    },
+    "OPERATION_END": {
+      "description": "End of the operation (INSPIRE operations.opend_time)",
+      "events": 4
+    },
+    "OPERATION_ID": {
+      "description": "Operation identifier, in text_value, recorded at the operation start (INSPIRE operations.op_id; a random number beginning with 4)",
+      "events": 4
+    },
+    "OPERATION_START": {
+      "description": "Start of the operation (INSPIRE operations.opstart_time)",
+      "events": 4
+    },
+    "OR_IN": {
+      "description": "Patient entered the operating room (INSPIRE operations.orin_time)",
+      "events": 4
+    },
+    "OR_OUT": {
+      "description": "Patient left the operating room (INSPIRE operations.orout_time)",
+      "events": 4
+    },
+    "RACE//Asian": {
+      "description": "Race of the patient: Asian (INSPIRE operations.race)",
+      "events": 3
+    },
+    "SEX//F": {
+      "description": "Sex of the patient: F (INSPIRE operations.sex, M or F)",
+      "events": 2
+    },
+    "SEX//M": {
+      "description": "Sex of the patient: M (INSPIRE operations.sex, M or F)",
+      "events": 1
+    },
+    "VITAL//hr///min": {
+      "description": "Heart rate",
+      "events": 2
+    },
+    "VITALDB_CASE_ID": {
+      "description": "Identifier of the same case in the open VitalDB dataset, in text_value; a static (untimed) event (INSPIRE operations.case_id)",
+      "events": 4
+    },
+    "WARD_VITAL//hr///min": {
+      "description": "Heart rate",
+      "events": 1
+    },
+    "WEIGHT": {
+      "description": "Body weight measured before the operation, kg (INSPIRE operations.weight)",
+      "events": 3
+    }
+  }
+}

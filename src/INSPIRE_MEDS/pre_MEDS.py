@@ -1,4 +1,4 @@
-"""Build the one-row-per-subject side table the MESSY config joins against.
+"""The ``inspire_subject_table`` pre-stage: the one-row-per-subject side table the MESSY config joins.
 
 `MEDS_BIRTH` and `MEDS_DEATH` are properties of a *subject*, but INSPIRE records the facts
 they derive from on `operations`, which is one row per operation:
@@ -14,18 +14,29 @@ MESSY cannot reduce a table over its own rows -- self-joins are rejected, and df
 row-wise with no aggregates -- so the reduction happens here instead, and the event config joins
 the result back per subject.
 
-The output is written into a staging directory alongside symlinks to the raw release, so the
-credentialed raw tree the downloader verified is never modified.
+It runs as a MEDS-Extract pre-stage (MEDS-Extract 0.8.1 or later), which the spec declares::
+
+    etl:
+      pre_stages:
+        - inspire_subject_table
+
+``meds-extract-run`` runs it before ``convert_to_parquet``. It reads ``operations`` from the run's
+``input_dir`` and writes ``subjects.parquet`` into its own output directory, which
+``convert_to_parquet`` searches before ``input_dir``. The raw release is never modified.
 """
 
 from __future__ import annotations
 
 import logging
+import os
 from pathlib import Path
 
 import polars as pl
+from MEDS_transforms.stages import Stage
 
 logger = logging.getLogger(__name__)
+
+STAGE_NAME = "inspire_subject_table"
 
 #: Name of the derived table, matching the `subjects:` join target in `messy.yaml`.
 SIDE_TABLE_NAME = "subjects"
@@ -87,39 +98,41 @@ def build_subject_table(operations: pl.LazyFrame) -> pl.LazyFrame:
     )
 
 
-def stage_input(raw_input_dir: Path, staging_dir: Path) -> Path:
-    """Mirror `raw_input_dir` into `staging_dir` by symlink and add the derived side table.
-
-    The raw release is left untouched: every entry is symlinked, so the staging directory costs
-    nothing on disk and the checksum-verified files are never rewritten.
+def write_subject_table(raw_input_dir: Path, output_dir: Path) -> Path:
+    """Write the subject side table of the release in `raw_input_dir` to `output_dir`.
 
     Args:
-        raw_input_dir: The downloaded INSPIRE release.
-        staging_dir: Where to build the augmented input tree.
+        raw_input_dir: The INSPIRE release, as downloaded.
+        output_dir: Where to write `subjects.parquet`; created if needed.
 
     Returns:
-        The staging directory, ready to pass as `input_dir`.
+        The written file. It is replaced atomically, so a rerun gives the same file.
 
     Raises:
         FileNotFoundError: If the operations table is not present in `raw_input_dir`.
     """
-    sources = sorted(raw_input_dir.glob(f"{SOURCE_TABLE}.*"))
+    sources = sorted(Path(raw_input_dir).glob(f"{SOURCE_TABLE}.*"))
     if not sources:
         raise FileNotFoundError(
-            f"No {SOURCE_TABLE} table under {raw_input_dir}. Expected the INSPIRE release; "
-            "run the download step first, or point --raw-input-dir at an existing copy."
+            f"No {SOURCE_TABLE} table under {raw_input_dir}. Expected the INSPIRE release: "
+            "download it, or point input_dir at an existing copy."
         )
-
-    staging_dir.mkdir(parents=True, exist_ok=True)
-    for entry in raw_input_dir.iterdir():
-        link = staging_dir / entry.name
-        if not link.is_symlink() and not link.exists():
-            link.symlink_to(entry.resolve())
-
-    out = staging_dir / f"{SIDE_TABLE_NAME}.parquet"
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    out = output_dir / f"{SIDE_TABLE_NAME}.parquet"
     table = build_subject_table(
         pl.scan_csv(sources[0], infer_schema_length=None)
     ).collect()
-    table.write_parquet(out)
+    tmp = out.with_name(f".{out.name}.tmp")
+    table.write_parquet(tmp)
+    os.replace(tmp, out)
     logger.info(f"Wrote {table.height:,} subject rows to {out}")
-    return staging_dir
+    return out
+
+
+@Stage.register(stage_name=STAGE_NAME, is_metadata=False, default_config={})
+def main(cfg) -> None:
+    """Write the `subjects` side table of the release in ``input_dir`` for the spec to join."""
+    if cfg.worker != 0:
+        return
+    write_subject_table(Path(cfg.input_dir), Path(cfg.stage_cfg.output_dir))

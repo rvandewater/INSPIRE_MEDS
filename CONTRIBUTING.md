@@ -8,7 +8,7 @@ pip install INSPIRE_MEDS
 export DATASET_DOWNLOAD_USERNAME=$PHYSIONET_USERNAME
 export DATASET_DOWNLOAD_PASSWORD=$PHYSIONET_PASSWORD
 
-MEDS_extract-INSPIRE $ROOT_OUTPUT_DIR
+meds-extract-run spec=INSPIRE output_dir=$MEDS_OUTPUT_DIR download_dest_dir=$RAW_INPUT_DIR
 ```
 
 ## What the 0.7 layout looks like
@@ -24,6 +24,7 @@ Under MEDS-Transforms 0.2.x an ETL was a Python package: `pre_MEDS.py` reshaped 
 | `configs/ETL.yaml`             | nothing — the stage sequence is canonical and not configurable            |
 | `configs/event_configs.yaml`   | the event tables, written in [dftly](https://github.com/mmcdermott/dftly) |
 | `pre_MEDS.py`                  | mostly `_table.joins` / `_table.cols` (see the exception below)           |
+| a custom runner script         | `etl.pre_stages` / `etl.post_stages` (MEDS-Extract 0.8.1)                 |
 
 The file lives at [`src/INSPIRE_MEDS/messy.yaml`](src/INSPIRE_MEDS/messy.yaml) and is registered
 under the `MEDS_extract.pipelines` entry-point group in `pyproject.toml`:
@@ -61,22 +62,21 @@ must be written as `anchor - (-$offset)::minutes` because `+` does not lower cor
 on `operations`, which is one row per **operation**. MESSY cannot reduce a table over its own rows
 — self-joins are rejected and dftly is strictly row-wise — so
 [`src/INSPIRE_MEDS/pre_MEDS.py`](src/INSPIRE_MEDS/pre_MEDS.py) reduces `operations` to one row per
-subject, and the config joins that side table back.
+subject, and the config joins that side table back. It is a MEDS-Extract **pre-stage**: registered
+as `inspire_subject_table` under the `MEDS_transforms.stages` entry-point group and named in the
+spec's `etl.pre_stages`, so `meds-extract-run` runs it before `convert_to_parquet`. It writes
+`subjects.parquet` into its own output directory, which MEDS-Extract searches before the raw input,
+so the checksum-verified download is never modified.
 
-`MEDS_extract-INSPIRE` ([`src/INSPIRE_MEDS/__main__.py`](src/INSPIRE_MEDS/__main__.py)) is the
-complete build and chains five steps: `meds-extract-download`, that reduction, `meds-extract-run`,
-the literal-code descriptions, and suMEDS enrichment. It stages the side table in a directory of
-**symlinks** to the raw release, so the checksum-verified download is never modified.
+Everything else is in the spec. Literal codes are described by constant `_self` blocks. Vocabulary
+parents and titles come from suMEDS's `sumeds_enrich` post-stage (`etl.post_stages`) with
+[`src/INSPIRE_MEDS/sumeds_rules.yaml`](src/INSPIRE_MEDS/sumeds_rules.yaml), registered under
+`sumeds.rules` as `INSPIRE`, so there is no suMEDS code in this package. See the README section
+"Code metadata". `MEDS_extract-INSPIRE` ([`src/INSPIRE_MEDS/__main__.py`](src/INSPIRE_MEDS/__main__.py))
+is a deprecated alias of `meds-extract-run spec=INSPIRE`, kept for one release.
 
-The code metadata adds one small step after the pipeline
-([`src/INSPIRE_MEDS/code_descriptions.py`](src/INSPIRE_MEDS/code_descriptions.py)): it fills the
-descriptions of literal codes into `metadata/codes.parquet`. Vocabulary parents and titles come from
-suMEDS with [`src/INSPIRE_MEDS/sumeds_rules.yaml`](src/INSPIRE_MEDS/sumeds_rules.yaml), registered
-under `sumeds.rules` as `INSPIRE`; the runner's last step is just `suMEDS-enrich ... --rules INSPIRE`
-on that file, so there is no suMEDS code in this package. See the README section "Code metadata".
-
-If you are porting another dataset and it needs no such reduction, drop the Python entirely and
-let users call `meds-extract-run spec=<NAME>` directly.
+If you are porting another dataset and it needs no such reduction, drop the Python entirely: users
+call `meds-extract-run spec=<NAME>` either way.
 
 ## Testing
 
@@ -87,10 +87,11 @@ uv run pre-commit run --all-files
 ```
 
 There is no demo release for INSPIRE, and the credentialed download cannot run in CI. Instead,
-`tests/test_run_with_enrichment.py` runs `MEDS_extract-INSPIRE` end to end over a tiny, entirely
-synthetic release in INSPIRE's column layout (`tests/conftest.py`), offline against a tiny synthetic
-suMEDS ontology pack, and the Synthetic ETL workflow runs the extraction over data that MESSY-synth
-generates from the config. Changes that affect the output should still be validated by running the
+`tests/test_run_with_enrichment.py` runs `meds-extract-run spec=INSPIRE` end to end over a tiny,
+entirely synthetic release in INSPIRE's column layout (`tests/conftest.py`), offline against a tiny
+synthetic suMEDS ontology pack; `tests/test_runner_equivalence.py` checks that the build still has
+the codes, descriptions and event counts the 1.0.0 runner built from that release; and the Synthetic
+ETL workflow runs the same command over data that MESSY-synth generates from the config. Changes that affect the output should still be validated by running the
 ETL over the real release and comparing cohort statistics before and after (see the README section
 "Summary statistics").
 

@@ -1,12 +1,13 @@
-"""`MEDS_extract-INSPIRE` runs the ETL and then suMEDS enrichment, offline.
+"""`meds-extract-run spec=INSPIRE` runs the ETL and then the suMEDS enrichment stage, offline.
 
-The runner builds the subject side table, runs MEDS-Extract, fills the literal-code descriptions,
-and then hands `metadata/codes.parquet` to suMEDS with the rules this package registers under
-`INSPIRE`. It runs here twice over the synthetic release of ``conftest.py``: once with
-`--no-enrich`, the ETL's own output, and once with enrichment, which must only add to it. The
-ontology source is a tiny pack repository in suMEDS's `sumeds-ontologies/0.1` layout, built here
-with made-up titles for the synthetic ICD codes, so nothing is read over the network. An empty pack
-source stands in for a site without internet access, where the enrichment soft-fails.
+The spec's `etl.post_stages` run suMEDS's `sumeds_enrich` stage with the rules this package
+registers under `INSPIRE`. It runs here twice over the synthetic release of ``conftest.py``: once
+with `skip_stages=[sumeds_enrich]`, the ETL's own output, and once with enrichment, which must only
+add to it. The ontology source is a tiny pack repository in suMEDS's `sumeds-ontologies/0.1`
+layout, built here with made-up titles for the synthetic ICD codes, so nothing is read over the
+network. It reaches the stage as a runtime option, `overrides=['++stage_cfg.X=Y']`, or through
+`SUMEDS_ONTOLOGY_SOURCE`. An empty pack source stands in for a site without internet access, where
+the enrichment soft-fails.
 """
 
 import csv
@@ -20,10 +21,8 @@ from pathlib import Path
 import polars as pl
 import pyarrow.parquet as pq
 import pytest
-from conftest import run_command
+from conftest import etl_argv, run_command
 from meds import CodeMetadataSchema, DatasetMetadataSchema
-
-RUNNER = "MEDS_extract-INSPIRE"
 
 # vocabulary -> release -> code -> parent (None at the top). ICD-10-PCS holds every prefix of a
 # code, so a five-character INSPIRE code has four ancestors.
@@ -114,22 +113,28 @@ def ontology_source(tmp_path_factory) -> Path:
     return root
 
 
-def _build(root: Path, raw_dir: Path, *extra: str) -> Path:
-    run_command(
-        [RUNNER, str(root), f"--raw-input-dir={raw_dir}", "--do-download=false", *extra]
-    )
-    return root / "MEDS_cohort"
+def stage_options(**options) -> str:
+    """`sumeds_enrich` options for one run, as a `meds-extract-run` argument.
+
+    `meds-extract-run` passes `overrides=` to every stage of the pipeline, so `++` adds the key to
+    the stages that do not declare it (which ignore it) and sets it in the one that does.
+    """
+    pairs = ",".join(f"'++stage_cfg.{name}={value}'" for name, value in options.items())
+    return f"overrides=[{pairs}]"
 
 
-@pytest.fixture(scope="session")
-def plain_output(tmp_path_factory, raw_dir: Path) -> Path:
-    return _build(tmp_path_factory.mktemp("inspire_plain"), raw_dir, "--no-enrich")
+def _pipeline_log(output: Path) -> str:
+    """The pipeline log, where the post-stages write their output."""
+    return (output / ".logs" / "pipeline.log").read_text()
 
 
 @pytest.fixture(scope="session")
 def enriched_output(tmp_path_factory, raw_dir: Path, ontology_source: Path) -> Path:
-    root = tmp_path_factory.mktemp("inspire_enriched")
-    return _build(root, raw_dir, "--", "--ontology-source", str(ontology_source))
+    output = tmp_path_factory.mktemp("inspire_enriched") / "meds"
+    run_command(
+        etl_argv(output, raw_dir, stage_options(ontology_source=ontology_source))
+    )
+    return output
 
 
 def _codes(output: Path) -> dict[str, dict]:
@@ -233,23 +238,6 @@ def test_medications_get_atc_and_same_dataset_parents(enriched_codes: dict):
     assert not enriched_codes["OR_IN"]["parent_codes"]
 
 
-def test_bad_suMEDS_options_fail_before_the_pipeline(tmp_path: Path, raw_dir: Path):
-    argv = [
-        RUNNER,
-        str(tmp_path / "root"),
-        f"--raw-input-dir={raw_dir}",
-        "--do-download=false",
-    ]
-    result = subprocess.run(
-        [*argv, "--", "--no-such-option"], capture_output=True, text=True
-    )
-    assert result.returncode != 0
-    assert "--no-such-option" in result.stderr
-    assert not (tmp_path / "root").exists(), (
-        "the pipeline ran despite invalid suMEDS options"
-    )
-
-
 def test_dataset_json_records_the_enrichment(
     enriched_output: Path, enriched_codes: dict
 ):
@@ -263,6 +251,14 @@ def test_dataset_json_records_the_enrichment(
     assert coverage["with_parent_codes"][1] > coverage["with_parent_codes"][0]
 
 
+def test_skipping_the_stage_leaves_no_record(plain_output: Path):
+    """`skip_stages=[sumeds_enrich]`: the ETL's own metadata, no enrichment and no record."""
+    metadata = json.loads((plain_output / "metadata" / "dataset.json").read_text())
+    DatasetMetadataSchema.validate(metadata)
+    assert "sumeds_enrichment" not in metadata
+    assert not (plain_output / ".logs" / "sumeds_enrich.done").exists()
+
+
 def test_a_failed_enrichment_keeps_the_build_and_can_be_retried(
     tmp_path: Path,
     raw_dir: Path,
@@ -273,15 +269,11 @@ def test_a_failed_enrichment_keeps_the_build_and_can_be_retried(
     """Without packs (as without internet) the build succeeds; `suMEDS-enrich OUT` finishes it."""
     no_packs = tmp_path / "no-packs"
     no_packs.mkdir()
-    argv = [
-        RUNNER,
-        str(tmp_path / "root"),
-        f"--raw-input-dir={raw_dir}",
-        "--do-download=false",
-    ]
-    result = run_command([*argv, "--", "--ontology-source", str(no_packs)])
-    assert "once the cause is fixed, enrich it with" in result.stderr
-    output = tmp_path / "root" / "MEDS_cohort"
+    output = tmp_path / "meds"
+    run_command(
+        etl_argv(output, raw_dir), env={"SUMEDS_ONTOLOGY_SOURCE": str(no_packs)}
+    )
+    assert "once the cause is fixed, enrich it with" in _pipeline_log(output)
     codes = output / "metadata" / "codes.parquet"
     plain = plain_output / "metadata" / "codes.parquet"
     assert codes.read_bytes() == plain.read_bytes()
@@ -289,6 +281,12 @@ def test_a_failed_enrichment_keeps_the_build_and_can_be_retried(
     assert record["enriched"] is False
     assert record["rules"] == "INSPIRE"
     assert record["retry"].startswith("suMEDS-enrich <MEDS_ROOT>")
+
+    # The stage is done, failed or not, so running the same command again does not retry it.
+    run_command(
+        etl_argv(output, raw_dir), env={"SUMEDS_ONTOLOGY_SOURCE": str(ontology_source)}
+    )
+    assert _record(output)["enriched"] is False
 
     # The packs directory is a path, which the record never holds, so it is given again.
     sumeds_enrich = str(Path(sys.executable).parent / "suMEDS-enrich")
@@ -301,16 +299,12 @@ def test_a_failed_enrichment_keeps_the_build_and_can_be_retried(
 def test_strict_makes_a_failed_enrichment_an_error(tmp_path: Path, raw_dir: Path):
     no_packs = tmp_path / "no-packs"
     no_packs.mkdir()
-    argv = [
-        RUNNER,
-        str(tmp_path / "root"),
-        f"--raw-input-dir={raw_dir}",
-        "--do-download=false",
-        "--",
-        "--ontology-source",
-        str(no_packs),
-        "--strict",
-    ]
-    result = subprocess.run(argv, capture_output=True, text=True)
-    assert result.returncode == 1
-    assert "suMEDS-enrich: error:" in result.stderr
+    output = tmp_path / "meds"
+    options = stage_options(ontology_source=no_packs, strict="true")
+    result = subprocess.run(
+        etl_argv(output, raw_dir, options), capture_output=True, text=True
+    )
+    assert result.returncode != 0
+    assert "Stage sumeds_enrich failed" in result.stderr
+    assert "suMEDS-enrich: error:" in _pipeline_log(output)
+    assert not (output / ".logs" / "sumeds_enrich.done").exists()

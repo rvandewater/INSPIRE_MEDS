@@ -34,10 +34,10 @@ build() {
   local kind=$1 input=$2 output=$3
   case $kind in
     full)
-      # MEDS_extract-INSPIRE runs the ETL and then the suMEDS enrichment of metadata/codes.parquet,
-      # so the baseline covers the output of the documented complete build.
-      uv run --frozen MEDS_extract-INSPIRE "$output" --raw-input-dir "$input" --do-download false >&2 \
-        && echo "$output/MEDS_cohort"
+      # meds-extract-run runs the spec's pre-stage, the ETL and the suMEDS enrichment post-stage, so
+      # the baseline covers the output of the documented complete build.
+      uv run --frozen meds-extract-run spec=INSPIRE do_download=false input_dir="$input" output_dir="$output" >&2 \
+        && echo "$output"
       ;;
     *) die "unknown kind '$kind' (expected one of: $KINDS)" ;;
   esac

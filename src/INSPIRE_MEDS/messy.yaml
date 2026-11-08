@@ -1,3 +1,11 @@
+# INSPIRE (PhysioNet 1.4.2) to MEDS. `meds-extract-run spec=INSPIRE ...` runs all of it: the
+# `inspire_subject_table` pre-stage, the canonical MEDS-Extract stages, and the `sumeds_enrich`
+# post-stage (see `etl:`).
+#
+# Code metadata: `_metadata` blocks describe every code family but the diagnoses, literal codes
+# included (constant `_self` blocks, each with the source of its description). suMEDS adds the
+# ICD-10-CM titles of the diagnoses and the vocabulary parent codes (sumeds_rules.yaml).
+
 sources:
   dataset_version: 1.4.2
 
@@ -11,6 +19,19 @@ sources:
 etl:
   dataset_name: INSPIRE
   n_subjects_per_shard: 1000
+  # metadata/dataset.json: the release's license, as PhysioNet names it, and its page.
+  license: Korea Credentialed Health Data License-1-0-0
+  description_uri: https://physionet.org/content/inspire/1.4.2/
+  # Run before convert_to_parquet: builds the one-row-per-subject `subjects` table that
+  # `operations` joins below, from the raw `operations` table (INSPIRE_MEDS.pre_MEDS).
+  pre_stages:
+    - inspire_subject_table
+  # Run after the canonical stages: adds vocabulary titles and parent codes with suMEDS and records
+  # it in metadata/dataset.json. It soft-fails (e.g. without internet); `suMEDS-enrich OUTPUT_DIR`
+  # finishes it later. Leave it out with `skip_stages=[sumeds_enrich]`.
+  post_stages:
+    - sumeds_enrich:
+        rules: INSPIRE
 
 _defaults:
   subject_id: $subject_id
@@ -18,6 +39,7 @@ _defaults:
 operations:
   _table:
     joins:
+      # Written by the `inspire_subject_table` pre-stage; the release has no such table.
       subjects:
         key: subject_id
         cols: { birth_age: min, death_min: min }
@@ -42,16 +64,40 @@ operations:
     code: OPERATION_ID
     time: $opstart_t
     text_value: $op_id::str
+    # Source: physionet:inspire-1.4.2 Anonymization (op_id values begin with 4); the column comment
+    _metadata:
+      _self:
+        description: >-
+          "Operation identifier, in text_value, recorded at the operation start (INSPIRE
+          operations.op_id; a random number beginning with 4)"
   case_id: # Number, A linker to VitalDB Open Dataset
     code: VITALDB_CASE_ID
     time: null
     text_value: $case_id::str
+    # Source: the column comment (linker to the VitalDB open dataset); physionet:inspire-1.4.2
+    # Parent Projects (VitalDB)
+    _metadata:
+      _self:
+        description: >-
+          "Identifier of the same case in the open VitalDB dataset, in text_value; a static
+          (untimed) event (INSPIRE operations.case_id)"
   opdate: # Relative Time, Operation date
     code: OPERATION_DATE
     time: $opdate_t
+    # Source: the column comment
+    _metadata:
+      _self:
+        description: '"Date of the operation (INSPIRE operations.opdate)"'
   age: # Number, Age of the patient on the operation date
     code: MEDS_BIRTH
     time: $date_of_birth
+    # Source: physionet:inspire-1.4.2 Anonymization (age in 5-year intervals); the
+    # inspire_subject_table pre-stage (README Birth and death)
+    _metadata:
+      _self:
+        description: >-
+          "Birth (MEDS standard code); the date is estimated from the age at the patient's first
+          admission, which INSPIRE reports in 5-year bins (operations.age)"
   sex: # M/F, Sex of the patient
     code: 'f"SEX//{$sex ?? ''UNK''}"'
     time: null
@@ -63,10 +109,20 @@ operations:
     code: WEIGHT
     numeric_value: $weight
     time: $admission_t
+    # Source: the column comment; physionet:inspire-1.4.2 Anonymization (weight outside 10-200 kg
+    # set to null)
+    _metadata:
+      _self:
+        description: '"Body weight measured before the operation, kg (INSPIRE operations.weight)"'
   height: # Number, Height measured before operation
     code: HEIGHT
     time: $admission_t
     numeric_value: $height
+    # Source: the column comment; physionet:inspire-1.4.2 Anonymization (height outside 100-200 cm
+    # set to null); physionet:inspire-1.4.2 Release Notes 1.4 (height cleaned to cm)
+    _metadata:
+      _self:
+        description: '"Body height measured before the operation, cm (INSPIRE operations.height)"'
   race: # String, Race of the patient
     code: 'f"RACE//{$race ?? ''UNK''}"'
     time: null
@@ -132,42 +188,103 @@ operations:
   orin_time: # Relative Time, The time for entering the operating room
     code: OR_IN
     time: $orin_t
+    # Source: the column comment
+    _metadata:
+      _self:
+        description: '"Patient entered the operating room (INSPIRE operations.orin_time)"'
   orout_time: # Relative Time, The time for leaving the operating room
     code: OR_OUT
     time: $orout_t
+    # Source: the column comment
+    _metadata:
+      _self:
+        description: '"Patient left the operating room (INSPIRE operations.orout_time)"'
   opstart_time: # Relative Time, The time for starting the operation
     code: OPERATION_START
     time: $opstart_t
+    # Source: the column comment; physionet:inspire-1.4.2 Data Description (Operations)
+    _metadata:
+      _self:
+        description: '"Start of the operation (INSPIRE operations.opstart_time)"'
   opend_time: # Relative Time, The time for finishing the operation
     code: OPERATION_END
     time: $opend_t
+    # Source: the column comment; physionet:inspire-1.4.2 Data Description (Operations)
+    _metadata:
+      _self:
+        description: '"End of the operation (INSPIRE operations.opend_time)"'
   admission_time: # Relative Time, The time for hospital admission
     code: HOSPITAL_ADMISSION
     time: $admission_t
+    # Source: the column comment
+    _metadata:
+      _self:
+        description: '"Hospital admission (INSPIRE operations.admission_time)"'
   discharge_time: # Relative Time, The time for hospital discharge
     code: HOSPITAL_DISCHARGE
     time: $discharge_t
+    # Source: the column comment
+    _metadata:
+      _self:
+        description: '"Hospital discharge (INSPIRE operations.discharge_time)"'
   anstart_time: # Relative Time, The time for starting anaesthesia
     code: ANESTHESIA_START
     time: $anstart_t
+    # Source: the column comment; physionet:inspire-1.4.2 Data Description (Operations)
+    _metadata:
+      _self:
+        description: '"Start of anesthesia (INSPIRE operations.anstart_time)"'
   anend_time: # Relative Time, The time for finishing anaesthesia
     code: ANESTHESIA_END
     time: $anend_t
+    # Source: the column comment; physionet:inspire-1.4.2 Data Description (Operations)
+    _metadata:
+      _self:
+        description: '"End of anesthesia (INSPIRE operations.anend_time)"'
   cpbon_time: # Relative Time, The time for starting cardiopulmonary bypass
     code: CPB_ON
     time: $cpbon_t
+    # Source: the column comment
+    _metadata:
+      _self:
+        description: '"Start of cardiopulmonary bypass (INSPIRE operations.cpbon_time)"'
   cpboff_time: # Relative Time, The time for finishing cardiopulmonary bypass
     code: CPB_OFF
     time: $cpboff_t
+    # Source: the column comment
+    _metadata:
+      _self:
+        description: '"End of cardiopulmonary bypass (INSPIRE operations.cpboff_time)"'
   icuin_time: # Relative Time, The time for ICU admission after surgery
     code: ICU_ADMISSION
     time: $icuin_t
+    # Source: the column comment; physionet:inspire-1.4.2 Data Description (Operations: ICU
+    # admissions within 24 hours of surgery)
+    _metadata:
+      _self:
+        description: >-
+          "ICU admission after surgery (INSPIRE operations.icuin_time); only ICU admissions within
+          24 hours of surgery are recorded"
   icuout_time: # Relative Time, The time for ICU discharge after surgery
     code: ICU_DISCHARGE
     time: $icuout_t
+    # Source: the column comment; physionet:inspire-1.4.2 Data Description (Operations: ICU
+    # admissions within 24 hours of surgery)
+    _metadata:
+      _self:
+        description: >-
+          "ICU discharge after surgery (INSPIRE operations.icuout_time); recorded only for ICU
+          admissions within 24 hours of surgery"
   death_time: # Relative Time, The time for death
     code: MEDS_DEATH
     time: $date_of_death
+    # Source: physionet:inspire-1.4.2 Release Notes 1.3 (all-cause mortality column); the
+    # inspire_subject_table pre-stage (README Birth and death)
+    _metadata:
+      _self:
+        description: >-
+          "Death (MEDS standard code); the earlier of the in-hospital and all-cause death times
+          (operations.inhosp_death_time and allcause_death_time)"
 
 labs:
   _table:

@@ -4,7 +4,8 @@ name: Synthetic ETL for MESSY files using MESSY_synth
 # them. MESSY-synth validates that every event block yields events and fails the job otherwise, so
 # this catches expressions that only work on the dtypes of one particular release. It complements
 # the test suite, whose hand-written synthetic release (tests/conftest.py) runs through
-# MEDS_extract-INSPIRE and suMEDS enrichment and checks specific values.
+# `meds-extract-run spec=INSPIRE` (pre-stage, pipeline and suMEDS enrichment) and checks specific
+# values.
 
 on:
   push:
@@ -48,16 +49,57 @@ jobs:
         run: uv run --locked --extra tests pytest tests/ -v
 
       - name: Generate and extract synthetic data
-        # MESSY-synth 0.0.1 requires MEDS-Extract <0.8, while the ETL runs on 0.8, so it runs in a
-        # tool environment of its own. It cannot parse 0.8's `_table.joins`, so it reads a copy of
-        # the config with the key spelled `_table.join` (the only 0.8 syntax the config uses); the
-        # extraction itself runs the shipped config with this project's locked MEDS-Extract.
+        # MESSY-synth 0.0.1 requires MEDS-Extract <0.8, while the ETL runs on 0.8.1, so it runs in a
+        # tool environment of its own, on a copy of the config that MEDS-Extract 0.7 can parse:
+        # `_table.joins` is spelled `_table.join`, the `etl:` block keeps only the keys 0.7 knows
+        # (it rejects `pre_stages`, `post_stages` and the dataset descriptors such as `license`),
+        # and literal-code events lose their constant `_metadata` blocks, which 0.7 rejects. None of
+        # this changes which columns MESSY-synth generates. The extraction itself runs the shipped
+        # config with this project's locked MEDS-Extract, pre- and post-stages included.
         run: |
-          sed 's/^    joins:$/    join:/' src/INSPIRE_MEDS/messy.yaml > messy_0.7.yaml
+          uv run --locked python - src/INSPIRE_MEDS/messy.yaml messy_0.7.yaml <<'EOF'
+          import sys, yaml
+          spec = yaml.safe_load(open(sys.argv[1]))
+          keep = {"dataset_name", "raw_dataset_version", "n_subjects_per_shard", "split_fracs",
+                  "external_splits_json_fp", "do_dedup_text_and_numeric", "description_separator"}
+          spec["etl"] = {key: value for key, value in spec["etl"].items() if key in keep}
+          for table, events in spec.items():
+              if table in ("etl", "sources") or table.startswith("_"):
+                  continue
+              if "joins" in events.get("_table", {}):
+                  events["_table"]["join"] = events["_table"].pop("joins")
+              for event in events.values():
+                  if isinstance(event, dict) and "$" not in str(event.get("code", "$")):
+                      event.pop("_metadata", None)
+          yaml.safe_dump(spec, open(sys.argv[2], "w"), sort_keys=False)
+          EOF
           uvx --python ${{ matrix.python-version }} --from "MESSY_synth==0.0.1" \
             MESSY-synth ./messy_0.7.yaml -o raw_synthetic/ --explain
+          # MESSY-synth generates the `subjects` table the config joins, but the release has none:
+          # the inspire_subject_table pre-stage derives it from operations columns the config never
+          # reads (age, the two death times). Give operations those columns, from the generated
+          # table, and drop it, so the run below starts from a release-shaped input.
+          uv run --locked python - raw_synthetic <<'EOF'
+          import sys
+          from pathlib import Path
+          import polars as pl
+          raw = Path(sys.argv[1])
+          subjects = pl.read_csv(raw / "subjects.csv")
+          ops = pl.read_csv(raw / "operations.csv", infer_schema_length=None)
+          ops = ops.with_columns(admission_time=pl.lit(0)).join(
+              subjects.select("subject_id", age="birth_age", allcause_death_time="death_min"),
+              on="subject_id", how="left",
+          ).with_columns(
+              inhosp_death_time=pl.when(pl.col("subject_id") % 2 == 0).then("allcause_death_time")
+          )
+          ops.write_csv(raw / "operations.csv")
+          (raw / "subjects.csv").unlink()
+          EOF
           uv run --locked meds-extract-run spec=INSPIRE output_dir=./INSPIRE_meds_synth \
             input_dir=raw_synthetic do_download=false
           for f in dataset.json codes.parquet subject_splits.parquet; do
             test -f "INSPIRE_meds_synth/metadata/$f"
           done
+          test -f INSPIRE_meds_synth/inspire_subject_table/subjects.parquet
+          # The sumeds_enrich post-stage soft-fails, so report the record rather than require it.
+          jq '.sumeds_enrichment | {enriched, coverage, error}' INSPIRE_meds_synth/metadata/dataset.json

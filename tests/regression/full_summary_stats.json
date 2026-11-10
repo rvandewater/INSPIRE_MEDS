@@ -1,23 +1,23 @@
 {
   "code_metadata": {
     "description_length": {
-      "mean": 145.004,
-      "n": 3379,
+      "mean": 26.8031,
+      "n": 127,
       "quantiles": {
-        "p1": 17.56,
-        "p25": 134.0,
-        "p5": 129.0,
-        "p50": 157.0,
-        "p75": 157.0,
-        "p95": 157.0,
-        "p99": 157.0
+        "p1": 7.0,
+        "p25": 16.0,
+        "p5": 9.3,
+        "p50": 28.0,
+        "p75": 36.0,
+        "p95": 42.7,
+        "p99": 63.44
       },
-      "std": 26.6491
+      "std": 12.3815
     },
     "n_codes": 4515,
     "n_data_codes_missing_from_metadata": 0,
     "n_metadata_codes_absent_from_data": 0,
-    "n_with_description": 3379,
+    "n_with_description": 127,
     "n_with_parent_codes": null,
     "ontology": {
       "present": false
@@ -145,9 +145,9 @@
     }
   },
   "dataset": {
-    "created_at": "2026-11-04T15:27:29.850229+00:00",
+    "created_at": "2026-11-10T22:53:29.195867+00:00",
     "dataset_name": "INSPIRE",
-    "dataset_version": "1.4.2",
+    "dataset_version": "1.4.2:1.0.0",
     "etl_name": "MEDS_transforms",
     "etl_version": "0.7.0",
     "meds_version": "0.4.1",
@@ -155,18 +155,18 @@
   },
   "dataset_digest": {
     "by_file": null,
-    "code_metadata": "sha256:01812b7ca2aa16ead0d57fec3036c9445c4b1c1a589a06a31d29825deff87697",
-    "combined": "sha256:a45b66d0c367b48299e4199908d64d9cd151ea4c6d05c4ea279ed93215348a79",
+    "code_metadata": "sha256:a3cd703c78da6759f2268f44082218cef09b46afbc467f9fa91c6a30471feb17",
+    "combined": "sha256:186de3af4dd751e8ae277f318310890ad0273b7ffc7302210d95f276f989ec00",
     "data": {
       "digest": "sha256:82532f482bb74744f318d18c68d2fb9bc2f9a5ea16345ce3f03569d15b9ff6fb",
       "n_files": 100
     },
-    "dataset_metadata": "sha256:46c709ad833afd7be472a94f9dc82494d256d12b27407c6d5afb53b27898dd90",
+    "dataset_metadata": "sha256:acc36cf4f0b187d1301c9050e76a334ee2f4547c2ffa5a530c77d8f34f73ee14",
     "method": "files",
     "n_files": 103,
     "subject_splits": "sha256:f387fc5ba995a9a8b13d2521699dddc0449e80009ee5cd20337915ab66860b92"
   },
-  "extracted_at": "2026-11-04T22:17:10.851861",
+  "extracted_at": "2026-11-10T22:53:59.105292",
   "layout": {
     "code_metadata_columns": {
       "code": "String",
@@ -202,8 +202,22 @@
     "shard_names": null,
     "shard_names_digest": "sha256:aeec345f2acc9082dc765efc97b61e370126623581e51e78a2a09f5778a2f8ba"
   },
-  "meds_summary_stats_version": "0.0.3",
+  "meds_summary_stats_version": "0.0.4",
   "per_subject": {
+    "measurements_per_day": {
+      "mean": 9.10868,
+      "n": 99900,
+      "quantiles": {
+        "p1": 0.37119,
+        "p25": 2.22078,
+        "p5": 0.775235,
+        "p50": 4.28506,
+        "p75": 8.60955,
+        "p95": 26.9953,
+        "p99": 88.7785
+      },
+      "std": 25.5054
+    },
     "n_events": {
       "mean": 198.037,
       "n": 99900,
@@ -281,7 +295,7 @@
     "n_subjects_in_splits_without_data": 0,
     "present": true
   },
-  "stats_schema_version": 1,
+  "stats_schema_version": 2,
   "time": {
     "by_year": {
       "1925": {

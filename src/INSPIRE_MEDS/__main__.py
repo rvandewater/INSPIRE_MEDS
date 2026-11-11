@@ -11,8 +11,10 @@ Three steps, each of which is just the underlying tool:
 Step 2 is the main reason this wrapper exists. `MEDS_BIRTH` and `MEDS_DEATH` need a per-subject
 reduction that MESSY cannot express, and MEDS-Extract's `etl:` block deliberately does not let a
 config insert its own stage into the pipeline. Everything else is unchanged: the spec is still
-the shipped MESSY file, resolved by `pkg://` reference, and the stage DAG is still the canonical
-one.
+the shipped MESSY file and the stage DAG is still the canonical one. The run step names it by the
+pipeline name this ETL registers (`INSPIRE`) rather than its `pkg://` path, because MEDS-Extract
+records the ETL's version in `metadata/dataset.json` (as `<dataset version>:<ETL version>`) only
+for a registered pipeline.
 
 A last step fills the descriptions of the literal codes (`OR_IN`, `WEIGHT`, `MEDS_BIRTH`, ...)
 into the finished `metadata/codes.parquet`; see :mod:`INSPIRE_MEDS.code_descriptions` for why
@@ -28,6 +30,7 @@ import sys
 import sysconfig
 from pathlib import Path
 
+from . import PIPELINE_NAME
 from .code_descriptions import apply_static_descriptions
 from .pre_MEDS import stage_input
 
@@ -100,7 +103,7 @@ def main(argv: list[str] | None = None) -> None:
     _run(
         [
             _script("meds-extract-run"),
-            f"spec={SPEC_REF}",
+            f"spec={PIPELINE_NAME}",
             f"output_dir={out.resolve()!s}",
             "do_download=false",
             f"input_dir={staged.resolve()!s}",

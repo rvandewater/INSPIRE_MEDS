@@ -1,23 +1,23 @@
 {
   "code_metadata": {
     "description_length": {
-      "mean": 26.8031,
-      "n": 127,
+      "mean": 145.004,
+      "n": 3379,
       "quantiles": {
-        "p1": 7.0,
-        "p25": 16.0,
-        "p5": 9.3,
-        "p50": 28.0,
-        "p75": 36.0,
-        "p95": 42.7,
-        "p99": 63.44
+        "p1": 17.56,
+        "p25": 134.0,
+        "p5": 129.0,
+        "p50": 157.0,
+        "p75": 157.0,
+        "p95": 157.0,
+        "p99": 157.0
       },
-      "std": 12.3815
+      "std": 26.6491
     },
     "n_codes": 4515,
     "n_data_codes_missing_from_metadata": 0,
     "n_metadata_codes_absent_from_data": 0,
-    "n_with_description": 127,
+    "n_with_description": 3379,
     "n_with_parent_codes": null,
     "ontology": {
       "present": false
@@ -145,9 +145,9 @@
     }
   },
   "dataset": {
-    "created_at": "2026-11-10T22:53:29.195867+00:00",
+    "created_at": "2026-11-11T00:45:46.236155+00:00",
     "dataset_name": "INSPIRE",
-    "dataset_version": "1.4.2:1.0.0",
+    "dataset_version": "1.4.2:1.0.1",
     "etl_name": "MEDS_transforms",
     "etl_version": "0.7.0",
     "meds_version": "0.4.1",
@@ -155,18 +155,18 @@
   },
   "dataset_digest": {
     "by_file": null,
-    "code_metadata": "sha256:a3cd703c78da6759f2268f44082218cef09b46afbc467f9fa91c6a30471feb17",
-    "combined": "sha256:186de3af4dd751e8ae277f318310890ad0273b7ffc7302210d95f276f989ec00",
+    "code_metadata": "sha256:01812b7ca2aa16ead0d57fec3036c9445c4b1c1a589a06a31d29825deff87697",
+    "combined": "sha256:a45b66d0c367b48299e4199908d64d9cd151ea4c6d05c4ea279ed93215348a79",
     "data": {
       "digest": "sha256:82532f482bb74744f318d18c68d2fb9bc2f9a5ea16345ce3f03569d15b9ff6fb",
       "n_files": 100
     },
-    "dataset_metadata": "sha256:acc36cf4f0b187d1301c9050e76a334ee2f4547c2ffa5a530c77d8f34f73ee14",
+    "dataset_metadata": "sha256:beb8f9e0ebaa4db910a62134f2efb3ea2ed42677181286fe7e3d4455a83506ce",
     "method": "files",
     "n_files": 103,
     "subject_splits": "sha256:f387fc5ba995a9a8b13d2521699dddc0449e80009ee5cd20337915ab66860b92"
   },
-  "extracted_at": "2026-11-10T22:53:59.105292",
+  "extracted_at": "2026-11-11T00:46:11.854085",
   "layout": {
     "code_metadata_columns": {
       "code": "String",

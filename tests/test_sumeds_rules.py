@@ -14,10 +14,16 @@ from pathlib import Path
 import polars as pl
 import pytest
 import yaml
-from sumeds import EnrichmentConfig, OntologyRules, enrich_metadata, load_rules
+from sumeds import (
+    EnrichmentConfig,
+    OntologyRules,
+    enrich_metadata,
+    load_rules,
+    registered_rules,
+)
 from sumeds.ontology import INDEX_SCHEMA
 
-from INSPIRE_MEDS import MESSY_CFG
+from INSPIRE_MEDS import MESSY_CFG, PIPELINE_NAME
 
 RULES_FP = Path(__file__).parents[1] / "src" / "INSPIRE_MEDS" / "sumeds_rules.yaml"
 
@@ -97,6 +103,12 @@ def empty_ontology_source(tmp_path: Path) -> str:
 
 def test_rules_file_is_packaged():
     assert files("INSPIRE_MEDS").joinpath("sumeds_rules.yaml").is_file()
+
+
+def test_rules_are_registered_under_the_spec_name():
+    """The spec's `sumeds_enrich: {rules: INSPIRE}` and `suMEDS-enrich --rules INSPIRE` find them here."""
+    assert registered_rules()[PIPELINE_NAME] == "INSPIRE_MEDS:sumeds_rules.yaml"
+    assert load_rules(PIPELINE_NAME) == load_rules(RULES_FP)
 
 
 def test_rules_load_in_sumeds():

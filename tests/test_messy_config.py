@@ -1,6 +1,9 @@
 """Validate the bundled INSPIRE MESSY config against installed MEDS-Extract."""
 
+import json
+
 import pytest
+from meds import DatasetMetadataSchema
 
 from MEDS_extract.config import MessyConfig
 
@@ -101,6 +104,17 @@ def test_physionet_source_targets_inspire_release(cfg: MessyConfig, dummy_creden
 def test_etl_block(cfg: MessyConfig):
     assert cfg.etl.dataset_name == "INSPIRE"
     assert cfg.etl.stage_options["n_subjects_per_shard"] == 1000
+    assert [stage.name for stage in cfg.etl.pre_stages] == ["inspire_subject_table"]
+    assert [stage.name for stage in cfg.etl.post_stages] == ["sumeds_enrich"]
+    assert cfg.etl.post_stages[0].options == {"rules": PIPELINE_NAME}
+
+
+def test_dataset_json_describes_the_release(plain_output):
+    """The `etl:` descriptors reach `metadata/dataset.json`, which stays valid MEDS metadata."""
+    metadata = json.loads((plain_output / "metadata" / "dataset.json").read_text())
+    DatasetMetadataSchema.validate(metadata)
+    assert metadata["license"] == "Korea Credentialed Health Data License-1-0-0"
+    assert metadata["description_uri"] == "https://physionet.org/content/inspire/1.4.2/"
 
 
 def test_sources_declare_dataset_version(cfg: MessyConfig):

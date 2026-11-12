@@ -20,16 +20,27 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-# Pure-config ETL: the only runtime dependency is MEDS-Extract itself, which supplies both
-# CLIs (`meds-extract-download`, `meds-extract-run`) and every extraction stage.
-dependencies = ["MEDS-extract[download]>=0.7.0,<0.8", "polars>=1.0"]
+# MEDS-Extract supplies both CLIs (`meds-extract-download`, `meds-extract-run`) and every
+# extraction stage; 0.8.1 adds the `etl.pre_stages`/`post_stages` this spec runs, `_self` metadata
+# on literal codes, and the `etl:` dataset descriptors (`license`, `description_uri`). It is capped
+# below the next minor: MEDS-Extract 0.x minors are breaking (MESSY syntax, runner CLI), so raise
+# this deliberately when migrating. polars builds the subject side table (the
+# `inspire_subject_table` pre-stage). suMEDS 0.6.2 registers the `sumeds_enrich` post-stage, which
+# enriches the finished code metadata with the rules registered below; it soft-fails (a failed
+# enrichment, e.g. without internet, leaves the build as it was) and records the enrichment in
+# `metadata/dataset.json`. It is capped below the next minor for the same reason (its rules format
+# and output columns are still 0.x: 0.6 changed `*_names` to maps).
+dependencies = [
+  "MEDS-extract[download]>=0.8.1,<0.9",
+  "polars>=1.0",
+  "sumeds>=0.6.2,<0.7",
+]
 
 [tool.setuptools_scm]
 
 [project.optional-dependencies]
 dev = ["pre-commit<4"]
-# tests/test_sumeds_rules.py loads the packaged rules with suMEDS itself.
-tests = ["pytest", "sumeds>=0.4"]
+tests = ["pytest"]
 local_parallelism = ["hydra-joblib-launcher"]
 slurm_parallelism = ["hydra-submitit-launcher"]
 docs = [
@@ -38,13 +49,24 @@ docs = [
   "mkdocs-git-revision-date-localized-plugin==1.2.6"
 ]
 
-# Registers the bundled MESSY file as a MEDS-Extract dataset pipeline, so the whole
-# ETL is runnable as `meds-extract-run spec=INSPIRE output_dir=...`.
+# Deprecated alias of `meds-extract-run spec=INSPIRE`, kept for one release because 1.0.0 shipped it
+# (see `INSPIRE_MEDS.__main__`). Remove it in the next release.
 [project.scripts]
 MEDS_extract-INSPIRE = "INSPIRE_MEDS.__main__:main"
 
+# Registers the bundled MESSY file as a MEDS-Extract dataset pipeline, so the complete build is
+# `meds-extract-run spec=INSPIRE output_dir=...`.
 [project.entry-points."MEDS_extract.pipelines"]
 INSPIRE = "INSPIRE_MEDS:messy.yaml"
+
+# Registers the suMEDS rules under the same name, so the spec's `sumeds_enrich: {rules: INSPIRE}`
+# and `suMEDS-enrich --rules INSPIRE` find them.
+[project.entry-points."sumeds.rules"]
+INSPIRE = "INSPIRE_MEDS:sumeds_rules.yaml"
+
+# The pre-stage that builds the `subjects` side table (`etl.pre_stages`).
+[project.entry-points."MEDS_transforms.stages"]
+inspire_subject_table = "INSPIRE_MEDS.pre_MEDS:main"
 
 [project.urls]
 Homepage = "https://github.com/rvandewater/INSPIRE_MEDS"

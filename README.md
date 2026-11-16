@@ -103,7 +103,7 @@ the checksum-verified download is never modified.
 
 ## Code metadata
 
-`metadata/codes.parquet` carries `code`, `description`, `parent_codes` and `code_template`. Up to
+`metadata/codes.parquet` carries `code`, `description`, `parent_codes`, `unit` and `code_template`. Up to
 1.0.0 only the lab and vital codes had a description (from the release's `parameters.csv`) and no
 code had a parent. The ETL now describes every code family whose meaning INSPIRE itself documents,
 except the diagnoses, and writes no parent codes: the ICD-10-CM category titles and the
@@ -120,6 +120,13 @@ data changes.
 | `MEDICATION//…`                                                            | `_self` description naming the release's own `atc_code` and route                              | the release's own `atc_code` (documented as WHO ATC, mapped by the dataset authors)                                                                                                                                                                                               |
 | `SEX`, `RACE`, `ASA`, `EMERGENCY_OPERATION`, `ANESTHESIA_TYPE`             | `_self` templates                                                                              | the column documentation ([PhysioNet INSPIRE 1.4.2](https://physionet.org/content/inspire/1.4.2/) and the column comments in `messy.yaml`); ASA classes paraphrase the ASA Physical Status Classification System (American Society of Anesthesiologists, last amended 2020-12-13) |
 | the 19 literal codes (`OR_IN`, `WEIGHT`, `ICU_ADMISSION`, `MEDS_BIRTH`, …) | constant `_self` blocks on the events that emit them                                           | per event, in a `# Source:` comment: the PhysioNet INSPIRE 1.4.2 documentation section or the column comment                                                                                                                                                                      |
+
+**Units.** Every numeric code family also gets a `unit` column, the unit as recorded:
+`LAB//…`, `VITAL//…` and `WARD_VITAL//…` take the `Unit` of the release's `parameters.csv` (already
+the code's last segment, so one unit per code; an item without a `Unit` has the `//UNK` code and a
+null `unit`). `WEIGHT` and `HEIGHT`, whose unit is not in the data, take `kg` and `cm` as stated on
+the [PhysioNet INSPIRE 1.4.2](https://physionet.org/content/inspire/1.4.2/) page (the cited source is
+in a comment in `messy.yaml`). No code changes.
 
 A literal code has no components to join a dictionary on, so its description is a constant
 `_self` block on the event that emits it (MEDS-Extract 0.8.1 or later), e.g.

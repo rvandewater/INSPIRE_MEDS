@@ -308,3 +308,28 @@ def test_strict_makes_a_failed_enrichment_an_error(tmp_path: Path, raw_dir: Path
     assert "Stage sumeds_enrich failed" in result.stderr
     assert "suMEDS-enrich: error:" in _pipeline_log(output)
     assert not (output / ".logs" / "sumeds_enrich.done").exists()
+
+
+def test_numeric_codes_carry_their_unit(plain_codes: dict, enriched_codes: dict):
+    """Every numeric code family gets a `unit`; suMEDS keeps it.
+
+    Lab and vital codes take the release's `parameters.csv` Unit (also the code's last segment);
+    WEIGHT and HEIGHT, whose unit is not in the data, take the documented kg and cm. MEDS-Extract
+    writes `_metadata` outputs as lists of strings.
+    """
+    expected = {
+        "LAB//hb//g/dL": "g/dL",
+        "LAB//wbc//10^3/uL": "10^3/uL",
+        "VITAL//hr///min": "/min",
+        "WARD_VITAL//hr///min": "/min",
+        "WEIGHT": "kg",
+        "HEIGHT": "cm",
+    }
+    for codes in (plain_codes, enriched_codes):
+        for code, unit in expected.items():
+            assert codes[code]["unit"] == [unit], code
+        # Codes without a numeric value carry no unit.
+        assert not codes["OR_IN"]["unit"]
+        assert not codes["SEX//M"]["unit"]
+    # The parameters.csv description still rides next to the unit.
+    assert plain_codes["LAB//hb//g/dL"]["description"] == "Hemoglobin"

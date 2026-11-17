@@ -27,12 +27,11 @@ meds-extract-run spec=INSPIRE output_dir=$MEDS_OUTPUT_DIR download_dest_dir=$RAW
 This one command gives the complete build. It downloads the raw INSPIRE files into
 `$RAW_INPUT_DIR`, builds a small derived table (the `inspire_subject_table` pre-stage; see
 [Birth and death](#birth-and-death)), runs the eight-stage MEDS-Extract pipeline, which also
-describes the codes (see [Code metadata](#code-metadata)), and then fills the official ICD titles
-and the vocabulary parents into `metadata/codes.parquet` with
-[suMEDS](https://github.com/rvandewater/SumMEDS) (the `sumeds_enrich` post-stage, installed with
-this package; see [Enriching code metadata with suMEDS](#enriching-code-metadata-with-sumeds)), and
-last makes each code's `unit` one String (the `collapse_unit_metadata` post-stage; see
-[Code metadata](#code-metadata)). The MEDS dataset is written to `$MEDS_OUTPUT_DIR`. To reuse a download you already have:
+describes the codes (see [Code metadata](#code-metadata)), makes each code's `unit` one String (the
+`collapse_unit_metadata` post-stage), and then fills the official ICD titles and the vocabulary
+parents into `metadata/codes.parquet` with [suMEDS](https://github.com/rvandewater/SumMEDS) (the
+`sumeds_enrich` post-stage, installed with this package; see
+[Enriching code metadata with suMEDS](#enriching-code-metadata-with-sumeds)). The MEDS dataset is written to `$MEDS_OUTPUT_DIR`. To reuse a download you already have:
 
 ```bash
 meds-extract-run spec=INSPIRE output_dir=$MEDS_OUTPUT_DIR do_download=false input_dir=$RAW_INPUT_DIR
@@ -52,8 +51,8 @@ after a `--`; set them as [stage options](#enriching-code-metadata-with-sumeds) 
 
 The whole pipeline is one file, [`src/INSPIRE_MEDS/messy.yaml`](src/INSPIRE_MEDS/messy.yaml),
 registered under the `MEDS_extract.pipelines` entry-point group. Its `etl:` block names the
-`inspire_subject_table` pre-stage (see [Birth and death](#birth-and-death)), the `sumeds_enrich`
-and `collapse_unit_metadata` post-stages, and the release's license and PhysioNet page, which MEDS-Extract writes into
+`inspire_subject_table` pre-stage (see [Birth and death](#birth-and-death)), the
+`collapse_unit_metadata` and `sumeds_enrich` post-stages, and the release's license and PhysioNet page, which MEDS-Extract writes into
 `metadata/dataset.json`.
 
 ### Pseudo-timestamps
@@ -130,14 +129,16 @@ the [PhysioNet INSPIRE 1.4.2](https://physionet.org/content/inspire/1.4.2/) page
 in a comment in `messy.yaml`). No code changes.
 
 `unit` is a nullable String: the unit of the code's numeric values as recorded, one per code. MEDS
-does not standardise this column. MEDS-Extract writes it as a list, so the last post-stage,
+does not standardise this column. MEDS-Extract writes it as a list, so the first post-stage,
 `collapse_unit_metadata` ([`unit_metadata.py`](src/INSPIRE_MEDS/unit_metadata.py)), turns it into
 one String per code and fails if a code has more than one unit (none does in INSPIRE 1.4.2). The
 same step gives *unit siblings*, codes that differ only in their last `//<unit>` component, the code
 without it as an in-dataset parent in `parent_codes` (e.g. `LAB//<item>` for `LAB//<item>//<unit>`),
 and adds a row for that parent code unless one exists: the siblings' description if they all share
-it, the vocabulary parents they all share, and a null `unit`. INSPIRE's `parameters.csv` has one
-unit per item, so 1.4.2 has no unit siblings.
+it, the vocabulary parents they all share, and a null `unit`. It runs before suMEDS, so the enrichment
+sees the finished table. INSPIRE's `parameters.csv` has one unit per item, so 1.4.2 has no unit
+siblings, and its descriptions state no units (no `parameters.csv` description of an item without a
+`Unit` names one), so no unit is taken from description text.
 
 A literal code has no components to join a dictionary on, so its description is a constant
 `_self` block on the event that emits it (MEDS-Extract 0.8.1 or later), e.g.

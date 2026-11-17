@@ -19,12 +19,12 @@ without that component, ``X//item``, appended to their ``parent_codes``, and tha
 of its own (``add_unit_sibling_rows``) unless it already has one: the siblings' description if they
 all share it, the vocabulary parents they all share, and a null unit.
 
-It runs as the last MEDS-Extract post-stage, which the spec declares::
+It runs as the first MEDS-Extract post-stage, before suMEDS, which the spec declares::
 
     etl:
       post_stages:
-        - sumeds_enrich: ...
         - collapse_unit_metadata
+        - sumeds_enrich: ...
 """
 
 from __future__ import annotations

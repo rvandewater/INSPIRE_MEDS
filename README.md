@@ -30,8 +30,9 @@ This one command gives the complete build. It downloads the raw INSPIRE files in
 describes the codes (see [Code metadata](#code-metadata)), and then fills the official ICD titles
 and the vocabulary parents into `metadata/codes.parquet` with
 [suMEDS](https://github.com/rvandewater/SumMEDS) (the `sumeds_enrich` post-stage, installed with
-this package; see [Enriching code metadata with suMEDS](#enriching-code-metadata-with-sumeds)). The
-MEDS dataset is written to `$MEDS_OUTPUT_DIR`. To reuse a download you already have:
+this package; see [Enriching code metadata with suMEDS](#enriching-code-metadata-with-sumeds)), and
+last makes each code's `unit` one String (the `collapse_unit_metadata` post-stage; see
+[Code metadata](#code-metadata)). The MEDS dataset is written to `$MEDS_OUTPUT_DIR`. To reuse a download you already have:
 
 ```bash
 meds-extract-run spec=INSPIRE output_dir=$MEDS_OUTPUT_DIR do_download=false input_dir=$RAW_INPUT_DIR
@@ -51,8 +52,8 @@ after a `--`; set them as [stage options](#enriching-code-metadata-with-sumeds) 
 
 The whole pipeline is one file, [`src/INSPIRE_MEDS/messy.yaml`](src/INSPIRE_MEDS/messy.yaml),
 registered under the `MEDS_extract.pipelines` entry-point group. Its `etl:` block names the
-`inspire_subject_table` pre-stage (see [Birth and death](#birth-and-death)) and the `sumeds_enrich`
-post-stage, and the release's license and PhysioNet page, which MEDS-Extract writes into
+`inspire_subject_table` pre-stage (see [Birth and death](#birth-and-death)), the `sumeds_enrich`
+and `collapse_unit_metadata` post-stages, and the release's license and PhysioNet page, which MEDS-Extract writes into
 `metadata/dataset.json`.
 
 ### Pseudo-timestamps
@@ -127,6 +128,15 @@ the code's last segment, so one unit per code; an item without a `Unit` has the 
 null `unit`). `WEIGHT` and `HEIGHT`, whose unit is not in the data, take `kg` and `cm` as stated on
 the [PhysioNet INSPIRE 1.4.2](https://physionet.org/content/inspire/1.4.2/) page (the cited source is
 in a comment in `messy.yaml`). No code changes.
+
+`unit` is a nullable String: the unit of the code's numeric values as recorded, one per code. MEDS
+does not standardise this column. MEDS-Extract writes it as a list, so the last post-stage,
+`collapse_unit_metadata` ([`unit_metadata.py`](src/INSPIRE_MEDS/unit_metadata.py)), turns it into
+one String per code and fails if a code has more than one unit (none does in INSPIRE 1.4.2). The
+same step gives *unit siblings*, codes that differ only in their last `//<unit>` component, the code
+without it as an in-dataset parent in `parent_codes` (e.g. `LAB//<item>` for `LAB//<item>//<unit>`);
+no row is added for that parent. INSPIRE's `parameters.csv` has one unit per item, so 1.4.2 has no
+unit siblings.
 
 A literal code has no components to join a dictionary on, so its description is a constant
 `_self` block on the event that emits it (MEDS-Extract 0.8.1 or later), e.g.

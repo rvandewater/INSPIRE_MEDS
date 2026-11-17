@@ -1,6 +1,6 @@
 # INSPIRE (PhysioNet 1.4.2) to MEDS. `meds-extract-run spec=INSPIRE ...` runs all of it: the
-# `inspire_subject_table` pre-stage, the canonical MEDS-Extract stages, and the `sumeds_enrich`
-# post-stage (see `etl:`).
+# `inspire_subject_table` pre-stage, the canonical MEDS-Extract stages, and the `sumeds_enrich` and
+# `collapse_unit_metadata` post-stages (see `etl:`).
 #
 # Code metadata: `_metadata` blocks describe every code family but the diagnoses, literal codes
 # included (constant `_self` blocks, each with the source of its description). suMEDS adds the
@@ -32,6 +32,10 @@ etl:
   post_stages:
     - sumeds_enrich:
         rules: INSPIRE
+    # Last: turns codes.parquet's `unit` (a list, as MEDS-Extract writes every `_metadata`
+    # column) into one String per code, and fails if a code has more than one unit
+    # (INSPIRE_MEDS.unit_metadata).
+    - collapse_unit_metadata
 
 _defaults:
   subject_id: $subject_id

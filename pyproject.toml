@@ -67,6 +67,8 @@ INSPIRE = "INSPIRE_MEDS:sumeds_rules.yaml"
 # The pre-stage that builds the `subjects` side table (`etl.pre_stages`).
 [project.entry-points."MEDS_transforms.stages"]
 inspire_subject_table = "INSPIRE_MEDS.pre_MEDS:main"
+# The post-stage that makes codes.parquet's `unit` one String per code (`etl.post_stages`).
+collapse_unit_metadata = "INSPIRE_MEDS.unit_metadata:main"
 
 [project.urls]
 Homepage = "https://github.com/rvandewater/INSPIRE_MEDS"

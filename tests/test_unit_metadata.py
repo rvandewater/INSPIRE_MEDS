@@ -1,4 +1,4 @@
-"""`collapse_unit_metadata`: codes.parquet's `unit` becomes one String per code.
+"""`inspire_collapse_unit_metadata`: codes.parquet's `unit` becomes one String per code.
 
 Synthetic codes.parquet files only; the full spec runs it in `test_run_with_enrichment.py`.
 """

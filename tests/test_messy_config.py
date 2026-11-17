@@ -106,7 +106,7 @@ def test_etl_block(cfg: MessyConfig):
     assert cfg.etl.stage_options["n_subjects_per_shard"] == 1000
     assert [stage.name for stage in cfg.etl.pre_stages] == ["inspire_subject_table"]
     assert [stage.name for stage in cfg.etl.post_stages] == [
-        "collapse_unit_metadata",
+        "inspire_collapse_unit_metadata",
         "sumeds_enrich",
     ]
     assert cfg.etl.post_stages[1].options == {"rules": PIPELINE_NAME}

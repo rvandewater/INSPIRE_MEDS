@@ -1,4 +1,4 @@
-"""The ``collapse_unit_metadata`` post-stage: one ``unit`` String per code in ``codes.parquet``.
+"""The ``inspire_collapse_unit_metadata`` post-stage: one ``unit`` String per code in ``codes.parquet``.
 
 MEDS-Extract writes every ``_metadata`` column as ``List(String)``, the distinct values seen for a
 code. A code's ``unit`` is the unit of its numeric values as recorded, and every code has exactly
@@ -23,7 +23,7 @@ It runs as the first MEDS-Extract post-stage, before suMEDS, which the spec decl
 
     etl:
       post_stages:
-        - collapse_unit_metadata
+        - inspire_collapse_unit_metadata
         - sumeds_enrich: ...
 """
 
@@ -40,7 +40,7 @@ from MEDS_transforms.stages import Stage
 
 logger = logging.getLogger(__name__)
 
-STAGE_NAME = "collapse_unit_metadata"
+STAGE_NAME = "inspire_collapse_unit_metadata"
 UNIT_COLUMN = "unit"
 CODE_COLUMN = "code"
 PARENTS_COLUMN = "parent_codes"

@@ -9,7 +9,7 @@ The spec declares extension stages around the canonical MEDS-Extract stages. MED
 MEDS_DEATH are per-subject facts derived from a per-operation table, and MESSY cannot reduce a
 table over its own rows, so the `inspire_subject_table` pre-stage (`pre_MEDS`) writes a
 one-row-per-subject side table that the config joins back. After the pipeline, the
-`collapse_unit_metadata` post-stage (`unit_metadata`) makes the `unit` of `metadata/codes.parquet`
+`inspire_collapse_unit_metadata` post-stage (`unit_metadata`) makes the `unit` of `metadata/codes.parquet`
 one String per code, and suMEDS's `sumeds_enrich` post-stage then enriches it with the rules
 registered under `sumeds.rules` as `INSPIRE`.
 """

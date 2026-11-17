@@ -11,6 +11,7 @@ import pytest
 
 from INSPIRE_MEDS.unit_metadata import (
     add_unit_sibling_parents,
+    add_unit_sibling_rows,
     MultipleUnitsError,
     collapse_unit,
     collapse_unit_file,
@@ -122,8 +123,11 @@ def test_unit_siblings_get_their_stem_as_parent(tmp_path: Path):
     path = _write(tmp_path / "codes.parquet", SIBLINGS)
     collapse_unit_file(path)
     out = pq.read_table(path)
-    assert out.num_rows == SIBLINGS.num_rows  # no row for the stem
-    assert out.column("code").equals(SIBLINGS.column("code"))
+    # The SIBLINGS table is not sorted by code, so the stem row is appended.
+    assert out.column("code").to_pylist() == [
+        *SIBLINGS.column("code").to_pylist(),
+        "LAB//hb",
+    ]
     assert out.schema.field("parent_codes").type == pa.list_(pa.string())
     assert out.column("parent_codes").to_pylist() == [
         ["LOINC//718-7", "LAB//hb"],  # existing vocabulary parents stay first
@@ -132,10 +136,71 @@ def test_unit_siblings_get_their_stem_as_parent(tmp_path: Path):
         None,
         None,
         None,
+        None,  # the stem row: no parent shared by both siblings
     ]
     # Running it again adds nothing.
     collapse_unit_file(path)
     assert pq.read_table(path).equals(out)
+
+
+SORTED_SIBLINGS = pa.table(
+    {
+        "code": [
+            "LAB//hb//g/dL",
+            "LAB//hb//mmol/L",
+            "MED//x//mcg",
+            "MED//x//mg",
+            "OTHER",
+        ],
+        "description": [
+            "Hemoglobin",
+            "Hemoglobin",
+            "Drug x in mcg",
+            "Drug x in mg",
+            "o",
+        ],
+        "unit": ["g/dL", "mmol/L", "mcg", "mg", None],
+        "parent_codes": [
+            ["LOINC//718-7", "LOINC//0000-0"],
+            ["LOINC//718-7"],
+            ["ATC//X01"],
+            ["ATC//X01"],
+            None,
+        ],
+        "extra": [1, 2, 3, 4, 5],
+    }
+)
+
+
+def test_stem_rows_are_added_with_what_the_siblings_share():
+    out = add_unit_sibling_rows(add_unit_sibling_parents(SORTED_SIBLINGS))
+    assert out.schema == SORTED_SIBLINGS.schema
+    rows = {row["code"]: row for row in out.to_pylist()}
+    assert out.column("code").to_pylist() == sorted(rows)  # sorted input stays sorted
+    assert rows["LAB//hb"] == {
+        "code": "LAB//hb",
+        "description": "Hemoglobin",  # shared by both siblings
+        "unit": None,
+        "parent_codes": ["LOINC//718-7"],  # the parents both share, never the stem
+        "extra": None,
+    }
+    assert rows["MED//x"]["description"] is None  # the siblings' descriptions differ
+    assert rows["MED//x"]["parent_codes"] == ["ATC//X01"]
+    assert out.num_rows == SORTED_SIBLINGS.num_rows + 2
+    # A second run adds nothing.
+    assert add_unit_sibling_rows(add_unit_sibling_parents(out)) is out
+
+
+def test_an_existing_stem_row_is_left_alone():
+    existing = pa.table(
+        {
+            "code": ["LAB//hb", "LAB//hb//g/dL", "LAB//hb//mmol/L"],
+            "description": ["own", "Hemoglobin", "Hemoglobin"],
+            "unit": [None, "g/dL", "mmol/L"],
+        }
+    )
+    out = add_unit_sibling_rows(existing)
+    assert out is existing
 
 
 def test_parent_codes_is_added_when_missing():

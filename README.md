@@ -134,9 +134,10 @@ does not standardise this column. MEDS-Extract writes it as a list, so the last 
 `collapse_unit_metadata` ([`unit_metadata.py`](src/INSPIRE_MEDS/unit_metadata.py)), turns it into
 one String per code and fails if a code has more than one unit (none does in INSPIRE 1.4.2). The
 same step gives *unit siblings*, codes that differ only in their last `//<unit>` component, the code
-without it as an in-dataset parent in `parent_codes` (e.g. `LAB//<item>` for `LAB//<item>//<unit>`);
-no row is added for that parent. INSPIRE's `parameters.csv` has one unit per item, so 1.4.2 has no
-unit siblings.
+without it as an in-dataset parent in `parent_codes` (e.g. `LAB//<item>` for `LAB//<item>//<unit>`),
+and adds a row for that parent code unless one exists: the siblings' description if they all share
+it, the vocabulary parents they all share, and a null `unit`. INSPIRE's `parameters.csv` has one
+unit per item, so 1.4.2 has no unit siblings.
 
 A literal code has no components to join a dictionary on, so its description is a constant
 `_self` block on the event that emits it (MEDS-Extract 0.8.1 or later), e.g.

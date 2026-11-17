@@ -15,8 +15,9 @@ is.
 
 Then it links *unit siblings* (``add_unit_sibling_parents``): codes for the same item that differ
 only in a last ``//<unit>`` component, e.g. ``X//item//mg`` and ``X//item//mcg``, get the code
-without that component, ``X//item``, appended to their ``parent_codes``. No row is added for that
-parent code.
+without that component, ``X//item``, appended to their ``parent_codes``, and that stem gets a row
+of its own (``add_unit_sibling_rows``) unless it already has one: the siblings' description if they
+all share it, the vocabulary parents they all share, and a null unit.
 
 It runs as the last MEDS-Extract post-stage, which the spec declares::
 
@@ -43,6 +44,7 @@ STAGE_NAME = "collapse_unit_metadata"
 UNIT_COLUMN = "unit"
 CODE_COLUMN = "code"
 PARENTS_COLUMN = "parent_codes"
+DESCRIPTION_COLUMN = "description"
 CODES_FILE = "codes.parquet"
 #: The separator between code components; a unit sibling ends in ``SEPARATOR + unit``.
 SEPARATOR = "//"
@@ -179,8 +181,8 @@ def add_unit_sibling_parents(table: pa.Table) -> pa.Table:
     """``table`` with each unit sibling's stem appended to its ``parent_codes``.
 
     Existing parents are kept and the stem is not added twice; ``parent_codes`` keeps its List
-    type, or is added as ``list<string>`` if missing. No row is added for a stem, and a
-    unit-suffixed code without a sibling gets no parent. Without a String ``unit`` column, or
+    type, or is added as ``list<string>`` if missing. A unit-suffixed code without a sibling gets
+    no parent. ``add_unit_sibling_rows`` adds the stems' rows. Without a String ``unit`` column, or
     without siblings, ``table`` is returned as it is.
 
     Examples:
@@ -234,14 +236,93 @@ def add_unit_sibling_parents(table: pa.Table) -> pa.Table:
     return table.append_column(pa.field(PARENTS_COLUMN, target), column)
 
 
+def add_unit_sibling_rows(table: pa.Table) -> pa.Table:
+    """``table`` with a row for each unit-sibling stem that has none yet.
+
+    The new row's ``code`` is the stem; its ``description`` is the siblings' description if they
+    all have the same non-null one, else null; its ``parent_codes`` are the parents every sibling
+    has (in the first sibling's order, the stem itself left out), null if none; ``unit`` and every
+    other column are null. An existing row for the stem is left as it is, so a second run adds
+    nothing. If ``table`` is sorted by ``code``, the result is too; otherwise the rows are appended.
+
+    Examples:
+        >>> t = pa.table({
+        ...     "code": ["X//a//mcg", "X//a//mg", "Y//b//g", "Y//b//kg"],
+        ...     "description": ["A", "A", "B in g", "B in kg"],
+        ...     "unit": ["mcg", "mg", "g", "kg"],
+        ...     "parent_codes": [["ATC//A01", "X//a"], ["ATC//A01", "X//a"], None, None],
+        ... })
+        >>> out = add_unit_sibling_rows(t)
+        >>> out.slice(0, 3).to_pylist()[0]
+        {'code': 'X//a', 'description': 'A', 'unit': None, 'parent_codes': ['ATC//A01']}
+        >>> out.column("code").to_pylist()
+        ['X//a', 'X//a//mcg', 'X//a//mg', 'Y//b', 'Y//b//g', 'Y//b//kg']
+        >>> out.to_pylist()[3]["description"] is None
+        True
+        >>> add_unit_sibling_rows(out) is out
+        True
+    """
+    if UNIT_COLUMN not in table.column_names:
+        return table
+    unit_type = table.schema.field(UNIT_COLUMN).type
+    if not (pa.types.is_string(unit_type) or pa.types.is_large_string(unit_type)):
+        return table
+    stems = unit_sibling_stems(table).to_list()
+    if not any(stems):
+        return table
+    codes = table.column(CODE_COLUMN).to_pylist()
+    existing = set(codes)
+    has = set(table.column_names)
+    descriptions = (
+        table.column(DESCRIPTION_COLUMN).to_pylist()
+        if DESCRIPTION_COLUMN in has
+        else [None] * len(codes)
+    )
+    parents = (
+        table.column(PARENTS_COLUMN).to_pylist()
+        if PARENTS_COLUMN in has
+        else [None] * len(codes)
+    )
+    groups: dict[str, list[int]] = {}
+    for i, stem in enumerate(stems):
+        if stem is not None and stem not in existing:
+            groups.setdefault(stem, []).append(i)
+    if not groups:
+        return table
+
+    rows = []
+    for stem, members in groups.items():
+        row = {CODE_COLUMN: stem}
+        if DESCRIPTION_COLUMN in has:
+            shared = {descriptions[i] for i in members}
+            row[DESCRIPTION_COLUMN] = shared.pop() if len(shared) == 1 else None
+        if PARENTS_COLUMN in has:
+            lists = [[p for p in parents[i] or () if p != stem] for i in members]
+            common = [
+                p
+                for p in dict.fromkeys(lists[0])
+                if all(p in other for other in lists[1:])
+            ]
+            row[PARENTS_COLUMN] = common or None
+        rows.append(row)
+    new = pa.Table.from_pylist(rows, schema=table.schema)
+    out = pa.concat_tables([table, new])
+    if codes == sorted(codes, key=lambda c: (c is None, c)):
+        out = out.sort_by(CODE_COLUMN)
+    return out
+
+
 def collapse_unit_metadata(table: pa.Table) -> pa.Table:
-    """``collapse_unit`` and then ``add_unit_sibling_parents``; logs counts only."""
+    """``collapse_unit``, ``add_unit_sibling_parents``, ``add_unit_sibling_rows``; logs counts."""
     out = add_unit_sibling_parents(collapse_unit(table))
+    rows_before = out.num_rows
+    out = add_unit_sibling_rows(out)
     if UNIT_COLUMN in out.column_names:
         stems = unit_sibling_stems(out)
         logger.info(
             f"{stems.drop_nulls().n_unique()} unit-sibling group(s); "
-            f"{len(stems) - stems.null_count()} code row(s) have their stem as a parent"
+            f"{len(stems) - stems.null_count()} code row(s) have their stem as a parent; "
+            f"{out.num_rows - rows_before} stem row(s) added"
         )
     return out
 

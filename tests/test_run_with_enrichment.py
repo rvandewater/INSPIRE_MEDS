@@ -318,8 +318,7 @@ def test_numeric_codes_carry_their_unit(
 
     Lab and vital codes take the release's `parameters.csv` Unit (also the code's last segment);
     WEIGHT and HEIGHT, whose unit is not in the data, take the documented kg and cm. MEDS-Extract
-    writes `_metadata` outputs as lists of strings; the `inspire_collapse_unit_metadata` post-stage makes
-    `unit` one String per code, with or without the enrichment.
+    >= 0.9 writes `unit` as one String per code, and it stays one with or without the enrichment.
     """
     expected = {
         "LAB//hb//g/dL": "g/dL",

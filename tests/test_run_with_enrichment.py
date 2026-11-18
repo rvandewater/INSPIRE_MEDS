@@ -325,7 +325,7 @@ def test_numeric_codes_carry_their_unit(
         "LAB//wbc//10^3/uL": "10^3/uL",
         "VITAL//hr///min": "/min",
         "WARD_VITAL//hr///min": "/min",
-        "WEIGHT": "kg",
+        "WEIGHT": "kilogram",
         "HEIGHT": "cm",
     }
     for codes in (plain_codes, enriched_codes):

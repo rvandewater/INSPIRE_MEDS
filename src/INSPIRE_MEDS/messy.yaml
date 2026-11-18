@@ -122,7 +122,7 @@ operations:
         # The unit is not in the data. Source: physionet:inspire-1.4.2 (weights outside 10-200 kg
         # set to null; https://physionet.org/content/inspire/1.4.2/, the public project page of a
         # release under the Korea Credentialed Health Data License-1-0-0). Only the unit is taken.
-        unit: '"kg"'
+        unit: '"kilogram"'
   height: # Number, Height measured before operation
     code: HEIGHT
     time: $admission_t

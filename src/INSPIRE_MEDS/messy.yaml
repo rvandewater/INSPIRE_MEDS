@@ -35,6 +35,9 @@ etl:
     # writes `unit` as one String per code. It runs before suMEDS, so the enrichment, its coverage
     # record and a later `suMEDS-enrich` retry all see the same table.
     - inspire_unit_metadata
+    # One UCUM spelling for every `unit` (suMEDS's shared table, e.g. `Cel`, `mm[Hg]`, `mg/dL`); the
+    # spelling as recorded stays in `unit_source_value`, and an unknown spelling is kept as it is.
+    - sumeds_normalize_units
     - sumeds_enrich:
         rules: INSPIRE
 
@@ -122,7 +125,7 @@ operations:
         # The unit is not in the data. Source: physionet:inspire-1.4.2 (weights outside 10-200 kg
         # set to null; https://physionet.org/content/inspire/1.4.2/, the public project page of a
         # release under the Korea Credentialed Health Data License-1-0-0). Only the unit is taken.
-        unit: '"kilogram"'
+        unit: '"kg"'
   height: # Number, Height measured before operation
     code: HEIGHT
     time: $admission_t

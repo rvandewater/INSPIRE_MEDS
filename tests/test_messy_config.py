@@ -107,9 +107,10 @@ def test_etl_block(cfg: MessyConfig):
     assert [stage.name for stage in cfg.etl.pre_stages] == ["inspire_subject_table"]
     assert [stage.name for stage in cfg.etl.post_stages] == [
         "inspire_unit_metadata",
+        "sumeds_normalize_units",
         "sumeds_enrich",
     ]
-    assert cfg.etl.post_stages[1].options == {"rules": PIPELINE_NAME}
+    assert cfg.etl.post_stages[2].options == {"rules": PIPELINE_NAME}
 
 
 def test_dataset_json_describes_the_release(plain_output):

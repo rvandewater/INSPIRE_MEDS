@@ -27,8 +27,8 @@ meds-extract-run spec=INSPIRE output_dir=$MEDS_OUTPUT_DIR download_dest_dir=$RAW
 This one command gives the complete build. It downloads the raw INSPIRE files into
 `$RAW_INPUT_DIR`, builds a small derived table (the `inspire_subject_table` pre-stage; see
 [Birth and death](#birth-and-death)), runs the eight-stage MEDS-Extract pipeline, which also
-describes the codes (see [Code metadata](#code-metadata)), links unit siblings (the
-`inspire_unit_metadata` post-stage), writes `unit` in UCUM (suMEDS's `sumeds_normalize_units`
+describes the codes (see [Code metadata](#code-metadata)), links unit siblings (suMEDS's
+`sumeds_link_unit_siblings` post-stage), writes `unit` in UCUM (suMEDS's `sumeds_normalize_units`
 post-stage), and then fills the official ICD titles and the vocabulary
 parents into `metadata/codes.parquet` with [suMEDS](https://github.com/rvandewater/SumMEDS) (the
 `sumeds_enrich` post-stage, installed with this package; see
@@ -53,7 +53,7 @@ after a `--`; set them as [stage options](#enriching-code-metadata-with-sumeds) 
 The whole pipeline is one file, [`src/INSPIRE_MEDS/messy.yaml`](src/INSPIRE_MEDS/messy.yaml),
 registered under the `MEDS_extract.pipelines` entry-point group. Its `etl:` block names the
 `inspire_subject_table` pre-stage (see [Birth and death](#birth-and-death)), the
-`inspire_unit_metadata`, `sumeds_normalize_units` and `sumeds_enrich` post-stages, and the release's license and PhysioNet page, which MEDS-Extract writes into
+`sumeds_link_unit_siblings`, `sumeds_normalize_units` and `sumeds_enrich` post-stages (in that order), and the release's license and PhysioNet page, which MEDS-Extract writes into
 `metadata/dataset.json`.
 
 ### Pseudo-timestamps
@@ -135,12 +135,13 @@ in a comment in `messy.yaml`). No code changes.
 does not know is kept as it is, and the codes keep their names (`LAB//wbc//10^3/uL` stays). MEDS-Extract 0.9 and later write it as one String per code and
 fail the build if a code has more than one unit
 ([MEDS_extract#336](https://github.com/mmcdermott/MEDS_extract/pull/336); none does in INSPIRE
-1.4.2). The first post-stage, `inspire_unit_metadata`
-([`unit_metadata.py`](src/INSPIRE_MEDS/unit_metadata.py)), gives *unit siblings*, codes that differ only in their last `//<unit>` component, the code
+1.4.2). The first post-stage, suMEDS's shared `sumeds_link_unit_siblings`
+([docs](https://github.com/rvandewater/suMEDS/blob/main/docs/unit_siblings.md), default options), gives *unit siblings*, codes that differ only in their last `//<unit>` component, the code
 without it as an in-dataset parent in `parent_codes` (e.g. `LAB//<item>` for `LAB//<item>//<unit>`),
 and adds a row for that parent code unless one exists: the siblings' description if they all share
-it, the vocabulary parents they all share, and a null `unit`. It runs before suMEDS, so the enrichment
-sees the finished table. INSPIRE's `parameters.csv` has one unit per item, so 1.4.2 has no unit
+it (or, if they differ only by their own unit, that description without it), the vocabulary parents
+they all share, and a null `unit`. A `//UNK` code of the same item joins its siblings once the item
+has a real unit. It runs before the enrichment, so the enrichment sees the finished table. INSPIRE's `parameters.csv` has one unit per item, so 1.4.2 has no unit
 siblings, and its descriptions state no units (no `parameters.csv` description of an item without a
 `Unit` names one), so no unit is taken from description text.
 

@@ -8,9 +8,9 @@ the complete build is one command:
 The spec declares extension stages around the canonical MEDS-Extract stages. MEDS_BIRTH and
 MEDS_DEATH are per-subject facts derived from a per-operation table, and MESSY cannot reduce a
 table over its own rows, so the `inspire_subject_table` pre-stage (`pre_MEDS`) writes a
-one-row-per-subject side table that the config joins back. After the pipeline, the
-`inspire_unit_metadata` post-stage (`unit_metadata`) links unit siblings in `metadata/codes.parquet`,
-and suMEDS's `sumeds_enrich` post-stage then enriches it with the rules
+one-row-per-subject side table that the config joins back. After the pipeline, suMEDS's
+`sumeds_link_unit_siblings` post-stage links unit siblings in `metadata/codes.parquet`, its
+`sumeds_normalize_units` writes `unit` in UCUM, and its `sumeds_enrich` then enriches it with the rules
 registered under `sumeds.rules` as `INSPIRE`.
 """
 

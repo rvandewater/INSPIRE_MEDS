@@ -258,8 +258,11 @@ operations:
     _metadata:
       _self:
         description: '"Patient left the operating room (INSPIRE operations.orout_time)"'
+  # An operation and an anaesthesia are each two codes, `<FAMILY>//START` and `<FAMILY>//END`, the
+  # spelling the MEDS ETLs move to for the two ends of an interval (alignEHR#53). A bare `//` would
+  # parse as a division, so these literal codes are quoted strings.
   opstart_time: # Relative Time, The time for starting the operation
-    code: OPERATION_START
+    code: '"OPERATION//START"'
     time: $opstart_t
     hadm_id: $hadm_id
     operation_id: $op_id
@@ -268,7 +271,7 @@ operations:
       _self:
         description: '"Start of the operation (INSPIRE operations.opstart_time)"'
   opend_time: # Relative Time, The time for finishing the operation
-    code: OPERATION_END
+    code: '"OPERATION//END"'
     time: $opend_t
     hadm_id: $hadm_id
     operation_id: $op_id
@@ -293,7 +296,7 @@ operations:
       _self:
         description: '"Hospital discharge (INSPIRE operations.discharge_time)"'
   anstart_time: # Relative Time, The time for starting anaesthesia
-    code: ANESTHESIA_START
+    code: '"ANESTHESIA//START"'
     time: $anstart_t
     hadm_id: $hadm_id
     operation_id: $op_id
@@ -302,7 +305,7 @@ operations:
       _self:
         description: '"Start of anesthesia (INSPIRE operations.anstart_time)"'
   anend_time: # Relative Time, The time for finishing anaesthesia
-    code: ANESTHESIA_END
+    code: '"ANESTHESIA//END"'
     time: $anend_t
     hadm_id: $hadm_id
     operation_id: $op_id

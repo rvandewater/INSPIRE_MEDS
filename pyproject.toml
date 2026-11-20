@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=64", "setuptools-scm>=8.0", "wheel"]
+requires = ["setuptools>=64", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -42,7 +42,12 @@ dependencies = [
   "sumeds>=0.6.7,<0.7",
 ]
 
-[tool.setuptools_scm]
+# The version is static, so setuptools-scm is not used. Without it, setuptools only ships the YAML
+# files listed here: the MESSY spec and the suMEDS rules. Before, the wheel got them through
+# setuptools-scm's git file finder, so a wheel built outside a git checkout (from an sdist or a
+# `git archive` tarball) had no YAML and could not run.
+[tool.setuptools.package-data]
+INSPIRE_MEDS = ["*.yaml"]
 
 [project.optional-dependencies]
 dev = ["pre-commit<4"]

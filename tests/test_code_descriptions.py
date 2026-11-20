@@ -18,12 +18,12 @@ LITERAL_CODES = {
     "HEIGHT",
     "OR_IN",
     "OR_OUT",
-    "OPERATION_START",
-    "OPERATION_END",
+    "OPERATION//START",
+    "OPERATION//END",
     "HOSPITAL_ADMISSION",
     "HOSPITAL_DISCHARGE",
-    "ANESTHESIA_START",
-    "ANESTHESIA_END",
+    "ANESTHESIA//START",
+    "ANESTHESIA//END",
     "CPB_ON",
     "CPB_OFF",
     "ICU_ADMISSION",
@@ -66,7 +66,8 @@ def test_every_literal_code_has_one_constant_description():
         assert CONSTANT.match(description), (
             f"{table}/{name}: {description!r} is not a constant"
         )
-        descriptions.setdefault(code, []).append(description)
+        # A literal with `//` is a quoted dftly string (a bare `//` parses as a division).
+        descriptions.setdefault(code.strip('"'), []).append(description)
     assert set(descriptions) == LITERAL_CODES
     assert all(len(d) == 1 for d in descriptions.values()), descriptions
 

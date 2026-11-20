@@ -53,7 +53,11 @@ jobs:
         # extraction itself runs that config with this project's locked MEDS-Extract, pre- and
         # post-stages included.
         run: |
+          # DRAFT: MESSY-synth parses the spec with its own MEDS-Extract, and the released 0.9.0
+          # rejects `etl.cleanup_intermediates`. Drop this `--with` with the switch to the release
+          # pin (mmcdermott/MEDS_extract#340).
           uvx --python ${{ matrix.python-version }} --from "MESSY_synth==0.1.1" \
+            --with "MEDS-extract @ git+https://github.com/mmcdermott/MEDS_extract@refs/pull/340/head" \
             MESSY-synth ./src/INSPIRE_MEDS/messy.yaml -o raw_synthetic/ --explain
           # MESSY-synth generates the `subjects` table the config joins, but the release has none:
           # the inspire_subject_table pre-stage derives it from operations columns the config never

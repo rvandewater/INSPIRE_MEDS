@@ -353,6 +353,7 @@ the baseline. A MEDS-Extract, suMEDS or polars upgrade can also move the output,
     | `OPERATION_END`    | `OPERATION//END`    |
     | `ANESTHESIA_START` | `ANESTHESIA//START` |
     | `ANESTHESIA_END`   | `ANESTHESIA//END`   |
+
     To migrate, rewrite old codes with the regex `^(OPERATION|ANESTHESIA)_(START|END)$` → `\1//\2`.
 
 ## Citation

@@ -22,6 +22,23 @@ etl:
   # metadata/dataset.json: the release's license, as PhysioNet names it, and its page.
   license: Korea Credentialed Health Data License-1-0-0
   description_uri: https://physionet.org/content/inspire/1.4.2/
+  # The stay and operation ids (physionet:inspire-1.4.2: "A subject_id may be matched to one or
+  # more hadm_ids", "A single hadm_id may be matched with one or more op_ids"):
+  # - `hadm_id`, the hospital admission (operations.hadm_id), named as in the MIMIC-IV ETL and the
+  #   other MEDS ETLs (rvandewater/alignEHR#55). It is on the admission and operation events of
+  #   `operations`; the other tables carry no admission id.
+  # - `operation_id`, the operation (operations.op_id), on the operation events of `operations`
+  #   (times, ASA, emergency, department, anesthesia type, ICD-10-PCS, ...), so that the attributes
+  #   of one of several operations on the same day can be told apart. Not on `vitals`, although
+  #   vitals.op_id exists: where two operations overlap, the release repeats the same vital-sign
+  #   rows under each op_id, which MEDS-Extract merges into one event today; an `operation_id`
+  #   would turn every such event into one per operation (README, "Stay and operation ids").
+  # Neither is on the subject-level events (birth, sex, race, death), nor on ICU_ADMISSION and
+  # ICU_DISCHARGE: the release repeats one post-operative ICU stay on every operation it follows,
+  # at times across more than one admission, so it belongs to no single operation or admission.
+  # Weight, height and the admission and discharge events are per admission and carry only
+  # `hadm_id`. The OPERATION_ID event keeps op_id in its text_value, as before.
+  raw_source_id_columns: [hadm_id, operation_id]
   # Run before convert_to_parquet: builds the one-row-per-subject `subjects` table that
   # `operations` joins below, from the raw `operations` table (INSPIRE_MEDS.pre_MEDS).
   pre_stages:
@@ -72,6 +89,8 @@ operations:
   op_id: # Number, A random number starts with 4 for the operation.
     code: OPERATION_ID
     time: $opstart_t
+    hadm_id: $hadm_id
+    operation_id: $op_id
     text_value: $op_id::str
     # Source: physionet:inspire-1.4.2 Anonymization (op_id values begin with 4); the column comment
     _metadata:
@@ -82,6 +101,8 @@ operations:
   case_id: # Number, A linker to VitalDB Open Dataset
     code: VITALDB_CASE_ID
     time: null
+    hadm_id: $hadm_id
+    operation_id: $op_id
     text_value: $case_id::str
     # Source: the column comment (linker to the VitalDB open dataset); physionet:inspire-1.4.2
     # Parent Projects (VitalDB)
@@ -93,6 +114,8 @@ operations:
   opdate: # Relative Time, Operation date
     code: OPERATION_DATE
     time: $opdate_t
+    hadm_id: $hadm_id
+    operation_id: $op_id
     # Source: the column comment
     _metadata:
       _self:
@@ -118,6 +141,7 @@ operations:
     code: WEIGHT
     numeric_value: $weight
     time: $admission_t
+    hadm_id: $hadm_id
     # Source: the column comment; physionet:inspire-1.4.2 Anonymization (weight outside 10-200 kg
     # set to null)
     _metadata:
@@ -130,6 +154,7 @@ operations:
   height: # Number, Height measured before operation
     code: HEIGHT
     time: $admission_t
+    hadm_id: $hadm_id
     numeric_value: $height
     # Source: the column comment; physionet:inspire-1.4.2 Anonymization (height outside 100-200 cm
     # set to null); physionet:inspire-1.4.2 Release Notes 1.4 (height cleaned to cm)
@@ -151,6 +176,8 @@ operations:
   asa: # 1/2/3/4/5, American Society of Anesthesiologists physical status classification
     code: 'f"ASA//{$asa ?? ''UNK''}"'
     time: $opdate_t
+    hadm_id: $hadm_id
+    operation_id: $op_id
     _metadata:
       _self:
         # The classes paraphrase the ASA Physical Status Classification System (American Society
@@ -172,6 +199,8 @@ operations:
   emop: # Binary, Emergency of the operation
     code: 'f"EMERGENCY_OPERATION//{$emop ?? ''UNK''}"'
     time: $opdate_t
+    hadm_id: $hadm_id
+    operation_id: $op_id
     _metadata:
       _self:
         description: >-
@@ -180,6 +209,8 @@ operations:
   department: # String, Surgical department for admission
     code: 'f"ADMISSION_DEPARTMENT//{$department ?? ''UNK''}"'
     time: $opdate_t
+    hadm_id: $hadm_id
+    operation_id: $op_id
     _metadata:
       # The release's own department.csv spells out each abbreviation.
       department:
@@ -190,6 +221,8 @@ operations:
   antype: # String, Anesthesia Type (General / Neuraxial / Regional / MAC)
     code: 'f"ANESTHESIA_TYPE//{$antype ?? ''UNK''}"'
     time: $opdate_t
+    hadm_id: $hadm_id
+    operation_id: $op_id
     _metadata:
       _self:
         description: >-
@@ -198,6 +231,8 @@ operations:
   icd10_pcs: # String, ICD-10 Procedure Coding System code
     code: 'f"ICD10_PCS//{$icd10_pcs ?? ''UNK''}"'
     time: $opdate_t
+    hadm_id: $hadm_id
+    operation_id: $op_id
     _metadata:
       _self:
         description: >-
@@ -206,6 +241,8 @@ operations:
   orin_time: # Relative Time, The time for entering the operating room
     code: OR_IN
     time: $orin_t
+    hadm_id: $hadm_id
+    operation_id: $op_id
     # Source: the column comment
     _metadata:
       _self:
@@ -213,6 +250,8 @@ operations:
   orout_time: # Relative Time, The time for leaving the operating room
     code: OR_OUT
     time: $orout_t
+    hadm_id: $hadm_id
+    operation_id: $op_id
     # Source: the column comment
     _metadata:
       _self:
@@ -223,6 +262,8 @@ operations:
   opstart_time: # Relative Time, The time for starting the operation
     code: '"OPERATION//START"'
     time: $opstart_t
+    hadm_id: $hadm_id
+    operation_id: $op_id
     # Source: the column comment; physionet:inspire-1.4.2 Data Description (Operations)
     _metadata:
       _self:
@@ -230,6 +271,8 @@ operations:
   opend_time: # Relative Time, The time for finishing the operation
     code: '"OPERATION//END"'
     time: $opend_t
+    hadm_id: $hadm_id
+    operation_id: $op_id
     # Source: the column comment; physionet:inspire-1.4.2 Data Description (Operations)
     _metadata:
       _self:
@@ -237,6 +280,7 @@ operations:
   admission_time: # Relative Time, The time for hospital admission
     code: HOSPITAL_ADMISSION
     time: $admission_t
+    hadm_id: $hadm_id
     # Source: the column comment
     _metadata:
       _self:
@@ -244,6 +288,7 @@ operations:
   discharge_time: # Relative Time, The time for hospital discharge
     code: HOSPITAL_DISCHARGE
     time: $discharge_t
+    hadm_id: $hadm_id
     # Source: the column comment
     _metadata:
       _self:
@@ -251,6 +296,8 @@ operations:
   anstart_time: # Relative Time, The time for starting anaesthesia
     code: '"ANESTHESIA//START"'
     time: $anstart_t
+    hadm_id: $hadm_id
+    operation_id: $op_id
     # Source: the column comment; physionet:inspire-1.4.2 Data Description (Operations)
     _metadata:
       _self:
@@ -258,6 +305,8 @@ operations:
   anend_time: # Relative Time, The time for finishing anaesthesia
     code: '"ANESTHESIA//END"'
     time: $anend_t
+    hadm_id: $hadm_id
+    operation_id: $op_id
     # Source: the column comment; physionet:inspire-1.4.2 Data Description (Operations)
     _metadata:
       _self:
@@ -265,6 +314,8 @@ operations:
   cpbon_time: # Relative Time, The time for starting cardiopulmonary bypass
     code: CPB_ON
     time: $cpbon_t
+    hadm_id: $hadm_id
+    operation_id: $op_id
     # Source: the column comment
     _metadata:
       _self:
@@ -272,6 +323,8 @@ operations:
   cpboff_time: # Relative Time, The time for finishing cardiopulmonary bypass
     code: CPB_OFF
     time: $cpboff_t
+    hadm_id: $hadm_id
+    operation_id: $op_id
     # Source: the column comment
     _metadata:
       _self:

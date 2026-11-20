@@ -18,6 +18,8 @@ import pytest
 OPERATIONS = {
     "op_id": [400000001, 400000002, 400000003, 400000004],
     "subject_id": [1, 1, 2, 3],
+    # Subject 1's two operations are in one admission.
+    "hadm_id": [200000001, 200000001, 200000002, 200000003],
     "case_id": [1, 2, None, None],
     "opdate": [0, 1440, 0, 0],
     # Subject 1 straddles a 5-year age bin across two operations of one admission.

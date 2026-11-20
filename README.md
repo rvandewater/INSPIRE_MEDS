@@ -42,6 +42,15 @@ Run `meds-extract-run --help` for every option. Rerunning the same command on an
 only runs the stages that have not finished (each finished stage leaves `.logs/<stage>.done` in
 the output).
 
+Intermediate stage outputs are deleted after a successful run, by default: the spec sets
+MEDS-Extract's `etl.cleanup_intermediates: true`, so a finished `$MEDS_OUTPUT_DIR` holds only `data/`,
+`metadata/`, `.logs/` and `.meds_extract_run/`. A failed run keeps them, so the same command resumes
+where it stopped, and the same command on a finished output still does nothing. To keep them (to look
+at a stage's output; `$MEDS_OUTPUT_DIR/.logs/pipeline.log` keeps the stage logs either way), add
+`"overrides=['cleanup_intermediates=false']"`. Cleanup never deletes raw data: a download into the
+default `$MEDS_OUTPUT_DIR/.meds_extract_run/raw_input` stays, and `download_dest_dir=` elsewhere lets other
+output directories reuse it.
+
 **`MEDS_extract-INSPIRE` is deprecated.** It was the complete build up to 1.0.0. It is kept for
 one more release as an alias that prints the equivalent `meds-extract-run` command and runs it
 (`MEDS_extract-INSPIRE ROOT` builds into `ROOT/MEDS_cohort` from `ROOT/raw_input`, as before,
@@ -95,7 +104,8 @@ row-wise — so the `inspire_subject_table` pre-stage
 config joins it back. That is the only Python step this package ships. `meds-extract-run` runs it
 before `convert_to_parquet`; it writes `subjects.parquet` into its own directory
 (`$MEDS_OUTPUT_DIR/inspire_subject_table`), which MEDS-Extract searches before the raw input, so
-the checksum-verified download is never modified.
+the checksum-verified download is never modified. Like every stage directory, it is deleted once the
+run has succeeded, unless you pass `"overrides=['cleanup_intermediates=false']"`.
 
 | Was (`pre_MEDS.py`)                                  | Now                                                                                                     |
 | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
@@ -365,6 +375,13 @@ the baseline. A MEDS-Extract, suMEDS or polars upgrade can also move the output,
     | `ANESTHESIA_END`   | `ANESTHESIA//END`   |
 
     To migrate, rewrite old codes with the regex `^(OPERATION|ANESTHESIA)_(START|END)$` → `\1//\2`.
+
+- **Intermediate stage outputs are no longer kept.** Up to 1.1.0, a run left each stage's output in
+    `<output_dir>/<stage>/` (`convert_to_parquet/`, `convert_to_MEDS_events/`, `inspire_subject_table/`, `sumeds_enrich/`, …). The spec now sets MEDS-Extract's
+    `etl.cleanup_intermediates: true`, so a successful run deletes those directories and keeps only
+    `data/`, `metadata/`, `.logs/` and `.meds_extract_run/`. The MEDS data and metadata are
+    unchanged. To migrate, add `"overrides=['cleanup_intermediates=false']"` to `meds-extract-run`
+    wherever you read a stage directory after the run.
 
 ## Citation
 

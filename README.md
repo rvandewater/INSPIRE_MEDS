@@ -341,6 +341,7 @@ the baseline. A MEDS-Extract, suMEDS or polars upgrade can also move the output,
     `operation_id` (about 900 events in 1.4.2). Nothing needs migrating; to get the old rows back,
     drop the new columns and deduplicate:
     `df.drop("hadm_id", "operation_id").unique(maintain_order=True)`.
+
 - **Intermediate stage outputs are no longer kept.** Up to 1.1.0, a run left each stage's output in
     `<output_dir>/<stage>/` (`convert_to_parquet/`, `convert_to_MEDS_events/`, `inspire_subject_table/`, `sumeds_enrich/`, …). The spec now sets MEDS-Extract's
     `etl.cleanup_intermediates: true`, so a successful run deletes those directories and keeps only

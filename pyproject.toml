@@ -31,11 +31,12 @@ classifiers = [
 # enriches the finished code metadata with the rules registered below; it soft-fails (a failed
 # enrichment, e.g. without internet, leaves the build as it was) and records the enrichment in
 # `metadata/dataset.json`. It is capped below the next minor for the same reason (its rules format
-# and output columns are still 0.x: 0.6 changed `*_names` to maps).
+# and output columns are still 0.x: 0.6 changed `*_names` to maps). 0.6.6 registers
+# `sumeds_link_unit_siblings`, the first post-stage, which links codes that differ only in their unit.
 dependencies = [
   "MEDS-extract[download]>=0.9.0,<0.10",
   "polars>=1.0",
-  "sumeds>=0.6.5,<0.7",
+  "sumeds>=0.6.6,<0.7",
 ]
 
 [tool.setuptools_scm]
@@ -69,9 +70,6 @@ INSPIRE = "INSPIRE_MEDS:sumeds_rules.yaml"
 # The pre-stage that builds the `subjects` side table (`etl.pre_stages`).
 [project.entry-points."MEDS_transforms.stages"]
 inspire_subject_table = "INSPIRE_MEDS.pre_MEDS:main"
-# The post-stage that links unit siblings in codes.parquet (`etl.post_stages`).
-inspire_unit_metadata = "INSPIRE_MEDS.unit_metadata:main"
-
 [project.urls]
 Homepage = "https://github.com/rvandewater/INSPIRE_MEDS"
 Issues = "https://github.com/rvandewater/INSPIRE_MEDS/issues"

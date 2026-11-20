@@ -2,6 +2,7 @@
 
 import json
 
+import polars as pl
 import pytest
 from meds import DatasetMetadataSchema
 
@@ -119,6 +120,59 @@ def test_dataset_json_describes_the_release(plain_output):
     DatasetMetadataSchema.validate(metadata)
     assert metadata["license"] == "Korea Credentialed Health Data License-1-0-0"
     assert metadata["description_uri"] == "https://physionet.org/content/inspire/1.4.2/"
+    assert metadata["raw_source_id_columns"] == ["hadm_id", "operation_id"]
+
+
+def test_stay_and_operation_ids(plain_output):
+    """`hadm_id` and `operation_id` come from `operations` and are set where they are unambiguous."""
+    events = pl.concat(
+        [pl.read_parquet(fp) for fp in (plain_output / "data").rglob("*.parquet")]
+    )
+    table = events["source_block"].str.split("/").list.first()
+    ops = events.filter(table == "operations")
+    # Subject-level events, and the ICU stay, which the release repeats across operations.
+    idless_codes = ["MEDS_BIRTH", "MEDS_DEATH", "ICU_ADMISSION", "ICU_DISCHARGE"]
+    idless = ops.filter(
+        pl.col("code").is_in(idless_codes)
+        | pl.col("code").str.starts_with("SEX//")
+        | pl.col("code").str.starts_with("RACE//")
+    )
+    assert idless.height > 0
+    assert idless["hadm_id"].is_null().all()
+    assert idless["operation_id"].is_null().all()
+    other_ops = ops.join(idless, on=ops.columns, how="anti", nulls_equal=True)
+    assert other_ops["hadm_id"].is_not_null().all()
+    # Subject 1's two operations share one admission.
+    assert set(
+        other_ops.filter(pl.col("subject_id") == 1)["hadm_id"].unique().to_list()
+    ) == {200000001}
+    # Every operation event names its operation; the OPERATION_ID event repeats it in text_value.
+    op_events = other_ops.filter(pl.col("operation_id").is_not_null())
+    assert set(op_events["operation_id"].unique().to_list()) == {
+        400000001,
+        400000002,
+        400000003,
+        400000004,
+    }
+    op_id_events = ops.filter(pl.col("code") == "OPERATION_ID")
+    assert (
+        op_id_events["text_value"] == op_id_events["operation_id"].cast(pl.String)
+    ).all()
+    per_admission = other_ops.filter(
+        pl.col("code").is_in(
+            ["WEIGHT", "HEIGHT", "HOSPITAL_ADMISSION", "HOSPITAL_DISCHARGE"]
+        )
+    )
+    assert per_admission.height > 0
+    assert per_admission["operation_id"].is_null().all()
+    # No other table carries either id.
+    assert (
+        events.filter(table != "operations")
+        .select(
+            pl.col("hadm_id").is_null().all() & pl.col("operation_id").is_null().all()
+        )
+        .item()
+    )
 
 
 def test_sources_declare_dataset_version(cfg: MessyConfig):

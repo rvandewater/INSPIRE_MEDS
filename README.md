@@ -112,6 +112,40 @@ run has succeeded, unless you pass `"overrides=['cleanup_intermediates=false']"`
 | `.sort(admission_time).group_by(subject_id).first()` | self-join `cols: {age: min, admission_time: min}` plus an `_is_first` guard on the patient-level events |
 | `min(inhosp_death_time, allcause_death_time)`        | a dftly conditional                                                                                     |
 
+### Stay and operation ids
+
+INSPIRE has three levels of id: "A subject_id may be matched to one or more hadm_ids", and "A single
+hadm_id may be matched with one or more op_ids"
+([PhysioNet INSPIRE 1.4.2](https://physionet.org/content/inspire/1.4.2/)). Only `operations` carries
+`hadm_id`; `operations` and `vitals` carry `op_id`; the other tables carry `subject_id` alone. Two
+extension columns, both listed under `raw_source_id_columns` in `metadata/dataset.json`, keep them:
+
+| column         | source               | on which events                                                                                                                                                                                                    |
+| -------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `hadm_id`      | `operations.hadm_id` | the events of `operations` except the subject-level ones (`MEDS_BIRTH`, `SEX//…`, `RACE//…`, `MEDS_DEATH`) and `ICU_ADMISSION`/`ICU_DISCHARGE`                                                                     |
+| `operation_id` | `operations.op_id`   | the operation events of `operations`: `OPERATION_ID`, `VITALDB_CASE_ID`, `OPERATION_DATE`, ASA, emergency, department, anesthesia type, ICD-10-PCS, and the operating-room, operation, anesthesia and bypass times |
+
+`hadm_id` is the name the MIMIC-IV ETL and the other MEDS ETLs give the hospital admission
+([alignEHR#55](https://github.com/rvandewater/alignEHR/issues/55)). `WEIGHT`, `HEIGHT`,
+`HOSPITAL_ADMISSION` and `HOSPITAL_DISCHARGE` are per admission and carry `hadm_id` only. The
+`OPERATION_ID` event still holds `op_id` in its `text_value`.
+
+`operation_id` tells apart the attributes of several operations on the same day: those codes are placed
+at the operation date, so before it two operations of one subject on one day with, say, the same
+anesthesia type gave one event; now they give one per operation (about 900 such events in 1.4.2).
+
+Two places are left without an id on purpose:
+
+- **The ICU stay.** `icuin_time` and `icuout_time` are recorded on each operation the ICU stay
+    follows, and in 1.4.2 about 1,800 ICU admissions appear, at the same time, on operations of more than
+    one admission. They belong to no single operation or admission, so `ICU_ADMISSION` and
+    `ICU_DISCHARGE` carry neither id (and the release has no ICU-stay id for an `icustay_id`).
+- **The intraoperative vitals.** `vitals` has an `op_id`, but where two operations of a subject
+    overlap, the release repeats the same measurements under each of them: in 1.4.2, about 323,000 vital
+    events merge rows of more than one operation. With an `operation_id` each would become one event per
+    operation, about 334,000 extra rows. Tie a vital to its operation by time instead (between the
+    operation's `OR_IN` and `OR_OUT`).
+
 ## Code metadata
 
 `metadata/codes.parquet` carries `code`, `description`, `parent_codes`, `unit`, `unit_source_value` and `code_template`. Up to
@@ -296,8 +330,17 @@ the baseline. A MEDS-Extract, suMEDS or polars upgrade can also move the output,
 
 ## Breaking changes
 
-### Unreleased
+### Unreleased (after 1.1.0)
 
+- **New columns `hadm_id` and `operation_id`.** `hadm_id` is the hospital admission
+    (`operations.hadm_id`) and `operation_id` the operation (`operations.op_id`), on the events of
+    `operations` listed under [Stay and operation ids](#stay-and-operation-ids); both are listed under
+    `raw_source_id_columns` in `metadata/dataset.json`, which listed none before. Codes are unchanged.
+    The one change to existing rows: an operation-date event that two operations of one subject on
+    one day shared (same code, same value) is now written once per operation, with its own
+    `operation_id` (about 900 events in 1.4.2). Nothing needs migrating; to get the old rows back,
+    drop the new columns and deduplicate:
+    `df.drop("hadm_id", "operation_id").unique(maintain_order=True)`.
 - **Intermediate stage outputs are no longer kept.** Up to 1.1.0, a run left each stage's output in
     `<output_dir>/<stage>/` (`convert_to_parquet/`, `convert_to_MEDS_events/`, `inspire_subject_table/`, `sumeds_enrich/`, …). The spec now sets MEDS-Extract's
     `etl.cleanup_intermediates: true`, so a successful run deletes those directories and keeps only

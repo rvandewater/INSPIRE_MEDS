@@ -19,6 +19,7 @@ import sys
 from pathlib import Path
 
 import polars as pl
+import pyarrow as pa
 import pyarrow.parquet as pq
 import pytest
 from conftest import etl_argv, run_command
@@ -308,3 +309,39 @@ def test_strict_makes_a_failed_enrichment_an_error(tmp_path: Path, raw_dir: Path
     assert "Stage sumeds_enrich failed" in result.stderr
     assert "suMEDS-enrich: error:" in _pipeline_log(output)
     assert not (output / ".logs" / "sumeds_enrich.done").exists()
+
+
+def test_numeric_codes_carry_their_unit(
+    plain_output: Path, enriched_output: Path, plain_codes: dict, enriched_codes: dict
+):
+    """Every numeric code family gets a `unit`, in UCUM; suMEDS's enrichment keeps it.
+
+    Lab and vital codes take the release's `parameters.csv` Unit (also the code's last segment);
+    WEIGHT and HEIGHT, whose unit is not in the data, take the documented kg and cm. MEDS-Extract
+    >= 0.9 writes `unit` as one String per code, and it stays one with or without the enrichment.
+    suMEDS's `sumeds_normalize_units` writes it in UCUM and keeps the spelling as recorded in
+    `unit_source_value`; the code keeps its name.
+    """
+    # code -> (unit in UCUM, unit as recorded)
+    expected = {
+        "LAB//hb//g/dL": ("g/dL", "g/dL"),
+        "LAB//wbc//10^3/uL": ("10*9/L", "10^3/uL"),
+        "VITAL//hr///min": ("/min", "/min"),
+        "WARD_VITAL//hr///min": ("/min", "/min"),
+        "WEIGHT": ("kg", "kg"),
+        "HEIGHT": ("cm", "cm"),
+    }
+    for codes in (plain_codes, enriched_codes):
+        for code, units in expected.items():
+            assert (codes[code]["unit"], codes[code]["unit_source_value"]) == units, (
+                code
+            )
+        # Codes without a numeric value carry no unit.
+        assert codes["OR_IN"]["unit"] is None
+        assert codes["SEX//M"]["unit"] is None
+    for output in (plain_output, enriched_output):
+        schema = pq.read_schema(output / "metadata" / "codes.parquet")
+        assert schema.field("unit").type == pa.large_string()
+        assert schema.field("unit_source_value").type == pa.large_string()
+    # The parameters.csv description still rides next to the unit.
+    assert plain_codes["LAB//hb//g/dL"]["description"] == "Hemoglobin"

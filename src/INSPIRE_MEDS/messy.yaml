@@ -1,6 +1,6 @@
 # INSPIRE (PhysioNet 1.4.2) to MEDS. `meds-extract-run spec=INSPIRE ...` runs all of it: the
-# `inspire_subject_table` pre-stage, the canonical MEDS-Extract stages, and the `sumeds_enrich`
-# post-stage (see `etl:`).
+# `inspire_subject_table` pre-stage, the canonical MEDS-Extract stages, and the `inspire_unit_metadata` and
+# `sumeds_enrich` post-stages (see `etl:`).
 #
 # Code metadata: `_metadata` blocks describe every code family but the diagnoses, literal codes
 # included (constant `_self` blocks, each with the source of its description). suMEDS adds the
@@ -30,6 +30,14 @@ etl:
   # it in metadata/dataset.json. It soft-fails (e.g. without internet); `suMEDS-enrich OUTPUT_DIR`
   # finishes it later. Leave it out with `skip_stages=[sumeds_enrich]`.
   post_stages:
+    # First: gives codes that differ only in their last `//<unit>` part the code without it as a
+    # parent, with a row of its own (INSPIRE_MEDS.unit_metadata). MEDS-Extract >= 0.9 already
+    # writes `unit` as one String per code. It runs before suMEDS, so the enrichment, its coverage
+    # record and a later `suMEDS-enrich` retry all see the same table.
+    - inspire_unit_metadata
+    # One UCUM spelling for every `unit` (suMEDS's shared table, e.g. `Cel`, `mm[Hg]`, `mg/dL`); the
+    # spelling as recorded stays in `unit_source_value`, and an unknown spelling is kept as it is.
+    - sumeds_normalize_units
     - sumeds_enrich:
         rules: INSPIRE
 
@@ -114,6 +122,10 @@ operations:
     _metadata:
       _self:
         description: '"Body weight measured before the operation, kg (INSPIRE operations.weight)"'
+        # The unit is not in the data. Source: physionet:inspire-1.4.2 (weights outside 10-200 kg
+        # set to null; https://physionet.org/content/inspire/1.4.2/, the public project page of a
+        # release under the Korea Credentialed Health Data License-1-0-0). Only the unit is taken.
+        unit: '"kg"'
   height: # Number, Height measured before operation
     code: HEIGHT
     time: $admission_t
@@ -123,6 +135,11 @@ operations:
     _metadata:
       _self:
         description: '"Body height measured before the operation, cm (INSPIRE operations.height)"'
+        # The unit is not in the data. Source: physionet:inspire-1.4.2 (heights outside 100-200 cm
+        # set to null) and its Release Notes 1.4 (height cleaned to cm, mm values corrected);
+        # https://physionet.org/content/inspire/1.4.2/, the public project page of a release under
+        # the Korea Credentialed Health Data License-1-0-0. Only the unit is taken.
+        unit: '"cm"'
   race: # String, Race of the patient
     code: 'f"RACE//{$race ?? ''UNK''}"'
     time: null
@@ -303,6 +320,9 @@ labs:
     _metadata:
       _self:
         description: $Description
+        # The unit of numeric_value: the release's parameters.csv Unit, as recorded. It is also
+        # the code's last segment, so one value per code; a null Unit (code `//UNK`) stays null.
+        unit: $Unit
 
 medications:
   _table:
@@ -346,6 +366,9 @@ vitals:
     _metadata:
       _self:
         description: $Description
+        # The unit of numeric_value: the release's parameters.csv Unit, as recorded. It is also
+        # the code's last segment, so one value per code; a null Unit (code `//UNK`) stays null.
+        unit: $Unit
 
 ward_vitals:
   _table:
@@ -364,3 +387,6 @@ ward_vitals:
     _metadata:
       _self:
         description: $Description
+        # The unit of numeric_value: the release's parameters.csv Unit, as recorded. It is also
+        # the code's last segment, so one value per code; a null Unit (code `//UNK`) stays null.
+        unit: $Unit

@@ -27,11 +27,12 @@ meds-extract-run spec=INSPIRE output_dir=$MEDS_OUTPUT_DIR download_dest_dir=$RAW
 This one command gives the complete build. It downloads the raw INSPIRE files into
 `$RAW_INPUT_DIR`, builds a small derived table (the `inspire_subject_table` pre-stage; see
 [Birth and death](#birth-and-death)), runs the eight-stage MEDS-Extract pipeline, which also
-describes the codes (see [Code metadata](#code-metadata)), and then fills the official ICD titles
-and the vocabulary parents into `metadata/codes.parquet` with
-[suMEDS](https://github.com/rvandewater/SumMEDS) (the `sumeds_enrich` post-stage, installed with
-this package; see [Enriching code metadata with suMEDS](#enriching-code-metadata-with-sumeds)). The
-MEDS dataset is written to `$MEDS_OUTPUT_DIR`. To reuse a download you already have:
+describes the codes (see [Code metadata](#code-metadata)), links unit siblings (the
+`inspire_unit_metadata` post-stage), writes `unit` in UCUM (suMEDS's `sumeds_normalize_units`
+post-stage), and then fills the official ICD titles and the vocabulary
+parents into `metadata/codes.parquet` with [suMEDS](https://github.com/rvandewater/SumMEDS) (the
+`sumeds_enrich` post-stage, installed with this package; see
+[Enriching code metadata with suMEDS](#enriching-code-metadata-with-sumeds)). The MEDS dataset is written to `$MEDS_OUTPUT_DIR`. To reuse a download you already have:
 
 ```bash
 meds-extract-run spec=INSPIRE output_dir=$MEDS_OUTPUT_DIR do_download=false input_dir=$RAW_INPUT_DIR
@@ -51,8 +52,8 @@ after a `--`; set them as [stage options](#enriching-code-metadata-with-sumeds) 
 
 The whole pipeline is one file, [`src/INSPIRE_MEDS/messy.yaml`](src/INSPIRE_MEDS/messy.yaml),
 registered under the `MEDS_extract.pipelines` entry-point group. Its `etl:` block names the
-`inspire_subject_table` pre-stage (see [Birth and death](#birth-and-death)) and the `sumeds_enrich`
-post-stage, and the release's license and PhysioNet page, which MEDS-Extract writes into
+`inspire_subject_table` pre-stage (see [Birth and death](#birth-and-death)), the
+`inspire_unit_metadata`, `sumeds_normalize_units` and `sumeds_enrich` post-stages, and the release's license and PhysioNet page, which MEDS-Extract writes into
 `metadata/dataset.json`.
 
 ### Pseudo-timestamps
@@ -103,7 +104,7 @@ the checksum-verified download is never modified.
 
 ## Code metadata
 
-`metadata/codes.parquet` carries `code`, `description`, `parent_codes` and `code_template`. Up to
+`metadata/codes.parquet` carries `code`, `description`, `parent_codes`, `unit`, `unit_source_value` and `code_template`. Up to
 1.0.0 only the lab and vital codes had a description (from the release's `parameters.csv`) and no
 code had a parent. The ETL now describes every code family whose meaning INSPIRE itself documents,
 except the diagnoses, and writes no parent codes: the ICD-10-CM category titles and the
@@ -120,6 +121,28 @@ data changes.
 | `MEDICATION//…`                                                            | `_self` description naming the release's own `atc_code` and route                              | the release's own `atc_code` (documented as WHO ATC, mapped by the dataset authors)                                                                                                                                                                                               |
 | `SEX`, `RACE`, `ASA`, `EMERGENCY_OPERATION`, `ANESTHESIA_TYPE`             | `_self` templates                                                                              | the column documentation ([PhysioNet INSPIRE 1.4.2](https://physionet.org/content/inspire/1.4.2/) and the column comments in `messy.yaml`); ASA classes paraphrase the ASA Physical Status Classification System (American Society of Anesthesiologists, last amended 2020-12-13) |
 | the 19 literal codes (`OR_IN`, `WEIGHT`, `ICU_ADMISSION`, `MEDS_BIRTH`, …) | constant `_self` blocks on the events that emit them                                           | per event, in a `# Source:` comment: the PhysioNet INSPIRE 1.4.2 documentation section or the column comment                                                                                                                                                                      |
+
+**Units.** Every numeric code family also gets a `unit` column, the unit as recorded, then written in UCUM:
+`LAB//…`, `VITAL//…` and `WARD_VITAL//…` take the `Unit` of the release's `parameters.csv` (already
+the code's last segment, so one unit per code; an item without a `Unit` has the `//UNK` code and a
+null `unit`). `WEIGHT` and `HEIGHT`, whose unit is not in the data, take `kg` and `cm` as stated on
+the [PhysioNet INSPIRE 1.4.2](https://physionet.org/content/inspire/1.4.2/) page (the cited source is
+in a comment in `messy.yaml`). No code changes.
+
+`unit` is a nullable String: the unit of the code's numeric values, one per code, written in
+[UCUM](https://ucum.org/) by suMEDS's `sumeds_normalize_units` post-stage (`10^3/uL` becomes
+`10*9/L`, the same quantity). The spelling as recorded stays in `unit_source_value`, a spelling suMEDS
+does not know is kept as it is, and the codes keep their names (`LAB//wbc//10^3/uL` stays). MEDS-Extract 0.9 and later write it as one String per code and
+fail the build if a code has more than one unit
+([MEDS_extract#336](https://github.com/mmcdermott/MEDS_extract/pull/336); none does in INSPIRE
+1.4.2). The first post-stage, `inspire_unit_metadata`
+([`unit_metadata.py`](src/INSPIRE_MEDS/unit_metadata.py)), gives *unit siblings*, codes that differ only in their last `//<unit>` component, the code
+without it as an in-dataset parent in `parent_codes` (e.g. `LAB//<item>` for `LAB//<item>//<unit>`),
+and adds a row for that parent code unless one exists: the siblings' description if they all share
+it, the vocabulary parents they all share, and a null `unit`. It runs before suMEDS, so the enrichment
+sees the finished table. INSPIRE's `parameters.csv` has one unit per item, so 1.4.2 has no unit
+siblings, and its descriptions state no units (no `parameters.csv` description of an item without a
+`Unit` names one), so no unit is taken from description text.
 
 A literal code has no components to join a dictionary on, so its description is a constant
 `_self` block on the event that emits it (MEDS-Extract 0.8.1 or later), e.g.

@@ -332,6 +332,22 @@ the baseline. A MEDS-Extract, suMEDS or polars upgrade can also move the output,
     drop the new columns and deduplicate:
     `df.drop("hadm_id", "operation_id").unique(maintain_order=True)`.
 
+- **Operation and anaesthesia intervals are `OPERATION//START`, `OPERATION//END`, `ANESTHESIA//START` and
+    `ANESTHESIA//END`** ([alignEHR#53](https://github.com/rvandewater/alignEHR/issues/53)), not
+    `OPERATION_START`, `OPERATION_END`, `ANESTHESIA_START` and `ANESTHESIA_END`. The token is now the second
+    part, the spelling all MEDS ETLs move to for the two ends of an interval, so a start pairs with its end by
+    swapping `START` for `END`. Events, times and descriptions are otherwise unchanged. `OR_IN`/`OR_OUT` and
+    `CPB_ON`/`CPB_OFF` keep their names.
+
+    | Old                | New                 |
+    | ------------------ | ------------------- |
+    | `OPERATION_START`  | `OPERATION//START`  |
+    | `OPERATION_END`    | `OPERATION//END`    |
+    | `ANESTHESIA_START` | `ANESTHESIA//START` |
+    | `ANESTHESIA_END`   | `ANESTHESIA//END`   |
+
+    To migrate, rewrite old codes with the regex `^(OPERATION|ANESTHESIA)_(START|END)$` → `\1//\2`.
+
 ## Citation
 
 Please cite the following original paper when using the INSPIRE dataset:

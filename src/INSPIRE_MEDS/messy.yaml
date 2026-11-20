@@ -370,15 +370,23 @@ labs:
     cols:
       _origin: '("2016-01-01"::?"%Y-%m-%d")::datetime'
       chart_t: "$_origin + $chart_time::minutes"
+      # The unit as the code's last segment: stripped of surrounding whitespace, and `UNK` where it
+      # is missing or blank. MEDS-Extract compares units the same way when it writes `unit` in
+      # `codes.parquet` (stripped, blanks dropped), so ` mg` and `mg` give one code. dftly 0.7 has
+      # no strip function, so the extract takes the text from the first to the last non-whitespace
+      # character (`(?s)` lets it span line breaks), which is null when there is none. `vitals` and
+      # `ward_vitals` use the same helper.
+      _value_unit: '(extract /(?s)\S(?:.*\S)?/ from $Unit) ?? "UNK"'
   lab:
-    code: 'f"LAB//{$item_name ?? ''UNK''}//{$Unit ?? ''UNK''}"'
+    code: 'f"LAB//{$item_name ?? ''UNK''}//{$_value_unit}"'
     time: $chart_t
     numeric_value: $value
     _metadata:
       _self:
         description: $Description
-        # The unit of numeric_value: the release's parameters.csv Unit, as recorded. It is also
-        # the code's last segment, so one value per code; a null Unit (code `//UNK`) stays null.
+        # The unit of numeric_value: the release's parameters.csv Unit, as recorded (MEDS-Extract
+        # strips it). It is also the code's last segment, so one value per code; a null or blank
+        # Unit (code `//UNK`) stays null.
         unit: $Unit
 
 medications:
@@ -416,15 +424,18 @@ vitals:
     cols:
       _origin: '("2016-01-01"::?"%Y-%m-%d")::datetime'
       chart_t: "$_origin + $chart_time::minutes"
+      # The unit as the code's last segment, stripped; `UNK` if missing or blank (see `labs`).
+      _value_unit: '(extract /(?s)\S(?:.*\S)?/ from $Unit) ?? "UNK"'
   vital:
-    code: 'f"VITAL//{$item_name ?? ''UNK''}//{$Unit ?? ''UNK''}"'
+    code: 'f"VITAL//{$item_name ?? ''UNK''}//{$_value_unit}"'
     time: $chart_t
     numeric_value: $value
     _metadata:
       _self:
         description: $Description
-        # The unit of numeric_value: the release's parameters.csv Unit, as recorded. It is also
-        # the code's last segment, so one value per code; a null Unit (code `//UNK`) stays null.
+        # The unit of numeric_value: the release's parameters.csv Unit, as recorded (MEDS-Extract
+        # strips it). It is also the code's last segment, so one value per code; a null or blank
+        # Unit (code `//UNK`) stays null.
         unit: $Unit
 
 ward_vitals:
@@ -437,13 +448,16 @@ ward_vitals:
     cols:
       _origin: '("2016-01-01"::?"%Y-%m-%d")::datetime'
       chart_t: "$_origin + $chart_time::minutes"
+      # The unit as the code's last segment, stripped; `UNK` if missing or blank (see `labs`).
+      _value_unit: '(extract /(?s)\S(?:.*\S)?/ from $Unit) ?? "UNK"'
   ward_vital:
-    code: 'f"WARD_VITAL//{$item_name ?? ''UNK''}//{$Unit ?? ''UNK''}"'
+    code: 'f"WARD_VITAL//{$item_name ?? ''UNK''}//{$_value_unit}"'
     time: $chart_t
     numeric_value: $value
     _metadata:
       _self:
         description: $Description
-        # The unit of numeric_value: the release's parameters.csv Unit, as recorded. It is also
-        # the code's last segment, so one value per code; a null Unit (code `//UNK`) stays null.
+        # The unit of numeric_value: the release's parameters.csv Unit, as recorded (MEDS-Extract
+        # strips it). It is also the code's last segment, so one value per code; a null or blank
+        # Unit (code `//UNK`) stays null.
         unit: $Unit

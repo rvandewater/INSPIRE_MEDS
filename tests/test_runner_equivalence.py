@@ -28,8 +28,14 @@ def test_same_codes_descriptions_and_event_counts(plain_output: Path):
         code: {"description": description, "events": counts[code]}
         for code, description in codes.select("code", "description").iter_rows()
     }
-    assert events.height == golden["events"]
-    assert built == golden["codes"]
+    # Since then the fixture gained a lab item with a blank unit (`plt`, conftest.py), which gives
+    # one more event under `LAB//plt//UNK`; the padded units of `wbc` and `hr` give the same codes.
+    expected = {
+        **golden["codes"],
+        "LAB//plt//UNK": {"description": "Platelet count", "events": 1},
+    }
+    assert events.height == golden["events"] + 1
+    assert built == expected
 
 
 def test_literal_codes_carry_their_code_template(plain_output: Path):

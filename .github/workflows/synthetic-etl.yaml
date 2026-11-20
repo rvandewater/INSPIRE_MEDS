@@ -80,6 +80,9 @@ jobs:
           for f in dataset.json codes.parquet subject_splits.parquet; do
             test -f "INSPIRE_meds_synth/metadata/$f"
           done
-          test -f INSPIRE_meds_synth/inspire_subject_table/subjects.parquet
+          # The spec sets cleanup_intermediates: true, so the pre-stage's dir (with its
+          # subjects.parquet, which tests/test_subject_table.py checks) is gone and its marker stays.
+          test ! -e INSPIRE_meds_synth/inspire_subject_table
+          test -f INSPIRE_meds_synth/.logs/inspire_subject_table.done
           # The sumeds_enrich post-stage soft-fails, so report the record rather than require it.
           jq '.sumeds_enrichment | {enriched, coverage, error}' INSPIRE_meds_synth/metadata/dataset.json

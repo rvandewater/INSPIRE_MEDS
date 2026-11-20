@@ -36,12 +36,12 @@ VALUES = {
 }
 # The ontology rule each example code must resolve through (codes not listed match no rule).
 EXPECTED_ONTOLOGY = {
-    "DIAGNOSIS//ICD//10//I10": ("inspire-icd10cm-categories", "I10"),
-    "DIAGNOSIS//ICD//10//E11": ("inspire-icd10cm-categories", "E11"),
-    "DIAGNOSIS//ICD//10//J18": ("inspire-icd10cm-categories", "J18"),
-    "ICD10_PCS//0DTJ4": ("inspire-icd10pcs-prefixes", "0DTJ4"),
-    "ICD10_PCS//5A195": ("inspire-icd10pcs-prefixes", "5A195"),
-    "ICD10_PCS//02HV3": ("inspire-icd10pcs-prefixes", "02HV3"),
+    "DIAGNOSIS//ICD//10CM//I10": ("inspire-icd10cm-categories", "I10"),
+    "DIAGNOSIS//ICD//10CM//E11": ("inspire-icd10cm-categories", "E11"),
+    "DIAGNOSIS//ICD//10CM//J18": ("inspire-icd10cm-categories", "J18"),
+    "ICD//10PCS//0DTJ4": ("inspire-icd10pcs-prefixes", "0DTJ4"),
+    "ICD//10PCS//5A195": ("inspire-icd10pcs-prefixes", "5A195"),
+    "ICD//10PCS//02HV3": ("inspire-icd10pcs-prefixes", "02HV3"),
     **{
         f"MEDICATION//{atc}//{route}": ("inspire-atc-medications", atc)
         for atc in ["N02BE01", "N02BE", "N02B", "N02", "N", "B05XA03"]

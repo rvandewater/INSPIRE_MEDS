@@ -345,3 +345,6 @@ def test_numeric_codes_carry_their_unit(
         assert schema.field("unit_source_value").type == pa.large_string()
     # The parameters.csv description still rides next to the unit.
     assert plain_codes["LAB//hb//g/dL"]["description"] == "Hemoglobin"
+    # A blank parameters.csv Unit gives `//UNK` and no unit; no code keeps surrounding whitespace.
+    assert plain_codes["LAB//plt//UNK"]["unit"] is None
+    assert not [code for code in plain_codes if code != code.strip()]

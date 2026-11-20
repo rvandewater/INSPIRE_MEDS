@@ -70,7 +70,9 @@ output are not real dates, and comparing them across subjects is meaningless.
 
 A null component of a composite code drops the row since MEDS-Extract 0.7, where 0.6.x rendered
 it as the literal `UNK` and kept the row. Components are therefore coalesced with `?? 'UNK'`
-wherever a null must not drop the row.
+wherever a null must not drop the row. The unit in a lab or vital code is stripped of surrounding
+whitespace; missing or blank is `UNK`. MEDS-Extract compares units the same way when it writes `unit`
+(stripped, blanks dropped), so ` mg` and `mg` give one code.
 
 Two are deliberately left uncoalesced. `route` on medications is never null in the release (0 of
 10,854,338 rows), so a coalesce would be dead code. The demographic codes drop rather than mint
@@ -329,6 +331,14 @@ the baseline. A MEDS-Extract, suMEDS or polars upgrade can also move the output,
     edition is unchanged, and so are its `ICD10CM//…` and `ICD10PCS//…` parents. To migrate, rename codes
     with the regexes `^DIAGNOSIS//ICD//10//` → `DIAGNOSIS//ICD//10CM//` and `^ICD10_PCS//` →
     `ICD//10PCS//`.
+
+- **The unit in a lab or vital code is stripped of surrounding whitespace, and a blank one is
+    `UNK`** (`LAB//{item}//{unit}`, `VITAL//{item}//{unit}`, `WARD_VITAL//{item}//{unit}`). Before,
+    the `parameters.csv` Unit was copied as recorded: a padded unit (` mg`) gave a code of its own,
+    and a blank or empty one gave a code ending in whitespace or in `//`, with no `unit`. No output
+    change on the synthetic data; codes change only where a unit was padded or blank. To migrate,
+    strip the last part of an old code, and write `UNK` where it is then empty:
+    `^((?:LAB|VITAL|WARD_VITAL)//.+?//)\s*(\S(?:.*\S)?)?\s*$` → `\1\2`.
 
 - **New columns `hadm_id` and `operation_id`.** `hadm_id` is the hospital admission
     (`operations.hadm_id`) and `operation_id` the operation (`operations.op_id`), on the events of

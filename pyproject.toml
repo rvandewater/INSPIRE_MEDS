@@ -33,10 +33,12 @@ classifiers = [
 # `metadata/dataset.json`. It is capped below the next minor for the same reason (its rules format
 # and output columns are still 0.x: 0.6 changed `*_names` to maps). 0.6.6 registers
 # `sumeds_link_unit_siblings`, the first post-stage, which links codes that differ only in their unit.
+# suMEDS 0.6.9 adds the `link_single_units` option of `sumeds_link_unit_siblings`, which the spec
+# sets.
 dependencies = [
   "MEDS-extract[download]>=0.9.0,<0.10",
   "polars>=1.0",
-  "sumeds>=0.6.7,<0.7",
+  "sumeds>=0.6.9,<0.7",
 ]
 
 # The version is static, so setuptools-scm is not used. Without it, setuptools only ships the YAML
@@ -78,10 +80,3 @@ inspire_subject_table = "INSPIRE_MEDS.pre_MEDS:main"
 [project.urls]
 Homepage = "https://github.com/rvandewater/INSPIRE_MEDS"
 Issues = "https://github.com/rvandewater/INSPIRE_MEDS/issues"
-
-# suMEDS's `link_single_units` (rvandewater/suMEDS#29) and `unknown_unit_prefixes`
-# (rvandewater/suMEDS#30), which the `sumeds_link_unit_siblings` options in the spec use, are not
-# released yet, so suMEDS comes from #30's branch for now. Once they are released, drop this table
-# and raise the floor above to `sumeds>=<that release>`.
-[tool.uv.sources]
-sumeds = { git = "https://github.com/rvandewater/suMEDS", branch = "unknown-unit-prefixes" }

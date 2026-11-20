@@ -27,7 +27,12 @@ def test_same_codes_descriptions_and_event_counts(plain_output: Path):
     built = {
         code: {"description": description, "events": counts[code]}
         for code, description in codes.select("code", "description").iter_rows()
+        if code in counts
     }
+    # The only codes without events are unit-free stems (suMEDS's `sumeds_link_unit_siblings`, which
+    # the runner predates): each is another code without its unit component.
+    stems = set(codes["code"]) - set(counts)
+    assert all(any(c.startswith(f"{stem}//") for c in counts) for stem in stems), stems
     assert events.height == golden["events"]
     assert built == golden["codes"]
 

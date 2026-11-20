@@ -1,6 +1,6 @@
 # INSPIRE (PhysioNet 1.4.2) to MEDS. `meds-extract-run spec=INSPIRE ...` runs all of it: the
-# `inspire_subject_table` pre-stage, the canonical MEDS-Extract stages, and the `sumeds_enrich`
-# post-stage (see `etl:`).
+# `inspire_subject_table` pre-stage, the canonical MEDS-Extract stages, and the `inspire_unit_metadata` and
+# `sumeds_enrich` post-stages (see `etl:`).
 #
 # Code metadata: `_metadata` blocks describe every code family but the diagnoses, literal codes
 # included (constant `_self` blocks, each with the source of its description). suMEDS adds the
@@ -30,6 +30,14 @@ etl:
   # it in metadata/dataset.json. It soft-fails (e.g. without internet); `suMEDS-enrich OUTPUT_DIR`
   # finishes it later. Leave it out with `skip_stages=[sumeds_enrich]`.
   post_stages:
+    # First: gives codes that differ only in their last `//<unit>` part the code without it as a
+    # parent, with a row of its own (INSPIRE_MEDS.unit_metadata). MEDS-Extract >= 0.9 already
+    # writes `unit` as one String per code. It runs before suMEDS, so the enrichment, its coverage
+    # record and a later `suMEDS-enrich` retry all see the same table.
+    - inspire_unit_metadata
+    # One UCUM spelling for every `unit` (suMEDS's shared table, e.g. `Cel`, `mm[Hg]`, `mg/dL`); the
+    # spelling as recorded stays in `unit_source_value`, and an unknown spelling is kept as it is.
+    - sumeds_normalize_units
     - sumeds_enrich:
         rules: INSPIRE
 

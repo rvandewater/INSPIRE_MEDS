@@ -5,12 +5,13 @@ the complete build is one command:
 
     meds-extract-run spec=INSPIRE output_dir=$MEDS_OUTPUT_DIR download_dest_dir=$RAW_INPUT_DIR
 
-The spec declares two extension stages around the canonical MEDS-Extract stages. MEDS_BIRTH and
+The spec declares extension stages around the canonical MEDS-Extract stages. MEDS_BIRTH and
 MEDS_DEATH are per-subject facts derived from a per-operation table, and MESSY cannot reduce a
 table over its own rows, so the `inspire_subject_table` pre-stage (`pre_MEDS`) writes a
-one-row-per-subject side table that the config joins back. After the pipeline, suMEDS's
-`sumeds_enrich` post-stage enriches `metadata/codes.parquet` with the rules registered under
-`sumeds.rules` as `INSPIRE`.
+one-row-per-subject side table that the config joins back. After the pipeline, the
+`inspire_unit_metadata` post-stage (`unit_metadata`) links unit siblings in `metadata/codes.parquet`,
+and suMEDS's `sumeds_enrich` post-stage then enriches it with the rules
+registered under `sumeds.rules` as `INSPIRE`.
 """
 
 from importlib.metadata import PackageNotFoundError, version

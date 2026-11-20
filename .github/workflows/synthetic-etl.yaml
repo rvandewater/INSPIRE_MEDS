@@ -53,7 +53,7 @@ jobs:
         # extraction itself runs that config with this project's locked MEDS-Extract, pre- and
         # post-stages included.
         run: |
-          uvx --python ${{ matrix.python-version }} --from "MESSY_synth==0.1.0" \
+          uvx --python ${{ matrix.python-version }} --from "MESSY_synth==0.1.1" \
             MESSY-synth ./src/INSPIRE_MEDS/messy.yaml -o raw_synthetic/ --explain
           # MESSY-synth generates the `subjects` table the config joins, but the release has none:
           # the inspire_subject_table pre-stage derives it from operations columns the config never

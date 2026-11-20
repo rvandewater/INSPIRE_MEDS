@@ -10,11 +10,11 @@
       "description": "Surgical department for admission: General surgery (INSPIRE operations.department 'GS', expanded by the release's department.csv)",
       "events": 3
     },
-    "ANESTHESIA_END": {
+    "ANESTHESIA//END": {
       "description": "End of anesthesia (INSPIRE operations.anend_time)",
       "events": 4
     },
-    "ANESTHESIA_START": {
+    "ANESTHESIA//START": {
       "description": "Start of anesthesia (INSPIRE operations.anstart_time)",
       "events": 4
     },
@@ -146,7 +146,7 @@
       "description": "Date of the operation (INSPIRE operations.opdate)",
       "events": 4
     },
-    "OPERATION_END": {
+    "OPERATION//END": {
       "description": "End of the operation (INSPIRE operations.opend_time)",
       "events": 4
     },
@@ -154,7 +154,7 @@
       "description": "Operation identifier, in text_value, recorded at the operation start (INSPIRE operations.op_id; a random number beginning with 4)",
       "events": 4
     },
-    "OPERATION_START": {
+    "OPERATION//START": {
       "description": "Start of the operation (INSPIRE operations.opstart_time)",
       "events": 4
     },

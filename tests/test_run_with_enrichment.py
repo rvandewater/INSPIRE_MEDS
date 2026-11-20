@@ -200,11 +200,11 @@ def test_enrichment_only_adds(plain_codes: dict, enriched_codes: dict):
 
 
 def test_diagnoses_get_icd10cm_titles_and_parents(enriched_codes: dict):
-    i10 = enriched_codes["DIAGNOSIS//ICD//10//I10"]
+    i10 = enriched_codes["DIAGNOSIS//ICD//10CM//I10"]
     assert i10["description"] == title("ICD10CM", "I10")
     assert i10["parent_codes"] == ["ICD10CM//I10"]
     # Codes that are not in the vocabulary, and the null code, stay unenriched.
-    for code in ("DIAGNOSIS//ICD//10//U99", "DIAGNOSIS//ICD//10//UNK"):
+    for code in ("DIAGNOSIS//ICD//10CM//U99", "DIAGNOSIS//ICD//10CM//UNK"):
         assert enriched_codes[code]["description"] is None, code
         assert not enriched_codes[code]["parent_codes"], code
 
@@ -215,19 +215,19 @@ def test_parent_names_map_parents_to_titles(enriched_output: Path):
     names = dict(
         zip(table["code"].to_pylist(), table["parent_names"].to_pylist(), strict=True)
     )
-    assert dict(names["DIAGNOSIS//ICD//10//I10"]) == {
+    assert dict(names["DIAGNOSIS//ICD//10CM//I10"]) == {
         "ICD10CM//I10": title("ICD10CM", "I10")
     }
-    assert dict(names["ICD10_PCS//0DTJ4"])["ICD10PCS//0DT"] == title("ICD10PCS", "0DT")
+    assert dict(names["ICD//10PCS//0DTJ4"])["ICD10PCS//0DT"] == title("ICD10PCS", "0DT")
 
 
 def test_operations_get_icd10pcs_prefixes(plain_codes: dict, enriched_codes: dict):
-    pcs = enriched_codes["ICD10_PCS//0DTJ4"]
-    assert pcs["description"] == plain_codes["ICD10_PCS//0DTJ4"]["description"]
+    pcs = enriched_codes["ICD//10PCS//0DTJ4"]
+    assert pcs["description"] == plain_codes["ICD//10PCS//0DTJ4"]["description"]
     assert pcs["parent_codes"] == [
         f"ICD10PCS//{p}" for p in ("0DTJ4", "0DTJ", "0DT", "0D", "0")
     ]
-    assert not enriched_codes["ICD10_PCS//UNK"]["parent_codes"]
+    assert not enriched_codes["ICD//10PCS//UNK"]["parent_codes"]
 
 
 def test_medications_get_atc_and_same_dataset_parents(enriched_codes: dict):
@@ -345,3 +345,6 @@ def test_numeric_codes_carry_their_unit(
         assert schema.field("unit_source_value").type == pa.large_string()
     # The parameters.csv description still rides next to the unit.
     assert plain_codes["LAB//hb//g/dL"]["description"] == "Hemoglobin"
+    # A blank parameters.csv Unit gives `//UNK` and no unit; no code keeps surrounding whitespace.
+    assert plain_codes["LAB//plt//UNK"]["unit"] is None
+    assert not [code for code in plain_codes if code != code.strip()]

@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 import polars as pl
-from conftest import TABLES, run_command
+from conftest import TABLES, etl_argv, run_command
 
 from INSPIRE_MEDS import __main__ as alias
 from INSPIRE_MEDS import pre_MEDS
@@ -16,20 +16,44 @@ def test_docstring_examples():
     assert doctest.testmod(alias).failed == 0
 
 
+def test_default_run_deletes_the_stage_dirs(plain_output: Path):
+    """The spec sets `cleanup_intermediates: true`: a finished run keeps only the cohort and the run
+    records, and every stage, the pre-stage included, stays marked done."""
+    assert {p.name for p in plain_output.iterdir()} == {
+        ".logs",
+        ".meds_extract_run",
+        "data",
+        "metadata",
+    }
+    assert (plain_output / ".logs" / f"{pre_MEDS.STAGE_NAME}.done").exists()
+
+
 def test_pre_stage_stages_the_side_table_and_leaves_the_release_alone(
-    plain_output: Path, raw_dir: Path
+    tmp_path: Path, raw_dir: Path
 ):
-    """The side table lands in the stage's own dir, which `convert_to_parquet` reads first."""
+    """The side table lands in the stage's own dir, which `convert_to_parquet` reads first.
+
+    The stage dirs are kept for this run (`cleanup_intermediates=false`), so the table can be read.
+    """
+    kept_output = tmp_path / "meds"
+    run_command(
+        etl_argv(
+            kept_output,
+            raw_dir,
+            "skip_stages=[sumeds_enrich]",
+            "overrides=['cleanup_intermediates=false']",
+        )
+    )
     assert not list(raw_dir.glob("subjects*")), "the raw release was modified"
-    staged = pl.read_parquet(plain_output / pre_MEDS.STAGE_NAME / "subjects.parquet")
+    staged = pl.read_parquet(kept_output / pre_MEDS.STAGE_NAME / "subjects.parquet")
     expected = pre_MEDS.build_subject_table(
         pl.LazyFrame(TABLES["operations"])
     ).collect()
     assert staged.sort("subject_id").equals(expected.sort("subject_id"))
-    assert (plain_output / ".logs" / f"{pre_MEDS.STAGE_NAME}.done").exists()
+    assert (kept_output / ".logs" / f"{pre_MEDS.STAGE_NAME}.done").exists()
 
     events = pl.concat(
-        [pl.read_parquet(fp) for fp in (plain_output / "data").rglob("*.parquet")]
+        [pl.read_parquet(fp) for fp in (kept_output / "data").rglob("*.parquet")]
     )
     per_subject = (
         events.filter(pl.col("code").is_in(["MEDS_BIRTH", "MEDS_DEATH"]))

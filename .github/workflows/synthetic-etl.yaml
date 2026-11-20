@@ -53,7 +53,11 @@ jobs:
         # extraction itself runs that config with this project's locked MEDS-Extract, pre- and
         # post-stages included.
         run: |
+          # MESSY-synth parses the spec with its own MEDS-Extract, which must read
+          # `etl.cleanup_intermediates` (0.9.2+; earlier releases reject it). MESSY_synth 0.1.1
+          # allows any 0.8-0.9, so the floor keeps a cached tool environment off older releases.
           uvx --python ${{ matrix.python-version }} --from "MESSY_synth==0.1.1" \
+            --with "MEDS-extract>=0.9.2,<0.10" \
             MESSY-synth ./src/INSPIRE_MEDS/messy.yaml -o raw_synthetic/ --explain
           # MESSY-synth generates the `subjects` table the config joins, but the release has none:
           # the inspire_subject_table pre-stage derives it from operations columns the config never
@@ -80,6 +84,9 @@ jobs:
           for f in dataset.json codes.parquet subject_splits.parquet; do
             test -f "INSPIRE_meds_synth/metadata/$f"
           done
-          test -f INSPIRE_meds_synth/inspire_subject_table/subjects.parquet
+          # The spec sets cleanup_intermediates: true, so the pre-stage's dir (with its
+          # subjects.parquet, which tests/test_subject_table.py checks) is gone and its marker stays.
+          test ! -e INSPIRE_meds_synth/inspire_subject_table
+          test -f INSPIRE_meds_synth/.logs/inspire_subject_table.done
           # The sumeds_enrich post-stage soft-fails, so report the record rather than require it.
           jq '.sumeds_enrichment | {enriched, coverage, error}' INSPIRE_meds_synth/metadata/dataset.json

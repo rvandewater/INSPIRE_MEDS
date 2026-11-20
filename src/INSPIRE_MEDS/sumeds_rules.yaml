@@ -14,17 +14,17 @@
 schema: sumeds-rules/0.1
 
 ontology:
-  # DIAGNOSIS//ICD//10//{icd10_cm}: INSPIRE cuts ICD-10-CM codes to their three-character category,
+  # DIAGNOSIS//ICD//10CM//{icd10_cm}: INSPIRE cuts ICD-10-CM codes to their three-character category,
   # which suMEDS's ICD-10-CM data holds with its CMS title. The config writes a null code as UNK.
   - id: inspire-icd10cm-categories
-    pattern: "^DIAGNOSIS//ICD//10//(?P<code>(?!UNK$)[A-Z][0-9A-Z]{2})$"
+    pattern: "^DIAGNOSIS//ICD//10CM//(?P<code>(?!UNK$)[A-Z][0-9A-Z]{2})$"
     vocabulary: ICD10CM
     validate: pack
-  # ICD10_PCS//{icd10_pcs}: the first five ICD-10-PCS characters (section, body system, root
+  # ICD//10PCS//{icd10_pcs}: the first five ICD-10-PCS characters (section, body system, root
   # operation, body part, approach). suMEDS's ICD-10-PCS data holds every valid 1- to 6-character
   # prefix, described by its axis labels.
   - id: inspire-icd10pcs-prefixes
-    pattern: "^ICD10_PCS//(?P<code>[0-9A-HJ-NP-Z]{5})$"
+    pattern: "^ICD//10PCS//(?P<code>[0-9A-HJ-NP-Z]{5})$"
     vocabulary: ICD10PCS
     validate: pack
   # MEDICATION//{atc_code}//{route}: the release's own WHO ATC code, at any ATC level. ATC is

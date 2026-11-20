@@ -18,6 +18,8 @@ sources:
 
 etl:
   dataset_name: INSPIRE
+  # Delete the <output_dir>/<stage> dirs after a successful run; keep: "overrides=['cleanup_intermediates=false']"
+  cleanup_intermediates: true
   n_subjects_per_shard: 1000
   # metadata/dataset.json: the release's license, as PhysioNet names it, and its page.
   license: Korea Credentialed Health Data License-1-0-0
@@ -48,11 +50,13 @@ etl:
   # finishes it later. Leave it out with `skip_stages=[sumeds_enrich]`.
   post_stages:
     # First: suMEDS's shared stage gives codes that differ only in their last `//<unit>` part the
-    # code without it as a parent, with a row of its own (default options;
+    # code without it as a parent, with a row of its own, and with `link_single_units` so does a
+    # code ending in its unit whose item has one unit (default options otherwise;
     # https://github.com/rvandewater/suMEDS/blob/main/docs/unit_siblings.md). MEDS-Extract >= 0.9
     # already writes `unit` as one String per code. It runs before the enrichment, so the
     # enrichment, its coverage record and a later `suMEDS-enrich` retry all see the same table.
-    - sumeds_link_unit_siblings
+    - sumeds_link_unit_siblings:
+        link_single_units: true
     # One UCUM spelling for every `unit` (suMEDS's shared table, e.g. `Cel`, `mm[Hg]`, `mg/dL`); the
     # spelling as recorded stays in `unit_source_value`, and an unknown spelling is kept as it is.
     - sumeds_normalize_units
@@ -229,7 +233,7 @@ operations:
           f"Anesthesia type: {$antype ?? 'UNK'} (INSPIRE operations.antype: General, Neuraxial, Regional,
           or MAC = monitored anesthesia care)"
   icd10_pcs: # String, ICD-10 Procedure Coding System code
-    code: 'f"ICD10_PCS//{$icd10_pcs ?? ''UNK''}"'
+    code: 'f"ICD//10PCS//{$icd10_pcs ?? ''UNK''}"'
     time: $opdate_t
     hadm_id: $hadm_id
     operation_id: $op_id
@@ -370,15 +374,23 @@ labs:
     cols:
       _origin: '("2016-01-01"::?"%Y-%m-%d")::datetime'
       chart_t: "$_origin + $chart_time::minutes"
+      # The unit as the code's last segment: stripped of surrounding whitespace, and `UNK` where it
+      # is missing or blank. MEDS-Extract compares units the same way when it writes `unit` in
+      # `codes.parquet` (stripped, blanks dropped), so ` mg` and `mg` give one code. dftly 0.7 has
+      # no strip function, so the extract takes the text from the first to the last non-whitespace
+      # character (`(?s)` lets it span line breaks), which is null when there is none. `vitals` and
+      # `ward_vitals` use the same helper.
+      _value_unit: '(extract /(?s)\S(?:.*\S)?/ from $Unit) ?? "UNK"'
   lab:
-    code: 'f"LAB//{$item_name ?? ''UNK''}//{$Unit ?? ''UNK''}"'
+    code: 'f"LAB//{$item_name ?? ''UNK''}//{$_value_unit}"'
     time: $chart_t
     numeric_value: $value
     _metadata:
       _self:
         description: $Description
-        # The unit of numeric_value: the release's parameters.csv Unit, as recorded. It is also
-        # the code's last segment, so one value per code; a null Unit (code `//UNK`) stays null.
+        # The unit of numeric_value: the release's parameters.csv Unit, as recorded (MEDS-Extract
+        # strips it). It is also the code's last segment, so one value per code; a null or blank
+        # Unit (code `//UNK`) stays null.
         unit: $Unit
 
 medications:
@@ -402,7 +414,7 @@ diagnosis:
       _origin: '("2016-01-01"::?"%Y-%m-%d")::datetime'
       chart_t: "$_origin + $chart_time::minutes"
   diagnosis:
-    code: 'f"DIAGNOSIS//ICD//10//{$icd10_cm ?? ''UNK''}"'
+    code: 'f"DIAGNOSIS//ICD//10CM//{$icd10_cm ?? ''UNK''}"'
     time: $chart_t
     # No `_metadata`: suMEDS adds the ICD-10-CM category title and parents (sumeds_rules.yaml).
 
@@ -416,15 +428,18 @@ vitals:
     cols:
       _origin: '("2016-01-01"::?"%Y-%m-%d")::datetime'
       chart_t: "$_origin + $chart_time::minutes"
+      # The unit as the code's last segment, stripped; `UNK` if missing or blank (see `labs`).
+      _value_unit: '(extract /(?s)\S(?:.*\S)?/ from $Unit) ?? "UNK"'
   vital:
-    code: 'f"VITAL//{$item_name ?? ''UNK''}//{$Unit ?? ''UNK''}"'
+    code: 'f"VITAL//{$item_name ?? ''UNK''}//{$_value_unit}"'
     time: $chart_t
     numeric_value: $value
     _metadata:
       _self:
         description: $Description
-        # The unit of numeric_value: the release's parameters.csv Unit, as recorded. It is also
-        # the code's last segment, so one value per code; a null Unit (code `//UNK`) stays null.
+        # The unit of numeric_value: the release's parameters.csv Unit, as recorded (MEDS-Extract
+        # strips it). It is also the code's last segment, so one value per code; a null or blank
+        # Unit (code `//UNK`) stays null.
         unit: $Unit
 
 ward_vitals:
@@ -437,13 +452,16 @@ ward_vitals:
     cols:
       _origin: '("2016-01-01"::?"%Y-%m-%d")::datetime'
       chart_t: "$_origin + $chart_time::minutes"
+      # The unit as the code's last segment, stripped; `UNK` if missing or blank (see `labs`).
+      _value_unit: '(extract /(?s)\S(?:.*\S)?/ from $Unit) ?? "UNK"'
   ward_vital:
-    code: 'f"WARD_VITAL//{$item_name ?? ''UNK''}//{$Unit ?? ''UNK''}"'
+    code: 'f"WARD_VITAL//{$item_name ?? ''UNK''}//{$_value_unit}"'
     time: $chart_t
     numeric_value: $value
     _metadata:
       _self:
         description: $Description
-        # The unit of numeric_value: the release's parameters.csv Unit, as recorded. It is also
-        # the code's last segment, so one value per code; a null Unit (code `//UNK`) stays null.
+        # The unit of numeric_value: the release's parameters.csv Unit, as recorded (MEDS-Extract
+        # strips it). It is also the code's last segment, so one value per code; a null or blank
+        # Unit (code `//UNK`) stays null.
         unit: $Unit

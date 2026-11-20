@@ -42,6 +42,15 @@ Run `meds-extract-run --help` for every option. Rerunning the same command on an
 only runs the stages that have not finished (each finished stage leaves `.logs/<stage>.done` in
 the output).
 
+Intermediate stage outputs are deleted after a successful run, by default: the spec sets
+MEDS-Extract's `etl.cleanup_intermediates: true`, so a finished `$MEDS_OUTPUT_DIR` holds only `data/`,
+`metadata/`, `.logs/` and `.meds_extract_run/`. A failed run keeps them, so the same command resumes
+where it stopped, and the same command on a finished output still does nothing. To keep them (to look
+at a stage's output; `$MEDS_OUTPUT_DIR/.logs/pipeline.log` keeps the stage logs either way), add
+`"overrides=['cleanup_intermediates=false']"`. Cleanup never deletes raw data: a download into the
+default `$MEDS_OUTPUT_DIR/.meds_extract_run/raw_input` stays, and `download_dest_dir=` elsewhere lets other
+output directories reuse it.
+
 **`MEDS_extract-INSPIRE` is deprecated.** It was the complete build up to 1.0.0. It is kept for
 one more release as an alias that prints the equivalent `meds-extract-run` command and runs it
 (`MEDS_extract-INSPIRE ROOT` builds into `ROOT/MEDS_cohort` from `ROOT/raw_input`, as before,
@@ -70,7 +79,9 @@ output are not real dates, and comparing them across subjects is meaningless.
 
 A null component of a composite code drops the row since MEDS-Extract 0.7, where 0.6.x rendered
 it as the literal `UNK` and kept the row. Components are therefore coalesced with `?? 'UNK'`
-wherever a null must not drop the row.
+wherever a null must not drop the row. The unit in a lab or vital code is stripped of surrounding
+whitespace; missing or blank is `UNK`. MEDS-Extract compares units the same way when it writes `unit`
+(stripped, blanks dropped), so ` mg` and `mg` give one code.
 
 Two are deliberately left uncoalesced. `route` on medications is never null in the release (0 of
 10,854,338 rows), so a coalesce would be dead code. The demographic codes drop rather than mint
@@ -93,7 +104,8 @@ row-wise — so the `inspire_subject_table` pre-stage
 config joins it back. That is the only Python step this package ships. `meds-extract-run` runs it
 before `convert_to_parquet`; it writes `subjects.parquet` into its own directory
 (`$MEDS_OUTPUT_DIR/inspire_subject_table`), which MEDS-Extract searches before the raw input, so
-the checksum-verified download is never modified.
+the checksum-verified download is never modified. Like every stage directory, it is deleted once the
+run has succeeded, unless you pass `"overrides=['cleanup_intermediates=false']"`.
 
 | Was (`pre_MEDS.py`)                                  | Now                                                                                                     |
 | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
@@ -150,8 +162,8 @@ data changes.
 | -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `LAB//…`, `VITAL//…`, `WARD_VITAL//…`                                      | `_metadata: _self:` from the `parameters.csv` join (unchanged)                                 | the release's `parameters.csv`                                                                                                                                                                                                                                                    |
 | `ADMISSION_DEPARTMENT//…`                                                  | `_metadata: department:` joins the release's own `department.csv` at ETL time                  | the release's `department.csv` (nothing from it is copied into this repository)                                                                                                                                                                                                   |
-| `DIAGNOSIS//ICD//10//…`                                                    | none in the ETL                                                                                | the CMS ICD-10-CM category title, added by suMEDS                                                                                                                                                                                                                                 |
-| `ICD10_PCS//…`                                                             | `_self` description: the code, cut to its first five characters, and what those characters are | the column documentation ([PhysioNet INSPIRE 1.4.2](https://physionet.org/content/inspire/1.4.2/))                                                                                                                                                                                |
+| `DIAGNOSIS//ICD//10CM//…`                                                  | none in the ETL                                                                                | the CMS ICD-10-CM category title, added by suMEDS                                                                                                                                                                                                                                 |
+| `ICD//10PCS//…`                                                            | `_self` description: the code, cut to its first five characters, and what those characters are | the column documentation ([PhysioNet INSPIRE 1.4.2](https://physionet.org/content/inspire/1.4.2/))                                                                                                                                                                                |
 | `MEDICATION//…`                                                            | `_self` description naming the release's own `atc_code` and route                              | the release's own `atc_code` (documented as WHO ATC, mapped by the dataset authors)                                                                                                                                                                                               |
 | `SEX`, `RACE`, `ASA`, `EMERGENCY_OPERATION`, `ANESTHESIA_TYPE`             | `_self` templates                                                                              | the column documentation ([PhysioNet INSPIRE 1.4.2](https://physionet.org/content/inspire/1.4.2/) and the column comments in `messy.yaml`); ASA classes paraphrase the ASA Physical Status Classification System (American Society of Anesthesiologists, last amended 2020-12-13) |
 | the 19 literal codes (`OR_IN`, `WEIGHT`, `ICU_ADMISSION`, `MEDS_BIRTH`, …) | constant `_self` blocks on the events that emit them                                           | per event, in a `# Source:` comment: the PhysioNet INSPIRE 1.4.2 documentation section or the column comment                                                                                                                                                                      |
@@ -170,12 +182,14 @@ does not know is kept as it is, and the codes keep their names (`LAB//wbc//10^3/
 fail the build if a code has more than one unit
 ([MEDS_extract#336](https://github.com/mmcdermott/MEDS_extract/pull/336); none does in INSPIRE
 1.4.2). The first post-stage, suMEDS's shared `sumeds_link_unit_siblings`
-([docs](https://github.com/rvandewater/suMEDS/blob/main/docs/unit_siblings.md), default options), gives *unit siblings*, codes that differ only in their last `//<unit>` component, the code
+([docs](https://github.com/rvandewater/suMEDS/blob/main/docs/unit_siblings.md)), gives *unit siblings*, codes that differ only in their last `//<unit>` component, the code
 without it as an in-dataset parent in `parent_codes` (e.g. `LAB//<item>` for `LAB//<item>//<unit>`),
 and adds a row for that parent code unless one exists: the siblings' description if they all share
 it (or, if they differ only by their own unit, that description without it), the vocabulary parents
 they all share, and a null `unit`. A `//UNK` code of the same item joins its siblings once the item
-has a real unit. It runs before the enrichment, so the enrichment sees the finished table. INSPIRE's `parameters.csv` has one unit per item, so 1.4.2 has no unit
+has a real unit. With `link_single_units: true`, a code ending in its unit gets its stem also when
+its item has a single unit, so every `LAB`, `VITAL` and `WARD_VITAL` code with a recorded unit has
+its unit-free stem (`LAB//<item>//<unit>` gets `LAB//<item>`). It runs before the enrichment, so the enrichment sees the finished table. INSPIRE's `parameters.csv` has one unit per item, so 1.4.2 has no unit
 siblings, and its descriptions state no units (no `parameters.csv` description of an item without a
 `Unit` names one), so no unit is taken from description text.
 
@@ -322,6 +336,31 @@ the baseline. A MEDS-Extract, suMEDS or polars upgrade can also move the output,
 
 ### Unreleased (after 1.1.0)
 
+- **ICD codes name the vocabulary and its edition apart, `ICD//<edition>//<code>`.** Diagnoses
+    `DIAGNOSIS//ICD//10//<icd10_cm>` are now `DIAGNOSIS//ICD//10CM//<icd10_cm>`, and operations
+    `ICD10_PCS//<icd10_pcs>` are now `ICD//10PCS//<icd10_pcs>`: the layout every MEDS ETL of this family
+    uses for ICD (`ICD//10CM`, `ICD//9CM`, `ICD//10PCS`, `ICD//10GM`, `ICD//10CN`). The code after the
+    edition is unchanged, and so are its `ICD10CM//…` and `ICD10PCS//…` parents. To migrate, rename codes
+    with the regexes `^DIAGNOSIS//ICD//10//` → `DIAGNOSIS//ICD//10CM//` and `^ICD10_PCS//` →
+    `ICD//10PCS//`.
+
+- **The unit in a lab or vital code is stripped of surrounding whitespace, and a blank one is
+    `UNK`** (`LAB//{item}//{unit}`, `VITAL//{item}//{unit}`, `WARD_VITAL//{item}//{unit}`). Before,
+    the `parameters.csv` Unit was copied as recorded: a padded unit (` mg`) gave a code of its own,
+    and a blank or empty one gave a code ending in whitespace or in `//`, with no `unit`. No output
+    change on the synthetic data; codes change only where a unit was padded or blank. To migrate,
+    strip the last part of an old code, and write `UNK` where it is then empty:
+    `^((?:LAB|VITAL|WARD_VITAL)//.+?//)\s*(\S(?:.*\S)?)?\s*$` → `\1\2`.
+
+- **`codes.parquet` gains unit-free stem rows and stem parents for single-unit codes**
+    ([#27](https://github.com/rvandewater/INSPIRE_MEDS/pull/27)). suMEDS's `sumeds_link_unit_siblings` now runs with `link_single_units: true`:
+    every code that ends in its unit gets the code without the unit (its stem) as its last
+    `parent_codes` entry, and the stem gets a row of its own (no unit, no events), also when the
+    item has a single unit (`LAB//{item}//{unit}` gets `LAB//{item}`, likewise `VITAL` and `WARD_VITAL`). Before, only items recorded in two or more units did.
+    Events are unchanged. On a synthetic (MESSY-synth) build, 24 codes gain a stem parent and 24 stem rows are added (8 each `LAB`, `VITAL`, `WARD_VITAL`). To migrate, nothing is needed unless a tool expects every
+    `codes.parquet` row to have events: drop the stem rows (no `code_template`, no `unit`), or
+    ignore a parent that is the code without its last `//` component.
+
 - **New columns `hadm_id` and `operation_id`.** `hadm_id` is the hospital admission
     (`operations.hadm_id`) and `operation_id` the operation (`operations.op_id`), on the events of
     `operations` listed under [Stay and operation ids](#stay-and-operation-ids); both are listed under
@@ -347,6 +386,13 @@ the baseline. A MEDS-Extract, suMEDS or polars upgrade can also move the output,
     | `ANESTHESIA_END`   | `ANESTHESIA//END`   |
 
     To migrate, rewrite old codes with the regex `^(OPERATION|ANESTHESIA)_(START|END)$` → `\1//\2`.
+
+- **Intermediate stage outputs are no longer kept.** Up to 1.1.0, a run left each stage's output in
+    `<output_dir>/<stage>/` (`convert_to_parquet/`, `convert_to_MEDS_events/`, `inspire_subject_table/`, `sumeds_enrich/`, …). The spec now sets MEDS-Extract's
+    `etl.cleanup_intermediates: true`, so a successful run deletes those directories and keeps only
+    `data/`, `metadata/`, `.logs/` and `.meds_extract_run/`. The MEDS data and metadata are
+    unchanged. To migrate, add `"overrides=['cleanup_intermediates=false']"` to `meds-extract-run`
+    wherever you read a stage directory after the run.
 
 ## Citation
 

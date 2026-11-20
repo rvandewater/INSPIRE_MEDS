@@ -65,10 +65,10 @@ TABLES = {
         "route": ["IV", "IV", "IV", "PO"],
     },
     "labs": {
-        "subject_id": [1, 2, 3],
-        "chart_time": [-60, -30, 3200],
-        "item_name": ["hb", "wbc", "hb"],
-        "value": [13.5, 7.1, 11.0],
+        "subject_id": [1, 2, 3, 3],
+        "chart_time": [-60, -30, 3200, 3300],
+        "item_name": ["hb", "wbc", "hb", "plt"],
+        "value": [13.5, 7.1, 11.0, 250.0],
     },
     "vitals": {
         "subject_id": [1, 2],
@@ -82,10 +82,17 @@ TABLES = {
         "item_name": ["hr"],
         "value": [72.0],
     },
+    # Two units are padded with whitespace and one is blank: the unit in a code is stripped
+    # (`LAB//wbc//10^3/uL`, `VITAL//hr///min`), and a blank one is `UNK` (`LAB//plt//UNK`).
     "parameters": {
-        "Label": ["hb", "wbc", "hr"],
-        "Unit": ["g/dL", "10^3/uL", "/min"],
-        "Description": ["Hemoglobin", "White blood cell count", "Heart rate"],
+        "Label": ["hb", "wbc", "hr", "plt"],
+        "Unit": ["g/dL", " 10^3/uL", "/min ", "  "],
+        "Description": [
+            "Hemoglobin",
+            "White blood cell count",
+            "Heart rate",
+            "Platelet count",
+        ],
     },
     "department": {
         "Abbreviations": ["GS", "CS"],

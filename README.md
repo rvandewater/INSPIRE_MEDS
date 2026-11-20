@@ -182,12 +182,14 @@ does not know is kept as it is, and the codes keep their names (`LAB//wbc//10^3/
 fail the build if a code has more than one unit
 ([MEDS_extract#336](https://github.com/mmcdermott/MEDS_extract/pull/336); none does in INSPIRE
 1.4.2). The first post-stage, suMEDS's shared `sumeds_link_unit_siblings`
-([docs](https://github.com/rvandewater/suMEDS/blob/main/docs/unit_siblings.md), default options), gives *unit siblings*, codes that differ only in their last `//<unit>` component, the code
+([docs](https://github.com/rvandewater/suMEDS/blob/main/docs/unit_siblings.md)), gives *unit siblings*, codes that differ only in their last `//<unit>` component, the code
 without it as an in-dataset parent in `parent_codes` (e.g. `LAB//<item>` for `LAB//<item>//<unit>`),
 and adds a row for that parent code unless one exists: the siblings' description if they all share
 it (or, if they differ only by their own unit, that description without it), the vocabulary parents
 they all share, and a null `unit`. A `//UNK` code of the same item joins its siblings once the item
-has a real unit. It runs before the enrichment, so the enrichment sees the finished table. INSPIRE's `parameters.csv` has one unit per item, so 1.4.2 has no unit
+has a real unit. With `link_single_units: true`, a code ending in its unit gets its stem also when
+its item has a single unit, so every `LAB`, `VITAL` and `WARD_VITAL` code with a recorded unit has
+its unit-free stem (`LAB//<item>//<unit>` gets `LAB//<item>`). It runs before the enrichment, so the enrichment sees the finished table. INSPIRE's `parameters.csv` has one unit per item, so 1.4.2 has no unit
 siblings, and its descriptions state no units (no `parameters.csv` description of an item without a
 `Unit` names one), so no unit is taken from description text.
 
@@ -349,6 +351,15 @@ the baseline. A MEDS-Extract, suMEDS or polars upgrade can also move the output,
     change on the synthetic data; codes change only where a unit was padded or blank. To migrate,
     strip the last part of an old code, and write `UNK` where it is then empty:
     `^((?:LAB|VITAL|WARD_VITAL)//.+?//)\s*(\S(?:.*\S)?)?\s*$` → `\1\2`.
+
+- **`codes.parquet` gains unit-free stem rows and stem parents for single-unit codes**
+    ([#27](https://github.com/rvandewater/INSPIRE_MEDS/pull/27)). suMEDS's `sumeds_link_unit_siblings` now runs with `link_single_units: true`:
+    every code that ends in its unit gets the code without the unit (its stem) as its last
+    `parent_codes` entry, and the stem gets a row of its own (no unit, no events), also when the
+    item has a single unit (`LAB//{item}//{unit}` gets `LAB//{item}`, likewise `VITAL` and `WARD_VITAL`). Before, only items recorded in two or more units did.
+    Events are unchanged. On a synthetic (MESSY-synth) build, 24 codes gain a stem parent and 24 stem rows are added (8 each `LAB`, `VITAL`, `WARD_VITAL`). To migrate, nothing is needed unless a tool expects every
+    `codes.parquet` row to have events: drop the stem rows (no `code_template`, no `unit`), or
+    ignore a parent that is the code without its last `//` component.
 
 - **New columns `hadm_id` and `operation_id`.** `hadm_id` is the hospital admission
     (`operations.hadm_id`) and `operation_id` the operation (`operations.op_id`), on the events of

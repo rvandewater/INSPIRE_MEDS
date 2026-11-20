@@ -229,7 +229,7 @@ operations:
           f"Anesthesia type: {$antype ?? 'UNK'} (INSPIRE operations.antype: General, Neuraxial, Regional,
           or MAC = monitored anesthesia care)"
   icd10_pcs: # String, ICD-10 Procedure Coding System code
-    code: 'f"ICD10_PCS//{$icd10_pcs ?? ''UNK''}"'
+    code: 'f"ICD//10PCS//{$icd10_pcs ?? ''UNK''}"'
     time: $opdate_t
     hadm_id: $hadm_id
     operation_id: $op_id
@@ -402,7 +402,7 @@ diagnosis:
       _origin: '("2016-01-01"::?"%Y-%m-%d")::datetime'
       chart_t: "$_origin + $chart_time::minutes"
   diagnosis:
-    code: 'f"DIAGNOSIS//ICD//10//{$icd10_cm ?? ''UNK''}"'
+    code: 'f"DIAGNOSIS//ICD//10CM//{$icd10_cm ?? ''UNK''}"'
     time: $chart_t
     # No `_metadata`: suMEDS adds the ICD-10-CM category title and parents (sumeds_rules.yaml).
 

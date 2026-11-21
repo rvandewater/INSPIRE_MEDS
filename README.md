@@ -334,7 +334,9 @@ the baseline. A MEDS-Extract, suMEDS or polars upgrade can also move the output,
 
 ## Breaking changes
 
-### Unreleased (after 1.1.0)
+### 1.2.0 (2026-11-20)
+
+- Rebuilt on the full release; `tests/regression/full_summary_stats.json` regenerated.
 
 - **ICD codes name the vocabulary and its edition apart, `ICD//<edition>//<code>`.** Diagnoses
     `DIAGNOSIS//ICD//10//<icd10_cm>` are now `DIAGNOSIS//ICD//10CM//<icd10_cm>`, and operations
@@ -365,11 +367,15 @@ the baseline. A MEDS-Extract, suMEDS or polars upgrade can also move the output,
     (`operations.hadm_id`) and `operation_id` the operation (`operations.op_id`), on the events of
     `operations` listed under [Stay and operation ids](#stay-and-operation-ids); both are listed under
     `raw_source_id_columns` in `metadata/dataset.json`, which listed none before. Codes are unchanged.
-    The one change to existing rows: an operation-date event that two operations of one subject on
-    one day shared (same code, same value) is now written once per operation, with its own
-    `operation_id` (about 900 events in 1.4.2). Nothing needs migrating; to get the old rows back,
-    drop the new columns and deduplicate:
-    `df.drop("hadm_id", "operation_id").unique(maintain_order=True)`.
+    Rows that two operations of one subject shared are now written once per operation, each with its
+    own `operation_id`. The static (untimed) `VITALDB_CASE_ID` event carries `operation_id` too, so it
+    is written once per operation instead of once per patient: each VitalDB case id belongs to one
+    operation, and the `operation_id` links a VitalDB recording to the right surgery. On the full
+    1.4.2 release this adds 24,334 static rows (106,626 → 130,960 `VITALDB_CASE_ID` rows) and 909
+    timed operation-date events (two operations of one subject on one day, same code and value), so
+    measurements go from 140,689,363 to 140,714,606. Subjects, events (unique subject–time pairs)
+    and observed codes are unchanged. Nothing needs migrating; to get the old rows back, drop the new
+    columns and deduplicate: `df.drop("hadm_id", "operation_id").unique(maintain_order=True)`.
 
 - **Operation and anaesthesia intervals are `OPERATION//START`, `OPERATION//END`, `ANESTHESIA//START` and
     `ANESTHESIA//END`** ([alignEHR#53](https://github.com/rvandewater/alignEHR/issues/53)), not

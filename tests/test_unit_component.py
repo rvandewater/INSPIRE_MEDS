@@ -16,3 +16,4 @@ class TestUnitComponents(UnitComponentContract):
         "vitals/vital",
         "ward_vitals/ward_vital",
     )
+    require_unit_in_code = True

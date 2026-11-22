@@ -45,8 +45,10 @@ OPERATIONS = {
     "icuin_time": [None, 2210, 910, None],
     "icuout_time": [None, 4000, 3000, None],
     "discharge_time": [10080, 10080, 5000, 4000],
+    # Subject 2 died in hospital at 03:00 of day 3 and the death was registered the same day, so
+    # the registration date (00:00 of day 3, 4320) is earlier than the in-hospital time.
     "inhosp_death_time": [None, None, 4500, None],
-    "allcause_death_time": [20000, 20000, 4500, None],
+    "allcause_death_time": [20000, 20000, 4320, None],
 }
 
 TABLES = {

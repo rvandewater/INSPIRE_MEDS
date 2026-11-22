@@ -79,7 +79,11 @@ operations:
         cols: { birth_age: min, death_min: min }
     cols:
       _origin: '("2016-01-01"::?"%Y-%m-%d")::datetime'
-      date_of_birth: "$_origin - ($birth_age * 365.25 + 182.625)::days"
+      # birth_age is the age at the first admission (the anchor, offset 0): the age recorded on its
+      # earliest operation, which INSPIRE rounds to the nearest five years, less the days from the
+      # anchor to that operation. The recorded age is the centre of its bin, so no offset is added
+      # (inspire_subject_table pre-stage; alignEHR#54).
+      date_of_birth: "$_origin - ($birth_age * 365.25)::days"
       date_of_death: "$_origin + $death_min::minutes"
       admission_t: "$_origin + $admission_time::minutes"
       icuin_t: "$_origin + $icuin_time::minutes"
@@ -137,9 +141,10 @@ operations:
     _metadata:
       _self:
         description: >-
-          "Birth (MEDS standard code); the date is estimated from the age at the patient's first
-          admission, which INSPIRE rounds to the nearest five years (operations.age; not
-          top-coded, 90 is the highest level)"
+          "Birth (MEDS standard code); estimated as the date of the patient's first operation in
+          their first admission minus the age recorded on it, which INSPIRE rounds to the nearest
+          five years (operations.age; not top-coded, 90 is the highest level), so it is uncertain
+          by up to 2.5 years"
   sex: # M/F, Sex of the patient
     code: 'f"SEX//{$sex ?? ''UNK''}"'
     time: null
@@ -379,11 +384,11 @@ operations:
     _metadata:
       _self:
         description: >-
-          "Death (MEDS standard code); the earlier of the in-hospital death time from the EMR
-          (operations.inhosp_death_time) and 00:00 of the date the death was registered with the
-          Korean Ministry of the Interior and Safety (allcause_death_time, a median of about 11 days
-          after the death; follow-up to 2023-06-15). About 2% of patients could not be linked to
-          the registry, so no event means no recorded death, not survival"
+          "Death (MEDS standard code); the in-hospital death time from the EMR
+          (operations.inhosp_death_time) where there is one, else 00:00 of the date the death was
+          registered with the Korean Ministry of the Interior and Safety (allcause_death_time, a
+          median of about 11 days after the death; follow-up to 2023-06-15). About 2% of patients
+          could not be linked to the registry, so no event means no recorded death, not survival"
 
 labs:
   _table:

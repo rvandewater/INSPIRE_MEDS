@@ -2,6 +2,7 @@
 
 import doctest
 import sys
+from datetime import datetime, timedelta
 from pathlib import Path
 
 import polars as pl
@@ -63,6 +64,31 @@ def test_pre_stage_stages_the_side_table_and_leaves_the_release_alone(
     # One birth per subject (subject 3's first admission is in the table), one death per subject
     # with a death record (subjects 1 and 2).
     assert dict(per_subject.iter_rows()) == {"MEDS_BIRTH": 3, "MEDS_DEATH": 2}
+
+
+def test_birth_is_the_operation_date_minus_the_age_and_death_prefers_the_hospital_time(
+    plain_output: Path,
+):
+    """Ages are rounded to the nearest five years, so the age is the centre of its bin: birth is the
+    operation date minus the age, with no half-year offset. The in-hospital death time wins over
+    00:00 of the registration date, even where that date is earlier."""
+    events = pl.concat(
+        [pl.read_parquet(fp) for fp in (plain_output / "data").rglob("*.parquet")]
+    )
+    times = dict(
+        events.filter(pl.col("code").is_in(["MEDS_BIRTH", "MEDS_DEATH"]))
+        .select(
+            pl.concat_str("code", pl.col("subject_id").cast(pl.String), separator="/"),
+            "time",
+        )
+        .iter_rows()
+    )
+    origin = datetime(2016, 1, 1)
+    # Subject 1: ages 60 and 65 in one admission, the smaller on the operation at offset 0.
+    assert times["MEDS_BIRTH/1"] == origin - timedelta(days=60 * 365.25)
+    assert times["MEDS_BIRTH/2"] == origin - timedelta(days=40 * 365.25)
+    assert times["MEDS_DEATH/1"] == origin + timedelta(minutes=20000)
+    assert times["MEDS_DEATH/2"] == origin + timedelta(minutes=4500)
 
 
 def test_deprecated_alias_runs_meds_extract_run(

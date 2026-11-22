@@ -7,8 +7,9 @@ CSV into the finished `codes.parquet`. The spec now does both itself, with the
 holds what the runner built from the synthetic release of `conftest.py` (with `--no-enrich`): every
 code, its description and its number of events. The one difference is intended: literal codes now
 also carry their `code_template`, as every other described code does. The descriptions follow the spec:
-they are updated here when it rewords them (as for the INSPIRE team's 2026-11-22 answers), while the
-codes and event counts stay those of the runner.
+they are updated here when it rewords them (as for the INSPIRE team's 2026-11-22 answers), and codes
+renamed by a breaking change (README, "Breaking changes") are renamed here too, while the event counts
+stay those of the runner.
 """
 
 import json

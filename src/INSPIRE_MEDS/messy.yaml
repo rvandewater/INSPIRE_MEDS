@@ -2,9 +2,9 @@
 # `inspire_subject_table` pre-stage, the canonical MEDS-Extract stages, and suMEDS's
 # `sumeds_link_unit_siblings`, `sumeds_normalize_units` and `sumeds_enrich` post-stages (see `etl:`).
 #
-# Code metadata: `_metadata` blocks describe every code family but the diagnoses, literal codes
-# included (constant `_self` blocks, each with the source of its description). suMEDS adds the
-# ICD-10-CM titles of the diagnoses and the vocabulary parent codes (sumeds_rules.yaml).
+# Code metadata: `_metadata` blocks describe every code family, literal codes included (constant
+# `_self` blocks, each with the source of its description). suMEDS adds the vocabulary parent codes
+# and their titles (sumeds_rules.yaml), e.g. the ICD-10-CM category of a KCD diagnosis.
 #
 # Facts marked "INSPIRE team, 2026-11-22" come from the INSPIRE team (personal communication,
 # 2026-11-22), to be corrected in the INSPIRE documentation from v1.5. README, "Source caveats
@@ -445,13 +445,23 @@ diagnosis:
   # cut to the first three characters. Most coincide with ICD-10-CM categories; 71 in 1.4.2 do not
   # (rvandewater/INSPIRE_MEDS#30). `chart_time` is 00:00 of the diagnosis date recorded in the
   # EMR, not the time the diagnosis was made; a diagnosis entered at or after discharge can carry
-  # a date after the clinical event. The code keeps its `ICD//10CM` label for now (README, "Source
-  # caveats").
+  # a date after the clinical event.
+  #
+  # The code is `DIAGNOSIS//KCD//<edition>//<category>` (VOCABULARY//VERSION//CODE). The edition
+  # follows from the calendar date, which the release does not have: every offset is relative to
+  # the patient's first admission (README, "Pseudo-timestamps"). So it is `UNK` (one of 6, 7 or 8)
+  # until a release states it.
   diagnosis:
-    code: 'f"DIAGNOSIS//ICD//10CM//{$icd10_cm ?? ''UNK''}"'
+    code: 'f"DIAGNOSIS//KCD//UNK//{$icd10_cm ?? ''UNK''}"'
     time: $chart_t
-    # No `_metadata`: suMEDS adds the ICD-10-CM category title and parents (sumeds_rules.yaml). A
-    # description here would replace those titles (suMEDS fills only missing descriptions).
+    # suMEDS adds the ICD-10-CM category of the same code as a parent, with its CMS title in
+    # `parent_names`, where ICD-10-CM has one (sumeds_rules.yaml); the KCD-only codes get none.
+    _metadata:
+      _self:
+        description: >-
+          f"Diagnosis, KCD (Korean Standard Classification of Diseases) three-character category
+          {$icd10_cm ?? 'UNK'}, edition 6, 7 or 8 by diagnosis date, dated 00:00 of the diagnosis
+          date recorded in the EMR (INSPIRE diagnosis.icd10_cm)"
 
 vitals:
   _table:

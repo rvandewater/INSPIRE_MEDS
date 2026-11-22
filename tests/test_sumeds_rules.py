@@ -36,9 +36,9 @@ VALUES = {
 }
 # The ontology rule each example code must resolve through (codes not listed match no rule).
 EXPECTED_ONTOLOGY = {
-    "DIAGNOSIS//ICD//10CM//I10": ("inspire-icd10cm-categories", "I10"),
-    "DIAGNOSIS//ICD//10CM//E11": ("inspire-icd10cm-categories", "E11"),
-    "DIAGNOSIS//ICD//10CM//J18": ("inspire-icd10cm-categories", "J18"),
+    "DIAGNOSIS//KCD//UNK//I10": ("inspire-kcd-icd10cm-categories", "I10"),
+    "DIAGNOSIS//KCD//UNK//E11": ("inspire-kcd-icd10cm-categories", "E11"),
+    "DIAGNOSIS//KCD//UNK//J18": ("inspire-kcd-icd10cm-categories", "J18"),
     "ICD//10PCS//0DTJ4": ("inspire-icd10pcs-prefixes", "0DTJ4"),
     "ICD//10PCS//5A195": ("inspire-icd10pcs-prefixes", "5A195"),
     "ICD//10PCS//02HV3": ("inspire-icd10pcs-prefixes", "02HV3"),

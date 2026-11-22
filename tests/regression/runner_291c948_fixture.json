@@ -46,24 +46,24 @@
       "description": "Start of cardiopulmonary bypass (INSPIRE operations.cpbon_time)",
       "events": 1
     },
-    "DIAGNOSIS//ICD//10CM//E11": {
-      "description": null,
+    "DIAGNOSIS//KCD//UNK//E11": {
+      "description": "Diagnosis, KCD (Korean Standard Classification of Diseases) three-character category E11, edition 6, 7 or 8 by diagnosis date, dated 00:00 of the diagnosis date recorded in the EMR (INSPIRE diagnosis.icd10_cm)",
       "events": 1
     },
-    "DIAGNOSIS//ICD//10CM//I10": {
-      "description": null,
+    "DIAGNOSIS//KCD//UNK//I10": {
+      "description": "Diagnosis, KCD (Korean Standard Classification of Diseases) three-character category I10, edition 6, 7 or 8 by diagnosis date, dated 00:00 of the diagnosis date recorded in the EMR (INSPIRE diagnosis.icd10_cm)",
       "events": 1
     },
-    "DIAGNOSIS//ICD//10CM//J18": {
-      "description": null,
+    "DIAGNOSIS//KCD//UNK//J18": {
+      "description": "Diagnosis, KCD (Korean Standard Classification of Diseases) three-character category J18, edition 6, 7 or 8 by diagnosis date, dated 00:00 of the diagnosis date recorded in the EMR (INSPIRE diagnosis.icd10_cm)",
       "events": 1
     },
-    "DIAGNOSIS//ICD//10CM//U99": {
-      "description": null,
+    "DIAGNOSIS//KCD//UNK//U99": {
+      "description": "Diagnosis, KCD (Korean Standard Classification of Diseases) three-character category U99, edition 6, 7 or 8 by diagnosis date, dated 00:00 of the diagnosis date recorded in the EMR (INSPIRE diagnosis.icd10_cm)",
       "events": 1
     },
-    "DIAGNOSIS//ICD//10CM//UNK": {
-      "description": null,
+    "DIAGNOSIS//KCD//UNK//UNK": {
+      "description": "Diagnosis, KCD (Korean Standard Classification of Diseases) three-character category UNK, edition 6, 7 or 8 by diagnosis date, dated 00:00 of the diagnosis date recorded in the EMR (INSPIRE diagnosis.icd10_cm)",
       "events": 1
     },
     "EMERGENCY_OPERATION//0": {
@@ -142,20 +142,20 @@
       "description": "Death (MEDS standard code); the earlier of the in-hospital death time from the EMR (operations.inhosp_death_time) and 00:00 of the date the death was registered with the Korean Ministry of the Interior and Safety (allcause_death_time, a median of about 11 days after the death; follow-up to 2023-06-15). About 2% of patients could not be linked to the registry, so no event means no recorded death, not survival",
       "events": 2
     },
-    "OPERATION_DATE": {
-      "description": "Date of the operation (INSPIRE operations.opdate)",
-      "events": 4
-    },
     "OPERATION//END": {
       "description": "End of the operation (INSPIRE operations.opend_time)",
       "events": 4
     },
-    "OPERATION_ID": {
-      "description": "Operation identifier, in text_value, recorded at the operation start (INSPIRE operations.op_id; a random number beginning with 4)",
-      "events": 4
-    },
     "OPERATION//START": {
       "description": "Start of the operation (INSPIRE operations.opstart_time)",
+      "events": 4
+    },
+    "OPERATION_DATE": {
+      "description": "Date of the operation (INSPIRE operations.opdate)",
+      "events": 4
+    },
+    "OPERATION_ID": {
+      "description": "Operation identifier, in text_value, recorded at the operation start (INSPIRE operations.op_id; a random number beginning with 4)",
       "events": 4
     },
     "OR_IN": {

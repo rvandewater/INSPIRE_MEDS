@@ -188,8 +188,8 @@ def test_enrichment_only_adds(plain_codes: dict, enriched_codes: dict):
             assert enriched["description"] == plain["description"], code
         old_parents = plain.get("parent_codes") or []
         assert (enriched["parent_codes"] or [])[: len(old_parents)] == old_parents, code
-    # The ETL describes every code but the diagnoses, here through all three routes.
-    assert described == len(plain_codes) - 5
+    # The ETL describes every code, here through all three routes.
+    assert described == len(plain_codes)
     assert plain_codes["OR_IN"]["description"].startswith(
         "Patient entered the operating room"
     )
@@ -199,13 +199,17 @@ def test_enrichment_only_adds(plain_codes: dict, enriched_codes: dict):
     )
 
 
-def test_diagnoses_get_icd10cm_titles_and_parents(enriched_codes: dict):
-    i10 = enriched_codes["DIAGNOSIS//ICD//10CM//I10"]
-    assert i10["description"] == title("ICD10CM", "I10")
+def test_kcd_diagnoses_get_their_icd10cm_category_as_parent(
+    plain_codes: dict, enriched_codes: dict
+):
+    """The ETL describes a KCD category; suMEDS adds the ICD-10-CM category of the same code."""
+    i10 = enriched_codes["DIAGNOSIS//KCD//UNK//I10"]
+    assert i10["description"] == plain_codes["DIAGNOSIS//KCD//UNK//I10"]["description"]
+    assert i10["description"].startswith("Diagnosis, KCD")
     assert i10["parent_codes"] == ["ICD10CM//I10"]
-    # Codes that are not in the vocabulary, and the null code, stay unenriched.
-    for code in ("DIAGNOSIS//ICD//10CM//U99", "DIAGNOSIS//ICD//10CM//UNK"):
-        assert enriched_codes[code]["description"] is None, code
+    # A KCD-only category (not in the ICD-10-CM pack) and the null code get no parent.
+    for code in ("DIAGNOSIS//KCD//UNK//U99", "DIAGNOSIS//KCD//UNK//UNK"):
+        assert enriched_codes[code]["description"].startswith("Diagnosis, KCD"), code
         assert not enriched_codes[code]["parent_codes"], code
 
 
@@ -215,7 +219,7 @@ def test_parent_names_map_parents_to_titles(enriched_output: Path):
     names = dict(
         zip(table["code"].to_pylist(), table["parent_names"].to_pylist(), strict=True)
     )
-    assert dict(names["DIAGNOSIS//ICD//10CM//I10"]) == {
+    assert dict(names["DIAGNOSIS//KCD//UNK//I10"]) == {
         "ICD10CM//I10": title("ICD10CM", "I10")
     }
     assert dict(names["ICD//10PCS//0DTJ4"])["ICD10PCS//0DT"] == title("ICD10PCS", "0DT")
@@ -248,7 +252,8 @@ def test_dataset_json_records_the_enrichment(
     assert record["ontology_source"] == "local"
     coverage = record["coverage"]
     assert coverage["codes"] == len(enriched_codes)
-    assert coverage["described"][1] > coverage["described"][0]
+    # The ETL describes every code itself (the KCD diagnoses too), so suMEDS adds parents only.
+    assert coverage["described"][1] == coverage["described"][0] == len(enriched_codes)
     assert coverage["with_parent_codes"][1] > coverage["with_parent_codes"][0]
 
 

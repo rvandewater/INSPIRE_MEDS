@@ -7,7 +7,9 @@ import yaml
 from INSPIRE_MEDS import MESSY_CFG
 
 # Events whose codes suMEDS describes (sumeds_rules.yaml), so the config gives them no description.
-SUMEDS_DESCRIBED = {"diagnosis/diagnosis"}
+# None since the diagnoses are KCD: the config describes them, and suMEDS names their ICD-10-CM
+# parents.
+SUMEDS_DESCRIBED: set[str] = set()
 # The literal codes of the config, each described by a constant `_self` block.
 LITERAL_CODES = {
     "OPERATION_ID",
@@ -75,7 +77,7 @@ def test_every_literal_code_has_one_constant_description():
 def test_component_coded_events_declare_a_description():
     """Every event whose code has components describes itself through a ``_metadata`` block.
 
-    The exception is the diagnosis codes, which suMEDS describes with the ICD-10-CM category title.
+    Events listed in ``SUMEDS_DESCRIBED`` (none today) are left to suMEDS.
     """
     undescribed = []
     for table, name, event in _events():

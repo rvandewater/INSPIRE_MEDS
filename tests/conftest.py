@@ -1,7 +1,7 @@
 """A tiny, entirely synthetic INSPIRE release, and helpers to run the CLIs over it.
 
 The tables have the column layout of the INSPIRE 1.4.2 files that ``messy.yaml`` and the
-``inspire_subject_table`` pre-stage read, with made-up values: three subjects, public example ICD-10-CM, ICD-10-PCS and
+``inspire_subject_table`` pre-stage read, with made-up values: three subjects, public example KCD (ICD-10-CM-shaped), ICD-10-PCS and
 WHO ATC codes in INSPIRE's truncated layouts, and a null in each column the config writes as
 ``UNK``. No real INSPIRE data is used.
 """

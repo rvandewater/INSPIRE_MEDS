@@ -14,10 +14,14 @@
 schema: sumeds-rules/0.1
 
 ontology:
-  # DIAGNOSIS//ICD//10CM//{icd10_cm}: INSPIRE cuts ICD-10-CM codes to their three-character category,
-  # which suMEDS's ICD-10-CM data holds with its CMS title. The config writes a null code as UNK.
-  - id: inspire-icd10cm-categories
-    pattern: "^DIAGNOSIS//ICD//10CM//(?P<code>(?!UNK$)[A-Z][0-9A-Z]{2})$"
+  # DIAGNOSIS//KCD//{edition}//{icd10_cm}: a KCD three-character category (edition 6, 7, 8, or UNK
+  # while the release has no calendar dates). KCD is not in suMEDS's packs. Where ICD-10-CM has the
+  # same category, it becomes the code's parent, with its CMS title in parent_names: a KCD category
+  # and the ICD-10-CM category of the same code cover the same condition group (KCD follows WHO
+  # ICD-10, and ICD-10-CM extends WHO ICD-10 below the category level). `validate: pack` drops the
+  # KCD-only categories (71 in 1.4.2), which get no parent. The config writes a null code as UNK.
+  - id: inspire-kcd-icd10cm-categories
+    pattern: "^DIAGNOSIS//KCD//(?:[678]|UNK)//(?P<code>(?!UNK$)[A-Z][0-9A-Z]{2})$"
     vocabulary: ICD10CM
     validate: pack
   # ICD//10PCS//{icd10_pcs}: the first five ICD-10-PCS characters (section, body system, root

@@ -163,10 +163,12 @@ do not change.
     codes (e.g. U codes). The edition is the one in force on the diagnosis date: KCD-6 until 2015, KCD-7
     from 2016, KCD-8 from 2021. The release has no calendar dates (see
     [Pseudo-timestamps](#pseudo-timestamps)), so the edition of a diagnosis cannot be recovered from it.
-    Only the first three characters are released. Most coincide with ICD-10-CM categories, so the code
-    keeps its `DIAGNOSIS//ICD//10CM//<code>` label and suMEDS's ICD-10-CM title; 71 of the 1,136 codes do
-    not (67 that ICD-10-CM never had, and 4 that exist only as pre-release ICD-10-CM draft concepts), and
-    get no title or parent ([#30](https://github.com/rvandewater/INSPIRE_MEDS/issues/30)).
+    Only the first three characters are released. The code is `DIAGNOSIS//KCD//UNK//<code>`
+    (`VOCABULARY//VERSION//CODE`, the edition `UNK` because it cannot be recovered). Most categories
+    coincide with ICD-10-CM categories and get that category as a parent, with its CMS title in
+    `parent_names`; 71 of the 1,136 codes do not (67 that ICD-10-CM never had, and 4 that exist only as
+    pre-release ICD-10-CM draft concepts) and get no parent
+    ([#30](https://github.com/rvandewater/INSPIRE_MEDS/issues/30)).
 - **Diagnosis times are dates.** `diagnosis.chart_time` is 00:00 of the diagnosis date recorded in the
     EMR (all 2,464,620 rows are at 00:00), not the time the diagnosis was made, and a diagnosis entered at
     or after discharge can carry a date later than the clinical event. The team recommends not using the
@@ -221,7 +223,7 @@ issue. This ETL targets 1.4.2 until it is updated for v1.5.
 `metadata/codes.parquet` carries `code`, `description`, `parent_codes`, `unit`, `unit_source_value` and `code_template`. Up to
 1.0.0 only the lab and vital codes had a description (from the release's `parameters.csv`) and no
 code had a parent. The ETL now describes every code family whose meaning INSPIRE itself documents,
-except the diagnoses, and writes no parent codes: the ICD-10-CM category titles and the
+and writes no parent codes: the ICD-10-CM category titles of the diagnoses' parents and the
 vocabulary parents come from suMEDS, whose `sumeds_enrich` stage runs last (see
 [Enriching code metadata with suMEDS](#enriching-code-metadata-with-sumeds)). Nothing in the event
 data changes.
@@ -230,7 +232,7 @@ data changes.
 | -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `LAB//…`, `VITAL//…`, `WARD_VITAL//…`                                      | `_metadata: _self:` from the `parameters.csv` join (unchanged)                                 | the release's `parameters.csv`                                                                                                                                                                                                                                                    |
 | `ADMISSION_DEPARTMENT//…`                                                  | `_metadata: department:` joins the release's own `department.csv` at ETL time                  | the release's `department.csv` (nothing from it is copied into this repository)                                                                                                                                                                                                   |
-| `DIAGNOSIS//ICD//10CM//…`                                                  | none in the ETL                                                                                | the CMS ICD-10-CM category title, added by suMEDS                                                                                                                                                                                                                                 |
+| `DIAGNOSIS//KCD//…`                                                        | `_self` description: a KCD three-character category, its editions and its date-only time       | INSPIRE team, personal communication, 2026-11-22 (see [Source caveats](#source-caveats-inspire-142)); the CMS title of its ICD-10-CM parent is in `parent_names`, added by suMEDS                                                                                                 |
 | `ICD//10PCS//…`                                                            | `_self` description: the code, cut to its first five characters, and what those characters are | the column documentation ([PhysioNet INSPIRE 1.4.2](https://physionet.org/content/inspire/1.4.2/))                                                                                                                                                                                |
 | `MEDICATION//…`                                                            | `_self` description naming the release's own `atc_code` and route                              | the release's own `atc_code` (documented as WHO ATC, mapped by the dataset authors)                                                                                                                                                                                               |
 | `SEX`, `RACE`, `ASA`, `EMERGENCY_OPERATION`, `ANESTHESIA_TYPE`             | `_self` templates                                                                              | the column documentation ([PhysioNet INSPIRE 1.4.2](https://physionet.org/content/inspire/1.4.2/) and the column comments in `messy.yaml`); ASA classes paraphrase the ASA Physical Status Classification System (American Society of Anesthesiologists, last amended 2020-12-13) |
@@ -335,11 +337,12 @@ meds-extract-run spec=INSPIRE output_dir=$MEDS_OUTPUT_DIR do_download=false inpu
 ICD-10-CM and ICD-10-PCS codes are validated against suMEDS's versioned ontology data
 (sumeds-ontologies, pinned release), built from the CMS and CDC files. The rules add:
 
-- **Diagnoses** (`inspire-icd10cm-categories`). INSPIRE's diagnoses are KCD codes cut to the first
-    three characters, with a list of sensitive categories removed (`icd10_excluded.csv`); the PhysioNet
-    page calls them ICD-10-CM (see [Source caveats](#source-caveats-inspire-142)). A code that is also an
-    ICD-10-CM category gets the CMS title and the parent `ICD10CM//<category>`. KCD categories that
-    ICD-10-CM does not have (71 in 1.4.2) get neither.
+- **Diagnoses** (`inspire-kcd-icd10cm-categories`). INSPIRE's diagnoses are KCD codes cut to the
+    first three characters, with a list of sensitive categories removed (`icd10_excluded.csv`); the
+    PhysioNet page calls them ICD-10-CM (see [Source caveats](#source-caveats-inspire-142)). KCD is not
+    in suMEDS's packs. A KCD category that ICD-10-CM also has gets the parent `ICD10CM//<category>`,
+    named with its CMS title in `parent_names`; KCD categories that ICD-10-CM does not have (71 in
+    1.4.2) get no parent.
 - **Operations** (`inspire-icd10pcs-prefixes`). INSPIRE documents `icd10_pcs` as the first five
     characters of an ICD-10-PCS code (section, body system, root operation, body part, approach). In
     1.4.2 it was predicted from the operation name by a model (see
@@ -402,6 +405,20 @@ the baseline. A MEDS-Extract, suMEDS or polars upgrade can also move the output,
 `--compare`.
 
 ## Breaking changes
+
+### Unreleased
+
+- **Diagnoses are coded as KCD: `DIAGNOSIS//KCD//UNK//<code>`, not `DIAGNOSIS//ICD//10CM//<code>`.** The
+    INSPIRE team confirmed that `diagnosis.icd10_cm` holds KCD codes (Korean Standard Classification of
+    Diseases, edition 6, 7 or 8 by diagnosis date), not ICD-10-CM (INSPIRE team, personal communication,
+    2026-11-22; see [Source caveats](#source-caveats-inspire-142)). The edition is `UNK` because the
+    release has no calendar dates. The three-character code is unchanged, and so are the events. In
+    `codes.parquet`, the diagnoses now have an ETL description that names KCD. Where ICD-10-CM has the
+    same category, its CMS title, which was the `description` up to 1.2.0, is now in `parent_names` under
+    the unchanged parent `ICD10CM//<code>`. On the full 1.4.2 release this renames all 1,136 diagnosis
+    codes (2.38 M events); 1,065 keep their `ICD10CM` parent and 71 have none, as before. To migrate,
+    rename codes with the regex `^DIAGNOSIS//ICD//10CM//` → `DIAGNOSIS//KCD//UNK//`. A tool that matches
+    any edition should match `^DIAGNOSIS//KCD//[^/]+//`.
 
 ### 1.2.0 (2026-11-20)
 

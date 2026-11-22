@@ -92,10 +92,12 @@ an `UNK` category, because a missing demographic is not an observed value.
 `MEDS_BIRTH` and `MEDS_DEATH` are properties of a **subject**, but INSPIRE records what they
 derive from on `operations`, which is one row per **operation**:
 
-- `age` is the age on the operation date, quantised to 5-year bins, so a patient with several
+- `age` is the age on the operation date, rounded to the nearest five years, so a patient with several
     operations in one admission can straddle a bin boundary and carry two ages.
 - `inhosp_death_time` appears only on the rows of the admission during which the patient died,
-    while `allcause_death_time` is invariant across all their rows.
+    while `allcause_death_time` is invariant across all their rows. The first is the actual time of
+    death, the second 00:00 of the date the death was registered (see
+    [Source caveats](#source-caveats-inspire-142)); follow-up ends on 2023-06-15.
 
 MESSY cannot reduce a table over its own rows — self-joins are rejected and dftly is strictly
 row-wise — so the `inspire_subject_table` pre-stage
@@ -147,6 +149,72 @@ Two places are left without an id on purpose:
     events merge rows of more than one operation. With an `operation_id` each would become one event per
     operation, about 334,000 extra rows. Tie a vital to its operation by time instead (between the
     operation's `OR_IN` and `OR_OUT`).
+
+## Source caveats (INSPIRE 1.4.2)
+
+The INSPIRE team answered our questions about the 1.4.2 release (INSPIRE team, personal communication,
+2026-11-22; to be corrected in the INSPIRE documentation from v1.5). Where their answer differs from the
+[PhysioNet INSPIRE 1.4.2](https://physionet.org/content/inspire/1.4.2/) page, the answer is what this ETL
+documents. The counts are aggregates we measured on the 1.4.2 release; no row of it is quoted. The codes
+do not change.
+
+- **Diagnoses are KCD, not ICD-10-CM.** `diagnosis.icd10_cm` holds the codes recorded in the SNUH EMR in
+    the Korean Standard Classification of Diseases (KCD), which is based on WHO ICD-10 and adds Korean
+    codes (e.g. U codes). The edition is the one in force on the diagnosis date: KCD-6 until 2015, KCD-7
+    from 2016, KCD-8 from 2021. The release has no calendar dates (see
+    [Pseudo-timestamps](#pseudo-timestamps)), so the edition of a diagnosis cannot be recovered from it.
+    Only the first three characters are released. Most coincide with ICD-10-CM categories, so the code
+    keeps its `DIAGNOSIS//ICD//10CM//<code>` label and suMEDS's ICD-10-CM title; 71 of the 1,136 codes do
+    not (67 that ICD-10-CM never had, and 4 that exist only as pre-release ICD-10-CM draft concepts), and
+    get no title or parent ([#30](https://github.com/rvandewater/INSPIRE_MEDS/issues/30)).
+- **Diagnosis times are dates.** `diagnosis.chart_time` is 00:00 of the diagnosis date recorded in the
+    EMR (all 2,464,620 rows are at 00:00), not the time the diagnosis was made, and a diagnosis entered at
+    or after discharge can carry a date later than the clinical event. The team recommends not using the
+    diagnoses of an admission as features during that admission. Diagnoses carry no admission id, so how
+    many are dated late cannot be measured. By date, 9.2% of the rows fall within one of the patient's
+    admissions (admission day to discharge day), 4.8% within 7 days after a discharge and outside any
+    admission, and 24.1% before the first admission; the rest are outpatient-dated.
+- **Procedures.** In 1.4.2, `operations.icd10_pcs` was predicted from the procedure name by a model; the
+    ICD-10-PCS 2022 table was used only to fix laterality. v1.5 re-derives it from the ICD-10-PCS 2022
+    code set.
+- **Age** is rounded to the **nearest** five years in all releases (not floored): the level 90 covers
+    ages 87.50 to 89.98, nobody is 90 or older, and there is no top-coding. The level 20 starts at 18.03
+    in v1.2 to v1.4.x; from v1.5, operations of patients under 19 are excluded. In 1.4.2 the levels run
+    from 20 to 90. See [Birth and death](#birth-and-death) for how `MEDS_BIRTH` uses it.
+- **Death.** `allcause_death_time` is the date the death was registered in the Resident Registration
+    System of the Ministry of the Interior and Safety (MOIS), from a linkage snapshot of 2023-06-15,
+    stored as 00:00 of the registration date (all values are at 00:00). Registration follows the death by
+    a median of about 11 days: for the 923 patients with both death times in 1.4.2, the registration date
+    is a median of 10.6 days (5th to 95th percentile 2.4 to 33.9) after the in-hospital death time.
+    `inhosp_death_time` is the actual time of death from the EMR. **Follow-up ends on 2023-06-15**; every
+    operation (2011 to 2020) has at least 896 days of follow-up. 2.1% of the patients could not be linked
+    to the registry, and for them a missing `allcause_death_time` means unknown vital status, not
+    survival; 1.4.2 cannot tell them apart from linked survivors (v1.5 adds `allcause_death`: 1
+    registered, 0 linked without a death, null not linked).
+- **No LOINC mapping** of the labs from the source team yet; it may come later.
+- **Medications** are administered orders (drug name, route, time); doses and amounts were not
+    extracted. A combination product is one row per component. The released file has only `drug_name`
+    and `atc_code`: the `drug_name2/3` and `atc_code2/3` in `schema.csv` are an error there, and this ETL
+    never read them.
+- **ICU stays.** `icuin_time` and `icuout_time` are meant as the ICU stay after each operation (ICU
+    admissions without surgery are out of scope). In v1.3 to v1.4.2, the stay was linked to operations by
+    patient only, and about 30% of the linked rows point to the wrong stay, often one in a later hospital
+    admission. Measured on 1.4.2: 19,195 operations have an ICU stay; on 4,887 of them (25.5%) it begins
+    after the operation's hospital discharge, and 5,817 (30.3%) do not meet the v1.5 rule below. Of the
+    15,977 distinct ICU stays (the `ICU_ADMISSION` events), 2,667 (16.7%) begin neither during nor within
+    24 hours after any operation of the same admission. The events keep their times (each is one of the
+    patient's ICU admissions), so the effect in MEDS is that `ICU_ADMISSION` and `ICU_DISCHARGE` include
+    ICU stays that do not follow surgery. No event is dropped or moved; see
+    [#32](https://github.com/rvandewater/INSPIRE_MEDS/issues/32) for a proposed flag. v1.5 links a stay
+    only if it begins during the operation or within 24 hours after leaving the operating room, within
+    the same admission.
+- **`icd10_excluded.csv`**: only the matching diagnosis rows were removed; the patients and their other
+    records remain.
+
+**What changes in v1.5** (being finalised, on PhysioNet and KHDP): `icd10_pcs` from the ICD-10-PCS 2022
+code set; operations under 19 excluded; an `allcause_death` linkage column; ICU stays linked per
+operation and admission; corrected documentation (KCD, dates, age, death); and a fix of a `case_id`
+issue. This ETL targets 1.4.2 until it is updated for v1.5.
 
 ## Code metadata
 
@@ -267,14 +335,15 @@ meds-extract-run spec=INSPIRE output_dir=$MEDS_OUTPUT_DIR do_download=false inpu
 ICD-10-CM and ICD-10-PCS codes are validated against suMEDS's versioned ontology data
 (sumeds-ontologies, pinned release), built from the CMS and CDC files. The rules add:
 
-- **Diagnoses** (`inspire-icd10cm-categories`). INSPIRE documents its diagnoses as ICD-10-CM, cut
-    to the first three characters, with a list of sensitive categories removed
-    (`icd10_excluded.csv`). A code that is an ICD-10-CM category gets the CMS title and the parent
-    `ICD10CM//<category>`. Codes that ICD-10-CM does not have (likely codes from the Korean KCD that
-    were not converted) get neither.
+- **Diagnoses** (`inspire-icd10cm-categories`). INSPIRE's diagnoses are KCD codes cut to the first
+    three characters, with a list of sensitive categories removed (`icd10_excluded.csv`); the PhysioNet
+    page calls them ICD-10-CM (see [Source caveats](#source-caveats-inspire-142)). A code that is also an
+    ICD-10-CM category gets the CMS title and the parent `ICD10CM//<category>`. KCD categories that
+    ICD-10-CM does not have (71 in 1.4.2) get neither.
 - **Operations** (`inspire-icd10pcs-prefixes`). INSPIRE documents `icd10_pcs` as the first five
-    characters of an ICD-10-PCS code (section, body system, root operation, body part, approach),
-    mapped by hand from the operation name. A valid five-character prefix gets the parent
+    characters of an ICD-10-PCS code (section, body system, root operation, body part, approach). In
+    1.4.2 it was predicted from the operation name by a model (see
+    [Source caveats](#source-caveats-inspire-142)). A valid five-character prefix gets the parent
     `ICD10PCS//<prefix>` and its shorter prefixes (OMOP holds partial codes as
     `ICD10PCS Hierarchy` concepts).
 - **Medications** (`inspire-atc-medications`). The parent is the dataset's own ATC code,

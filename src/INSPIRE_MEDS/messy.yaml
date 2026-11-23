@@ -5,6 +5,10 @@
 # Code metadata: `_metadata` blocks describe every code family but the diagnoses, literal codes
 # included (constant `_self` blocks, each with the source of its description). suMEDS adds the
 # ICD-10-CM titles of the diagnoses and the vocabulary parent codes (sumeds_rules.yaml).
+#
+# Facts marked "INSPIRE team, 2026-11-22" come from the INSPIRE team (personal communication,
+# 2026-11-22), to be corrected in the INSPIRE documentation from v1.5. README, "Source caveats
+# (INSPIRE 1.4.2)", lists them with the counts measured on 1.4.2.
 
 sources:
   dataset_version: 1.4.2
@@ -127,13 +131,15 @@ operations:
   age: # Number, Age of the patient on the operation date
     code: MEDS_BIRTH
     time: $date_of_birth
-    # Source: physionet:inspire-1.4.2 Anonymization (age in 5-year intervals); the
+    # Source: physionet:inspire-1.4.2 Anonymization (age in 5-year intervals); INSPIRE team,
+    # 2026-11-22 (age rounded to the nearest five years, no top-coding); the
     # inspire_subject_table pre-stage (README Birth and death)
     _metadata:
       _self:
         description: >-
           "Birth (MEDS standard code); the date is estimated from the age at the patient's first
-          admission, which INSPIRE reports in 5-year bins (operations.age)"
+          admission, which INSPIRE rounds to the nearest five years (operations.age; not
+          top-coded, 90 is the highest level)"
   sex: # M/F, Sex of the patient
     code: 'f"SEX//{$sex ?? ''UNK''}"'
     time: null
@@ -237,11 +243,14 @@ operations:
     time: $opdate_t
     hadm_id: $hadm_id
     operation_id: $op_id
+    # Source: the column comment; INSPIRE team, 2026-11-22 (in 1.4.2 predicted from the procedure
+    # name by a model; v1.5 re-derives it from the ICD-10-PCS 2022 code set)
     _metadata:
       _self:
         description: >-
           f"Operation, ICD-10-PCS code cut to its first five characters (section, body system, root
-          operation, body part, approach): {$icd10_pcs ?? 'UNK'} (INSPIRE operations.icd10_pcs)"
+          operation, body part, approach): {$icd10_pcs ?? 'UNK'} (INSPIRE operations.icd10_pcs; up
+          to INSPIRE 1.4.2 predicted from the procedure name by a model)"
   orin_time: # Relative Time, The time for entering the operating room
     code: OR_IN
     time: $orin_t
@@ -333,36 +342,48 @@ operations:
     _metadata:
       _self:
         description: '"End of cardiopulmonary bypass (INSPIRE operations.cpboff_time)"'
+  # INSPIRE team, 2026-11-22: icuin_time/icuout_time are the ICU stay after each operation (ICU
+  # stays without surgery are out of scope), but in v1.3-v1.4.2 a stay was linked to operations by
+  # patient only, so many linked rows point to a stay of another admission. On 1.4.2, 2,667 of
+  # 15,977 distinct ICU stays (16.7%) begin neither during nor within 24 h after any operation of
+  # the same admission (README, "Source caveats"). v1.5 links a stay only when it does.
   icuin_time: # Relative Time, The time for ICU admission after surgery
     code: ICU_ADMISSION
     time: $icuin_t
     # Source: the column comment; physionet:inspire-1.4.2 Data Description (Operations: ICU
-    # admissions within 24 hours of surgery)
+    # admissions within 24 hours of surgery); INSPIRE team, 2026-11-22 (linked by patient only)
     _metadata:
       _self:
         description: >-
-          "ICU admission after surgery (INSPIRE operations.icuin_time); only ICU admissions within
-          24 hours of surgery are recorded"
+          "ICU admission recorded on an operation (INSPIRE operations.icuin_time); meant as the ICU
+          stay after surgery, but up to INSPIRE 1.4.2 linked to operations by patient only, so some
+          stays do not follow an operation of the same admission"
   icuout_time: # Relative Time, The time for ICU discharge after surgery
     code: ICU_DISCHARGE
     time: $icuout_t
     # Source: the column comment; physionet:inspire-1.4.2 Data Description (Operations: ICU
-    # admissions within 24 hours of surgery)
+    # admissions within 24 hours of surgery); INSPIRE team, 2026-11-22 (linked by patient only)
     _metadata:
       _self:
         description: >-
-          "ICU discharge after surgery (INSPIRE operations.icuout_time); recorded only for ICU
-          admissions within 24 hours of surgery"
+          "ICU discharge recorded on an operation (INSPIRE operations.icuout_time); meant as the
+          end of the ICU stay after surgery, but up to INSPIRE 1.4.2 linked to operations by
+          patient only, so some stays do not follow an operation of the same admission"
   death_time: # Relative Time, The time for death
     code: MEDS_DEATH
     time: $date_of_death
-    # Source: physionet:inspire-1.4.2 Release Notes 1.3 (all-cause mortality column); the
-    # inspire_subject_table pre-stage (README Birth and death)
+    # Source: physionet:inspire-1.4.2 Release Notes 1.3 (all-cause mortality column); INSPIRE
+    # team, 2026-11-22 (allcause_death_time is the date the death was registered with the
+    # Ministry of the Interior and Safety, linkage of 2023-06-15; inhosp_death_time is the actual
+    # time from the EMR); the inspire_subject_table pre-stage (README Birth and death)
     _metadata:
       _self:
         description: >-
-          "Death (MEDS standard code); the earlier of the in-hospital and all-cause death times
-          (operations.inhosp_death_time and allcause_death_time)"
+          "Death (MEDS standard code); the earlier of the in-hospital death time from the EMR
+          (operations.inhosp_death_time) and 00:00 of the date the death was registered with the
+          Korean Ministry of the Interior and Safety (allcause_death_time, a median of about 11 days
+          after the death; follow-up to 2023-06-15). About 2% of patients could not be linked to
+          the registry, so no event means no recorded death, not survival"
 
 labs:
   _table:
@@ -398,6 +419,10 @@ medications:
     cols:
       _origin: '("2016-01-01"::?"%Y-%m-%d")::datetime'
       chart_t: "$_origin + $chart_time::minutes"
+  # INSPIRE team, 2026-11-22: the table holds administered orders (drug, route, time); doses and
+  # amounts were not extracted. A combination product is one row per component, and the released
+  # file has only `drug_name` and `atc_code` (the `drug_name2/3` and `atc_code2/3` of schema.csv
+  # are an error in schema.csv).
   medication:
     code: 'f"MEDICATION//{$atc_code ?? ''UNK''}//{$route}"'
     time: $chart_t
@@ -406,17 +431,27 @@ medications:
       _self:
         description: >-
           f"Medication administered, WHO ATC code {$atc_code ?? 'UNK'}, route {$route} (INSPIRE
-          medications.atc_code and route; the ingredient name is in text_value)"
+          medications.atc_code and route; the ingredient name is in text_value). An administered
+          order without dose or amount; a combination product is one event per component"
 
 diagnosis:
   _table:
     cols:
       _origin: '("2016-01-01"::?"%Y-%m-%d")::datetime'
       chart_t: "$_origin + $chart_time::minutes"
+  # INSPIRE team, 2026-11-22: `icd10_cm` holds the codes recorded in the SNUH EMR in the Korean
+  # Standard Classification of Diseases (KCD, based on WHO ICD-10 with Korean additions), in the
+  # edition in force on the diagnosis date (KCD-6 to 2015, KCD-7 from 2016, KCD-8 from 2021),
+  # cut to the first three characters. Most coincide with ICD-10-CM categories; 71 in 1.4.2 do not
+  # (rvandewater/INSPIRE_MEDS#30). `chart_time` is 00:00 of the diagnosis date recorded in the
+  # EMR, not the time the diagnosis was made; a diagnosis entered at or after discharge can carry
+  # a date after the clinical event. The code keeps its `ICD//10CM` label for now (README, "Source
+  # caveats").
   diagnosis:
     code: 'f"DIAGNOSIS//ICD//10CM//{$icd10_cm ?? ''UNK''}"'
     time: $chart_t
-    # No `_metadata`: suMEDS adds the ICD-10-CM category title and parents (sumeds_rules.yaml).
+    # No `_metadata`: suMEDS adds the ICD-10-CM category title and parents (sumeds_rules.yaml). A
+    # description here would replace those titles (suMEDS fills only missing descriptions).
 
 vitals:
   _table:

@@ -135,11 +135,11 @@
       "events": 1
     },
     "MEDS_BIRTH": {
-      "description": "Birth (MEDS standard code); the date is estimated from the age at the patient's first admission, which INSPIRE rounds to the nearest five years (operations.age; not top-coded, 90 is the highest level)",
+      "description": "Birth (MEDS standard code); estimated as the date of the patient's first operation in their first admission minus the age recorded on it, which INSPIRE rounds to the nearest five years (operations.age; not top-coded, 90 is the highest level), so it is uncertain by up to 2.5 years",
       "events": 3
     },
     "MEDS_DEATH": {
-      "description": "Death (MEDS standard code); the earlier of the in-hospital death time from the EMR (operations.inhosp_death_time) and 00:00 of the date the death was registered with the Korean Ministry of the Interior and Safety (allcause_death_time, a median of about 11 days after the death; follow-up to 2023-06-15). About 2% of patients could not be linked to the registry, so no event means no recorded death, not survival",
+      "description": "Death (MEDS standard code); the in-hospital death time from the EMR (operations.inhosp_death_time) where there is one, else 00:00 of the date the death was registered with the Korean Ministry of the Interior and Safety (allcause_death_time, a median of about 11 days after the death; follow-up to 2023-06-15). About 2% of patients could not be linked to the registry, so no event means no recorded death, not survival",
       "events": 2
     },
     "OPERATION_DATE": {

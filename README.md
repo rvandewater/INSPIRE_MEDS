@@ -109,6 +109,18 @@ before `convert_to_parquet`; it writes `subjects.parquet` into its own directory
 the checksum-verified download is never modified. Like every stage directory, it is deleted once the
 run has succeeded, unless you pass `"overrides=['cleanup_intermediates=false']"`.
 
+How the two are placed:
+
+- **`MEDS_BIRTH`** is the date of the earliest operation with the smallest age of the first admission,
+    minus that age. INSPIRE rounds ages to the nearest five years, so the recorded age is the centre of its
+    bin (a true age between 2.5 years below and 2.5 years above it) and no offset is added: the midpoint
+    rule of [alignEHR#54](https://github.com/rvandewater/alignEHR/issues/54). The birth date is uncertain by
+    up to 2.5 years. There is no top-coding (see [Source caveats](#source-caveats-inspire-142)).
+- **`MEDS_DEATH`** is `inhosp_death_time`, the actual time of an in-hospital death, where there is one, and
+    otherwise `allcause_death_time`, 00:00 of the date the death was registered (a median of about 11 days
+    after it). Follow-up ends on 2023-06-15. No `MEDS_DEATH` means no recorded death: for the about 2% of
+    patients who could not be linked to the registry, vital status is unknown.
+
 | Was (`pre_MEDS.py`)                                  | Now                                                                                                     |
 | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
 | `ORIGIN_PSUEDOTIME`                                  | `_origin: ("2016-01-01"::?"%Y-%m-%d")::datetime`                                                        |
@@ -402,6 +414,28 @@ the baseline. A MEDS-Extract, suMEDS or polars upgrade can also move the output,
 `--compare`.
 
 ## Breaking changes
+
+### Unreleased
+
+- **`MEDS_BIRTH` moves about half a year later.** Up to 1.2.0 it was the first admission minus (age +
+    0.5 years). INSPIRE rounds ages to the nearest five years (INSPIRE team, personal communication,
+    2026-11-22), so the recorded age is already the centre of its bin. `MEDS_BIRTH` is now the operation
+    date minus the age: of the earliest operation with the smallest age in the first admission (the
+    midpoint rule of [alignEHR#54](https://github.com/rvandewater/alignEHR/issues/54)). On the full 1.4.2
+    release, every one of the 99,886 births moves later, by 181.6 to 187.6 days at the 0th to 95th
+    percentile (median 183.6 days): 182.625 days for the dropped half-year, plus the days from the
+    admission to that operation. Codes, values and the number of events are unchanged. To migrate, an age
+    computed from `MEDS_BIRTH` is now about 0.5 years smaller and no longer needs a correction; to
+    reproduce the old time, subtract 182.625 days and the days from the first `HOSPITAL_ADMISSION` to that
+    operation's `OPERATION_DATE`.
+- **`MEDS_DEATH` prefers the in-hospital death time.** Up to 1.2.0 it was the earlier of
+    `inhosp_death_time` and `allcause_death_time`. `allcause_death_time` is 00:00 of the date the death was
+    registered, so where the death was registered on the day it happened, the earlier value was 00:00 of
+    that day, before the actual time of death. `MEDS_DEATH` is now `inhosp_death_time` where there is one,
+    else `allcause_death_time`. On the full 1.4.2 release, fewer than 20 of the 13,323 deaths (0.5% of the
+    923 patients with both times) move, each later and within the same day except one; the number of deaths
+    is unchanged. To migrate, nothing is needed for tasks that use death at day resolution or longer
+    horizons; to reproduce the old time, take the earlier of the two source columns.
 
 ### 1.2.0 (2026-11-20)
 

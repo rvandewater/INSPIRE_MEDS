@@ -3,9 +3,9 @@
 `MEDS_BIRTH` and `MEDS_DEATH` are properties of a *subject*, but INSPIRE records the facts
 they derive from on `operations`, which is one row per operation:
 
-- `age` is the age on the operation date, quantised to 5-year bins. A subject with several
-  operations during their first admission can therefore straddle a bin boundary and carry two
-  different ages, which yields two birth dates exactly five years apart.
+- `age` is the age on the operation date, rounded to the nearest five years. A subject with
+  several operations during their first admission can therefore straddle a bin boundary and carry
+  two different ages, which yields two birth dates five years apart.
 - `inhosp_death_time` is recorded only on the rows of the admission during which the patient
   died, while `allcause_death_time` is invariant across all of a subject's rows. A row-wise
   expression sees different values on different rows and emits two death events.
@@ -44,6 +44,9 @@ SIDE_TABLE_NAME = "subjects"
 #: The raw table every derived column comes from.
 SOURCE_TABLE = "operations"
 
+#: Minutes in a Julian year (365.25 days), the year the spec uses to turn ages into days.
+MINUTES_PER_YEAR = 365.25 * 24 * 60
+
 
 def build_subject_table(operations: pl.LazyFrame) -> pl.LazyFrame:
     """Reduce `operations` to one row per subject, carrying the birth and death inputs.
@@ -54,47 +57,70 @@ def build_subject_table(operations: pl.LazyFrame) -> pl.LazyFrame:
     Returns:
         A frame of `subject_id`, `birth_age` and `death_min`, one row per subject.
 
-    `birth_age` is the *smallest* age recorded at the subject's first admission. Age rises
-    monotonically with time, so the minimum is the age at the earliest operation of that
-    admission -- the observation closest to the admission itself, and the only choice that does
-    not depend on row order. `admission_time == 0` identifies the first admission because
+    `birth_age` is the patient's estimated age, in years, at the start of their first admission
+    (offset 0, the anchor of every INSPIRE offset): the smallest age recorded in that admission,
+    minus the time from the anchor to the date of the earliest operation with that age. Age rises
+    with time, so that is normally the first operation; taking the smallest age keeps the choice
+    of 1.2.0 where a release's ages are not monotonic, and does not depend on row order. INSPIRE
+    rounds ages to the nearest five years (INSPIRE team, personal communication, 2026-11-22), so
+    the recorded age is already the centre of its bin and needs no half-bin or half-year offset;
+    the spec places `MEDS_BIRTH` at the anchor minus `birth_age` years, i.e. at that operation's
+    date minus the recorded age. `admission_time == 0` identifies the first admission because
     INSPIRE anchors each subject's offsets at their own first admission.
 
-    `death_min` is the earliest death time from either source, taken over all of the subject's
-    rows, and is null only when the subject has neither record.
+    `death_min` is the in-hospital death time when the subject has one, else the all-cause death
+    time. `inhosp_death_time` is the actual time of death from the EMR, while
+    `allcause_death_time` is 00:00 of the date the death was registered with the Ministry of the
+    Interior and Safety, a median of about 11 days later (INSPIRE team, 2026-11-22), so the
+    in-hospital time is preferred even where the registration date is earlier (a death registered
+    on the day it happened). `death_min` is null only when the subject has neither record.
 
     Examples:
         >>> ops = pl.LazyFrame({
-        ...     "subject_id": [1, 1, 2, 3],
-        ...     "admission_time": [0, 0, 0, 5],
-        ...     "age": [75, 80, 60, 40],
-        ...     "inhosp_death_time": [None, None, 100.0, None],
-        ...     "allcause_death_time": [1440.0, 1440.0, None, None],
+        ...     "subject_id": [1, 1, 2, 3, 4],
+        ...     "admission_time": [0, 0, 0, 5, 0],
+        ...     "opdate": [0, 1440, 2 * 1440, 1440, 0],
+        ...     "age": [75, 80, 60, 40, 50],
+        ...     "inhosp_death_time": [None, None, 3000.0, None, 4500.0],
+        ...     "allcause_death_time": [1440.0, 1440.0, None, None, 4320.0],
         ... })
-        >>> build_subject_table(ops).collect().sort("subject_id")
-        shape: (3, 3)
-        ┌────────────┬───────────┬───────────┐
-        │ subject_id ┆ birth_age ┆ death_min │
-        │ ---        ┆ ---       ┆ ---       │
-        │ i64        ┆ i64       ┆ f64       │
-        ╞════════════╪═══════════╪═══════════╡
-        │ 1          ┆ 75        ┆ 1440.0    │
-        │ 2          ┆ 60        ┆ 100.0     │
-        │ 3          ┆ null      ┆ null      │
-        └────────────┴───────────┴───────────┘
+        >>> table = build_subject_table(ops).collect().sort("subject_id")
+        >>> table.select("subject_id", "death_min")
+        shape: (4, 2)
+        ┌────────────┬───────────┐
+        │ subject_id ┆ death_min │
+        │ ---        ┆ ---       │
+        │ i64        ┆ f64       │
+        ╞════════════╪═══════════╡
+        │ 1          ┆ 1440.0    │
+        │ 2          ┆ 3000.0    │
+        │ 3          ┆ null      │
+        │ 4          ┆ 4500.0    │
+        └────────────┴───────────┘
+        >>> [None if a is None else round(a, 4) for a in table["birth_age"]]
+        [75.0, 59.9945, None, 50.0]
 
-        Subject 1 straddles a 5-year bin (75 and 80) and takes the earlier age; subject 2 has
-        only an in-hospital death and keeps it; subject 3's first admission is not in the table
-        and has no death, so both are null.
+        Subject 1 straddles a 5-year bin (75 and 80) and takes the smaller age, of its first
+        operation;
+        subject 2 was operated on two days after admission, so its age at the anchor is two days
+        less than 60; subject 3's first admission is not in the table and has no death, so both
+        are null. Subject 4's death was registered at 00:00 of the day it died in hospital: the
+        in-hospital time wins.
     """
-    first_admission_age = (
-        pl.when(pl.col("admission_time") == 0).then(pl.col("age")).otherwise(None).min()
+    first_admission = pl.col("admission_time") == 0
+    age_at_anchor = pl.col("age") - pl.col("opdate") / MINUTES_PER_YEAR
+    # The first-admission rows first, by age and operation date; null if there is none.
+    birth_age = (
+        pl.when(first_admission)
+        .then(age_at_anchor)
+        .sort_by([~first_admission, pl.col("age"), pl.col("opdate")], nulls_last=True)
+        .first()
     )
     return operations.group_by("subject_id").agg(
-        birth_age=first_admission_age,
-        death_min=pl.min_horizontal(
+        birth_age=birth_age.cast(pl.Float64),
+        death_min=pl.coalesce(
             pl.col("inhosp_death_time").min(), pl.col("allcause_death_time").min()
-        ),
+        ).cast(pl.Float64),
     )
 
 

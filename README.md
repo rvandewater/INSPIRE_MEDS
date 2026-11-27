@@ -415,7 +415,7 @@ the baseline. A MEDS-Extract, suMEDS or polars upgrade can also move the output,
 
 ## Breaking changes
 
-### Unreleased
+### 1.3.0 (2026-11-27)
 
 - **`MEDS_BIRTH` moves about half a year later.** Up to 1.2.0 it was the first admission minus (age +
     0.5 years). INSPIRE rounds ages to the nearest five years (INSPIRE team, personal communication,
